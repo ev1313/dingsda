@@ -88,9 +88,15 @@ class Container(collections.OrderedDict):
     def __getattr__(self, name):
         try:
             if name in self.__slots__:
-                return object.__getattribute__(self, name)
+                ret = object.__getattribute__(self, name)
+                if callable(ret):
+                    return ret(self)
+                return ret
             else:
-                return self[name]
+                ret = self[name]
+                if callable(ret):
+                    return ret(self)
+                return ret
         except KeyError:
             raise AttributeError(name)
 

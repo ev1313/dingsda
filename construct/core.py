@@ -385,6 +385,7 @@ class Construct(object):
         Parse a stream. Files, pipes, sockets, and other streaming sources of data are handled by this method. See parse().
         """
         context = Container(**contextkw)
+        context._preprocessing = False
         context._parsing = True
         context._building = False
         context._sizing = False
@@ -410,6 +411,9 @@ class Construct(object):
     def _parse(self, stream, context, path):
         """Override in your subclass."""
         raise NotImplementedError
+    
+    def _preprocess(self, obj, context, path):
+        return obj
 
     def build(self, obj, **contextkw):
         r"""
@@ -435,6 +439,7 @@ class Construct(object):
         """
         context = Container(**contextkw)
         context._parsing = False
+        context._preprocessing = False
         context._building = True
         context._sizing = False
         context._params = context
@@ -454,6 +459,15 @@ class Construct(object):
         """Override in your subclass."""
         raise NotImplementedError
 
+    def preprocess(self, obj, **contextkw):
+        context = Container(**contextkw)
+        context._preprocessing = True
+        context._parsing = False
+        context._building = False
+        context._sizing = False
+        context._params = context
+        return self._preprocess(obj=obj, context=context, path="(preprocess)")
+
     def sizeof(self, **contextkw):
         r"""
         Calculate the size of this object, optionally using a context.
@@ -471,6 +485,7 @@ class Construct(object):
         :raises SizeofError: size could not be determined in actual context, or is impossible to be determined
         """
         context = Container(**contextkw)
+        context._preprocessing = False
         context._parsing = False
         context._building = False
         context._sizing = True
@@ -2209,6 +2224,25 @@ class Struct(Construct):
             except StopFieldError:
                 break
         return obj
+    
+    def _preprocess(self, obj, context, path):
+        if obj is None:
+            obj = Container()
+        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _index = context.get("_index", None))
+        context._root = context._.get("_root", context)
+        context.update(obj)
+        for sc in self.subcons:
+            subobj = obj.get(sc.name, None)
+
+            if sc.name:
+                context[sc.name] = subobj
+
+            preprocessret = sc._preprocess(subobj, context, path)
+            if sc.name:
+                context[sc.name] = preprocessret
+        return context
+            
+
 
     def _build(self, obj, stream, context, path):
         if obj is None:
@@ -2736,6 +2770,10 @@ class Renamed(Subconstruct):
     def _parse(self, stream, context, path):
         path += " -> %s" % (self.name,)
         return self.subcon._parsereport(stream, context, path)
+    
+    def _preprocess(self, obj, context, path):
+        path += " -> %s" % (self.name,)
+        return self.subcon._preprocess(obj, context, path)
 
     def _build(self, obj, stream, context, path):
         path += " -> %s" % (self.name,)
@@ -2970,6 +3008,9 @@ class Rebuild(Subconstruct):
     def _build(self, obj, stream, context, path):
         obj = evaluate(self.func, context)
         return self.subcon._build(obj, stream, context, path)
+
+    def _preprocess(self, obj, context, path):
+        return self.func
 
     def _emitparse(self, code):
         return self.subcon._compileparse(code)
