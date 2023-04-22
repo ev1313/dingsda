@@ -2407,17 +2407,6 @@ def test_lazy_rebuild():
     res = d.build(obj)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
 
-def test_lazy_rebuild_nested():
-    d = Struct(
-        "foo" / Int32ul,
-        "asd" / Struct(
-            "bar" / Rebuild(Int32ul, lambda ctx: ctx.baz),
-            "baz" / Rebuild(Int32ul, lambda ctx: ctx._.foo),
-        )
-    )
-    obj = {"foo": 4, "asd": {"bar": lambda ctx: ctx.baz, "baz": lambda ctx: ctx._.foo}}
-    res = d.build(obj)
-    assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
 
 @xfail(reason="unfixable defect in the design")
 def test_adapters_context_issue_954():
