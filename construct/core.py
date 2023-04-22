@@ -413,7 +413,7 @@ class Construct(object):
         raise NotImplementedError
     
     def _preprocess(self, obj, context, path):
-        return obj
+        return obj, self._preprocess_sizeof(context, path)
 
     def build(self, obj, **contextkw):
         r"""
@@ -491,6 +491,20 @@ class Construct(object):
         context._sizing = True
         context._params = context
         return self._sizeof(context, "(sizeof)")
+
+    r"""
+    Calculate the size of this object while preprocessing.
+    
+    In contrary to the normal sizeof, this is only called while preprocessing, where all information regarding the size
+    of the object is available.
+    
+    In the worst case you can build the object and return the length, which would be inefficient, but possible.
+    
+    By default it calls _sizeof, which will fail usually with a SizeofError.
+    """
+    def _preprocess_sizeof(self, context, path):
+        """Override in your subclass."""
+        return self._sizeof(context, path)
 
     def _sizeof(self, context, path):
         """Override in your subclass."""
@@ -2226,6 +2240,7 @@ class Struct(Construct):
         return obj
     
     def _preprocess(self, obj, context, path):
+        size = 0
         if obj is None:
             obj = Container()
         context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _index = context.get("_index", None))
@@ -2237,10 +2252,11 @@ class Struct(Construct):
             if sc.name:
                 context[sc.name] = subobj
 
-            preprocessret = sc._preprocess(subobj, context, path)
+            preprocessret, retsize = sc._preprocess(subobj, context, path)
+            size += retsize
             if sc.name:
                 context[sc.name] = preprocessret
-        return context
+        return context, size
             
 
 
@@ -3010,7 +3026,7 @@ class Rebuild(Subconstruct):
         return self.subcon._build(obj, stream, context, path)
 
     def _preprocess(self, obj, context, path):
-        return self.func
+        return self.func, self.subcon._preprocess_sizeof(context, path)
 
     def _emitparse(self, code):
         return self.subcon._compileparse(code)

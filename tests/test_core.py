@@ -2383,7 +2383,7 @@ def test_switch_issue_913_using_integers():
     common(d, b"\xab", 171, 1, x=1)
     common(d, b"\x09\x00", 9, 2, x=2)
 
-def test_preprocess():
+def test_preprocess_rebuild():
     d = Struct(
         "foo" / Int32ul,
         "asd" / Struct(
@@ -2392,10 +2392,37 @@ def test_preprocess():
         )
     )
     obj = {"foo": 4}
-    preprocessed_ctx = d.preprocess(obj=obj)
+    preprocessed_ctx, size = d.preprocess(obj=obj)
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
+    assert(size == len(res))
     
+def test_preprocess_int_size():
+    d = Int32ul
+    obj = 4
+    preprocessed_ctx, size = d.preprocess(obj=obj)
+    assert(preprocessed_ctx == obj)
+    assert(size == 4)
+
+def test_preprocess_struct_size():
+    d = Struct(
+        "foo" / Int32ul,
+        "anon" / Struct(
+            "bar" / Rebuild(Int32ul, lambda ctx: ctx.baz),
+            "baz" / Rebuild(Int32ul, lambda ctx: ctx._.foo),
+            )
+    )
+    obj = {"foo": 4}
+    preprocessed_ctx, size = d.preprocess(obj=obj)
+    assert(preprocessed_ctx["_size"] == 12)
+    assert(preprocessed_ctx["anon"]["_size"] == 8)
+    assert(preprocessed_ctx["anon"]["bar"]["_size"] == 4)
+    assert(preprocessed_ctx["anon"]["baz"]["_size"] == 4)
+
+    res = d.build(preprocessed_ctx)
+    assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
+    assert(size == len(res))
+
 
 def test_lazy_rebuild():
     d = Struct(
