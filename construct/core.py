@@ -2251,35 +2251,35 @@ class Struct(Construct):
     
     def _preprocess(self, obj, context, path, offset=0):
         size = 0
-        context["_offset"] = offset
         if obj is None:
             obj = Container()
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
-        context.update(obj)
+        ctx = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _index = context.get("_index", None))
+        ctx._root = ctx._.get("_root", context)
+        ctx.update(obj)
+        ctx["_offset"] = offset
         for sc in self.subcons:
             subobj = obj.get(sc.name, None)
 
             if sc.name:
                 context[sc.name] = subobj
 
-            preprocessret, retsize = sc._preprocess(subobj, context, path, offset=offset)
-            context[f"_offset_{sc.name}"] = offset
-            context[f"_size_{sc.name}"] = retsize
+            preprocessret, retsize = sc._preprocess(subobj, ctx, path, offset=offset)
+            ctx[f"_offset_{sc.name}"] = offset
+            ctx[f"_size_{sc.name}"] = retsize
             offset += retsize
-            context[f"_endoffset_{sc.name}"] = offset
+            ctx[f"_endoffset_{sc.name}"] = offset
             size += retsize
             if sc.name:
-                context[sc.name] = preprocessret
+                ctx[sc.name] = preprocessret
 
-        context["_size"] = size
-        context["_endoffset"] = offset
+        ctx["_size"] = size
+        ctx["_endoffset"] = offset
 
         # remove _, because construct rebuild will fail otherwise
         #if "_" in context.keys():
         #    context.pop("_")
 
-        return context, size
+        return ctx, size
 
     def _build(self, obj, stream, context, path):
         if obj is None:
