@@ -2392,6 +2392,7 @@ def test_preprocess_rebuild():
         )
     )
     obj = {"foo": 4}
+    # the preprocessing adds the lambdas to the dictionary, so building is possible without the values
     preprocessed_ctx, size = d.preprocess(obj=obj)
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
@@ -2400,9 +2401,11 @@ def test_preprocess_rebuild():
 def test_preprocess_int_size():
     d = Int32ul
     obj = 4
-    preprocessed_ctx, size = d.preprocess(obj=obj)
+    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
     assert(preprocessed_ctx == obj)
-    assert(size == 4)
+    assert(extra_info["_offset"] == 0)
+    assert(extra_info["_size"] == 4)
+    assert(extra_info["_endoffset"] == 4)
 
 def test_preprocess_struct_size():
     d = Struct(
@@ -2413,7 +2416,7 @@ def test_preprocess_struct_size():
             )
     )
     obj = {"foo": 4}
-    preprocessed_ctx, size = d.preprocess(obj=obj)
+    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
     assert(preprocessed_ctx["_size"] == 12)
     assert(preprocessed_ctx["_offset"] == 0)
     assert(preprocessed_ctx["anon"]["_offset"] == 4)
@@ -2424,7 +2427,42 @@ def test_preprocess_struct_size():
 
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
-    assert(size == len(res))
+    assert(extra_info["_offset"] == 0)
+    assert(extra_info["_size"] == len(res))
+    assert(extra_info["_endoffset"] == len(res))
+
+
+def test_preprocess_array_size():
+    d = Struct(
+        "foo" / Array(3, Int32ul),
+    )
+    obj = {"foo": [4,4,4]}
+    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
+    assert(preprocessed_ctx["_offset"] == 0)
+    assert(preprocessed_ctx["_size"] == 12)
+    assert(preprocessed_ctx["_endoffset"] == 12)
+    assert(extra_info["_offset"] == 0)
+    assert(extra_info["_size"] == 12)
+    assert(extra_info["_endoffset"] == 12)
+    res = d.build(preprocessed_ctx)
+    assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
+
+def test_preprocess_rebuild():
+    d = Struct(
+        "foo" / Int32ul,
+        "bar" / Rebuild(Int32ul, lambda ctx: ctx.baz),
+        "baz" / Rebuild(Int32ul, lambda ctx: ctx.foo),
+        )
+    obj = {"foo": 4}
+    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
+    assert(preprocessed_ctx["_offset"] == 0)
+    assert(preprocessed_ctx["_size"] == 12)
+    assert(preprocessed_ctx["_endoffset"] == 12)
+    assert(extra_info["_offset"] == 0)
+    assert(extra_info["_size"] == 12)
+    assert(extra_info["_endoffset"] == 12)
+    res = d.build(preprocessed_ctx)
+    assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
 
 
 def test_lazy_rebuild():

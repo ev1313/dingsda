@@ -425,9 +425,10 @@ class Construct(object):
             :param path: the path to the construct
 
             :return obj: the preprocessed object
-            :return size: the size of the object
+            :return extra_info: a dictionary containing extra information regarding offset, size, etc.
         """
-        return obj, self._sizeof(context, path)
+        size = self._sizeof(context, path)
+        return obj, {"_offset": offset, "_size": size, "_endoffset": offset + size}
 
     def build(self, obj, **contextkw):
         r"""
@@ -482,7 +483,7 @@ class Construct(object):
 
             :param obj: the object to preprocess
             :return obj: the preprocessed Container
-            :return size: the real size of the construct for the current dictionary / object
+            :return extra_info: the dictionary containing extra information for the *current* object, like offset, size, etc.
         """
         context = Container(**contextkw)
         context._preprocessing = True
@@ -2263,7 +2264,8 @@ class Struct(Construct):
             if sc.name:
                 context[sc.name] = subobj
 
-            preprocessret, retsize = sc._preprocess(subobj, ctx, path, offset=offset)
+            preprocessret, extra_info = sc._preprocess(subobj, ctx, path, offset=offset)
+            retsize = extra_info["_size"]
             ctx[f"_offset_{sc.name}"] = offset
             ctx[f"_size_{sc.name}"] = retsize
             offset += retsize
@@ -2279,7 +2281,7 @@ class Struct(Construct):
         #if "_" in context.keys():
         #    context.pop("_")
 
-        return ctx, size
+        return ctx, {"_offset": ctx["_offset"], "_size": ctx["_size"], "_endoffset": ctx["_endoffset"]}
 
     def _build(self, obj, stream, context, path):
         if obj is None:
@@ -3047,7 +3049,8 @@ class Rebuild(Subconstruct):
         return self.subcon._build(obj, stream, context, path)
 
     def _preprocess(self, obj, context, path, offset=0):
-        return self.func, self.subcon._sizeof(context, path)
+        size = self.subcon._sizeof(context, path)
+        return self.func, {"_offset_": offset, "_size": size, "_endoffset": offset + size}
 
     def _emitparse(self, code):
         return self.subcon._compileparse(code)
