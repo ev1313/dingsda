@@ -4529,6 +4529,19 @@ class Pointer(Subconstruct):
         self.offset = offset
         self.stream = stream
 
+
+    def _preprocess(self, obj, context, path, offset=0):
+        # the offset doesn't change, because the pointer itself has no size
+        # therefor just generate relative offsets from here
+        obj, child_extra_info = self.subcon._preprocess(obj, context, path, offset=0)
+
+        extra_info = {f"_ptr{k}": v for k, v in child_extra_info.items()}
+        extra_info["_offset"] = offset
+        extra_info["_size"] = 0
+        extra_info["_endoffset"] = offset
+
+        return obj, extra_info
+
     def _parse(self, stream, context, path):
         offset = evaluate(self.offset, context)
         stream = evaluate(self.stream, context) or stream

@@ -2518,6 +2518,19 @@ def test_preprocess_rebuild():
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
 
 
+def test_preprocess_pointer():
+    d = Struct(
+        "foo" / Array(4, Int32ul),
+        "bar" / Pointer(2, Int32ul),
+        "baz" / Array(4, Int32ul),
+        )
+    obj = {"foo": [1,2,3,4], "bar": 2, "baz": [5,6,7,8]}
+    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
+    assert(extra_info["_bar_ptr_offset"] == 0)
+    assert(extra_info["_bar_ptr_size"] == 4)
+    assert(extra_info["_bar_ptr_endoffset"] == 4)
+    res = d.build(preprocessed_ctx)
+
 def test_lazy_rebuild():
     d = Struct(
         "foo" / Int32ul,
