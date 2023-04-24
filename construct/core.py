@@ -2252,36 +2252,43 @@ class Struct(Construct):
     
     def _preprocess(self, obj, context, path, offset=0):
         size = 0
+        extra_info = {}
         if obj is None:
             obj = Container()
         ctx = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _index = context.get("_index", None))
         ctx._root = ctx._.get("_root", context)
         ctx.update(obj)
-        ctx["_offset"] = offset
+        extra_info["_offset"] = offset
         for sc in self.subcons:
             subobj = obj.get(sc.name, None)
 
             if sc.name:
                 context[sc.name] = subobj
 
-            preprocessret, extra_info = sc._preprocess(subobj, ctx, path, offset=offset)
-            retsize = extra_info["_size"]
-            ctx[f"_offset_{sc.name}"] = offset
-            ctx[f"_size_{sc.name}"] = retsize
+            preprocessret, child_extra_info = sc._preprocess(subobj, ctx, path, offset=offset)
+            # put named extra info to the context
+            extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+
+            # update offset & size
+            retsize = child_extra_info["_size"]
             offset += retsize
-            ctx[f"_endoffset_{sc.name}"] = offset
             size += retsize
             if sc.name:
                 ctx[sc.name] = preprocessret
 
-        ctx["_size"] = size
-        ctx["_endoffset"] = offset
+            # add current extra_info to context, so e.g. lambdas can use them already
+            ctx.update(extra_info)
 
-        # remove _, because construct rebuild will fail otherwise
+        extra_info["_size"] = size
+        extra_info["_endoffset"] = offset
+        ctx.update(extra_info)
+
+        # remove _, because construct rebuild will fail otherwise (?)
         #if "_" in context.keys():
         #    context.pop("_")
 
-        return ctx, {"_offset": ctx["_offset"], "_size": ctx["_size"], "_endoffset": ctx["_endoffset"]}
+        return ctx, extra_info
 
     def _build(self, obj, stream, context, path):
         if obj is None:
@@ -2560,6 +2567,28 @@ class Array(Subconstruct):
         self.count = count
         self.discard = discard
 
+    def _preprocess(self, obj, context, path, offset=0):
+        # count isn't checked here, this is done in the build phase
+        retlist = ListContainer()
+        extra_info = {"_offset": offset}
+        size = 0
+        for i,e in enumerate(obj):
+            context._index = i
+            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            retlist.append(obj)
+
+            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+            offset += child_extra_info["_size"]
+            size += child_extra_info["_size"]
+
+            context.update(extra_info)
+
+        extra_info["_size"] = size
+        extra_info["_endoffset"] = offset
+
+        return retlist, extra_info
+
     def _parse(self, stream, context, path):
         count = evaluate(self.count, context)
         if not 0 <= count:
@@ -2634,6 +2663,30 @@ class GreedyRange(Subconstruct):
         super().__init__(subcon)
         self.discard = discard
 
+
+    def _preprocess(self, obj, context, path, offset=0):
+        # predicates don't need to be checked in preprocessing
+        retlist = ListContainer()
+        extra_info = {"_offset": offset}
+        size = 0
+        for i,e in enumerate(obj):
+            context._index = i
+            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            retlist.append(obj)
+
+            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+            offset += child_extra_info["_size"]
+            size += child_extra_info["_size"]
+
+            context.update(extra_info)
+
+        extra_info["_size"] = size
+        extra_info["_endoffset"] = offset
+
+        return retlist, extra_info
+
+
     def _parse(self, stream, context, path):
         discard = self.discard
         obj = ListContainer()
@@ -2704,6 +2757,29 @@ class RepeatUntil(Subconstruct):
         super().__init__(subcon)
         self.predicate = predicate
         self.discard = discard
+
+
+    def _preprocess(self, obj, context, path, offset=0):
+        # predicates don't need to be checked in preprocessing
+        retlist = ListContainer()
+        extra_info = {"_offset": offset}
+        size = 0
+        for i,e in enumerate(obj):
+            context._index = i
+            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            retlist.append(obj)
+
+            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+            offset += child_extra_info["_size"]
+            size += child_extra_info["_size"]
+
+            context.update(extra_info)
+
+        extra_info["_size"] = size
+        extra_info["_endoffset"] = offset
+
+        return retlist, extra_info
 
     def _parse(self, stream, context, path):
         predicate = self.predicate
