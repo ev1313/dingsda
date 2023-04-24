@@ -2415,9 +2415,12 @@ def test_preprocess_struct_size():
     obj = {"foo": 4}
     preprocessed_ctx, size = d.preprocess(obj=obj)
     assert(preprocessed_ctx["_size"] == 12)
+    assert(preprocessed_ctx["_offset"] == 0)
+    assert(preprocessed_ctx["anon"]["_offset"] == 4)
     assert(preprocessed_ctx["anon"]["_size"] == 8)
-    assert(preprocessed_ctx["anon"]["bar"]["_size"] == 4)
-    assert(preprocessed_ctx["anon"]["baz"]["_size"] == 4)
+    assert(preprocessed_ctx["anon"]["_endoffset"] == 12)
+    assert(preprocessed_ctx["anon"]["_size_bar"] == 4)
+    assert(preprocessed_ctx["anon"]["_size_baz"] == 4)
 
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
