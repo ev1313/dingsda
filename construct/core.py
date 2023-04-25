@@ -305,6 +305,7 @@ class Construct(object):
     * `parse`
     * `parse_stream`
     * `parse_file`
+    * `preprocess`
     * `build`
     * `build_stream`
     * `build_file`
@@ -315,6 +316,7 @@ class Construct(object):
     Subclass authors should not override the external methods. Instead, another API is available:
 
     * `_parse`
+    * `_preprocess`
     * `_build`
     * `_sizeof`
     * `_actualsize`
@@ -412,6 +414,8 @@ class Construct(object):
         """Override in your subclass."""
         raise NotImplementedError
 
+    def _toET(self, ):
+
     def _preprocess(self, obj, context, path, offset=0):
         r"""
            Preprocess an object before building or sizing, called by the preprocess function.
@@ -473,6 +477,40 @@ class Construct(object):
     def _build(self, obj, stream, context, path):
         """Override in your subclass."""
         raise NotImplementedError
+
+    def toET(self, obj, **contextkw):
+        r"""
+            Convert a parsed construct to a XML ElementTree.
+        
+        :param obj: The object
+        :param contextkw: further arguments
+        :returns: an ElementTree 
+        """
+
+        context = Container(**contextkw)
+        context._preprocessing = False
+        context._parsing = False
+        context._building = False
+        context._sizing = False
+        context._params = context
+        return self._toET(obj=obj, parent=None, context=context, path="(toET)")
+
+    def fromET(self, xml, **contextkw):
+        r"""
+            Convert an XML ElementTree to a construct.
+
+        :param xml: The ElementTree
+        :param contextkw: further arguments
+        :returns: a Container
+        """
+
+        context = Container(**contextkw)
+        context._preprocessing = False
+        context._parsing = False
+        context._building = False
+        context._sizing = False
+        context._params = context
+        return self._fromET(xml=xml, parent=None, context=context, path="(fromET)")
 
     def preprocess(self, obj, **contextkw):
         r"""
