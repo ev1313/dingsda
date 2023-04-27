@@ -6,6 +6,7 @@ from construct.lib import *
 from construct.expr import *
 from construct.version import *
 
+import xml.etree.ElementTree as ET
 
 #===============================================================================
 # exceptions
@@ -235,6 +236,52 @@ def stream_iseof(stream):
         raise StreamError("stream. read() seek() tell() failed", path="???")
 
 
+def get_current_field(context, name):
+    idx = context.get("_index", None)
+    if idx is not None:
+        return context[f"{name}_{idx}"]
+    else:
+        return context[name]
+
+def create_child_context(context, name, list_index=None):
+    assert (context is not None)
+    assert (name is not None)
+
+    data = get_current_field(context, name)
+
+    if isinstance(data, Container) or isinstance(data, dict):
+        ctx = Container(_=context, **data)
+    elif isinstance(data, ListContainer) or isinstance(data, list):
+        assert (list_index is not None)
+        # does not add an additional _ layer for arrays
+        ctx = Container(**context)
+        ctx._index = list_index
+        ctx[f"{name}_{list_index}"] = data[list_index]
+    else:
+        # this is needed when the item is part of a list
+        # then the name is e.g. "bar_1"
+        ctx = Container(_=context)
+        ctx[name] = data
+    _root = ctx.get("_root", None)
+    if _root is None:
+        ctx["_root"] = context
+    else:
+        ctx["_root"] = _root
+    return ctx
+
+
+def rename_in_context(context, name, new_name):
+    ctx = context
+    idx = context.get("_index", None)
+    if idx is not None:
+        ctx[f"{new_name}_{idx}"] = context[f"{name}_{idx}"]
+        ctx[f"{name}_{idx}"] = None
+    else:
+        ctx[new_name] = context[name]
+        ctx[name] = None
+
+    return ctx
+
 class CodeGen:
     def __init__(self):
         self.blocks = []
@@ -414,7 +461,8 @@ class Construct(object):
         """Override in your subclass."""
         raise NotImplementedError
 
-    def _toET(self, ):
+    def _toET(self, parent, name, context, path):
+        raise NotImplementedError
 
     def _preprocess(self, obj, context, path, offset=0):
         r"""
@@ -478,10 +526,13 @@ class Construct(object):
         """Override in your subclass."""
         raise NotImplementedError
 
-    def toET(self, obj, **contextkw):
+    def toET(self, obj, name="Root", **contextkw):
         r"""
             Convert a parsed construct to a XML ElementTree.
-        
+
+            This method creates the root node for the following _toET calls, so
+            even FormatFields can attach their values to an attrib.
+
         :param obj: The object
         :param contextkw: further arguments
         :returns: an ElementTree 
@@ -493,7 +544,10 @@ class Construct(object):
         context._building = False
         context._sizing = False
         context._params = context
-        return self._toET(obj=obj, parent=None, context=context, path="(toET)")
+        context[name] = obj
+        # create root node
+        xml = ET.Element(name)
+        return self._toET(parent=xml, context=context, name=name, path="(toET)")
 
     def fromET(self, xml, **contextkw):
         r"""
@@ -1222,6 +1276,14 @@ class FormatField(Construct):
             raise FormatFieldError("struct %r error during building, given value %r" % (self.fmtstr, obj), path=path)
         stream_write(stream, data, self.length, path)
         return obj
+
+    def _toET(self, parent, name, context, path):
+        assert (name is not None)
+        assert(parent is not None)
+
+        data = str(get_current_field(context, name))
+        parent.attrib[name] = data
+        return None
 
     def _sizeof(self, context, path):
         return self.length
@@ -2351,6 +2413,23 @@ class Struct(Construct):
                 break
         return context
 
+    def _toET(self, parent, name, context, path):
+        assert(name is not None)
+        assert(parent is not None)
+
+        ctx = create_child_context(context, name)
+
+        elem = ET.Element(name)
+        for sc in self.subcons:
+            if sc.name is None or sc.name.startswith("_"):
+                continue
+
+            child = sc._toET(context=ctx, name=sc.name, parent=elem, path=f"{path} -> {name}")
+            if child is not None:
+                elem.append(child)
+
+        return elem
+
     def _sizeof(self, context, path):
         context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = None, _index = context.get("_index", None))
         context._root = context._.get("_root", context)
@@ -2931,6 +3010,15 @@ class Renamed(Subconstruct):
     def _build(self, obj, stream, context, path):
         path += " -> %s" % (self.name,)
         return self.subcon._build(obj, stream, context, path)
+
+    def _toET(self, parent, name, context, path):
+        ctx = context
+
+        # corner case with Switch e.g.
+        if name != self.name:
+            ctx = rename_in_context(context=context, name=name, new_name=self.name)
+
+        return self.subcon._toET(context=ctx, name=self.name, parent=parent, path=f"{path} -> {name}")
 
     def _sizeof(self, context, path):
         path += " -> %s" % (self.name,)

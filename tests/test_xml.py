@@ -6,13 +6,29 @@ from construct.lib import *
 
 from xml.etree import ElementTree as ET
 
-def test_basic_xml():
+def test_basic_struct():
     s = Struct(
         "a" / Int32ul,
         "b" / Int32ul,
     )
 
     data = {"a": 1, "b": 2}
-    xml = s.toET(context=data, name="test", parent=None, is_root=True)
+    xml = s.toET(obj=data, name="test")
 
     assert(ET.tostring(xml) == b'<test a="1" b="2" />')
+
+
+def test_basic_struct_2():
+    s = Struct(
+        "a" / Int32ul,
+        "b" / Int32ul,
+        "s" / Struct(
+            "c" / Int32ul,
+            "d" / Int32ul,
+        ),
+        )
+
+    data = {"a": 1, "b": 2, "s": {"c": 3, "d": 4}}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test a="1" b="2"><s c="3" d="4" /></test>')
