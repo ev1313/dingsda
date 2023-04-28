@@ -270,6 +270,40 @@ def create_child_context(context, name, list_index=None):
     return ctx
 
 
+def get_current_field(context, name):
+    idx = context.get("_index", None)
+    if idx is not None:
+        return context[f"{name}_{idx}"]
+    else:
+        return context[name]
+
+def create_parent_context(context):
+    # we go down one layer
+    ctx = Container()
+    ctx["_"] = context
+    # add root node
+    _root = context.get("_root", None)
+    if _root is None:
+        ctx["_root"] = context
+    else:
+        ctx["_root"] = _root
+    return ctx
+
+def insert_or_append_field(context, name, value):
+    current = context.get(name, None)
+    if current is None:
+        context[name] = value
+    elif isinstance(current, ListContainer) or isinstance(current, list):
+        context[name].append(value)
+    else:
+        print("insert_or_append_field failed")
+        print(context)
+        print(name)
+        print(current)
+        assert (0)
+    return context
+
+
 def rename_in_context(context, name, new_name):
     ctx = context
     idx = context.get("_index", None)
@@ -464,6 +498,9 @@ class Construct(object):
     def _toET(self, parent, name, context, path):
         raise NotImplementedError
 
+    def _fromET(self, parent, name, context, path):
+        raise NotImplementedError
+
     def _preprocess(self, obj, context, path, offset=0):
         r"""
            Preprocess an object before building or sizing, called by the preprocess function.
@@ -564,7 +601,7 @@ class Construct(object):
         context._building = False
         context._sizing = False
         context._params = context
-        return self._fromET(xml=xml, parent=None, context=context, path="(fromET)")
+        return self._fromET(parent=xml, name=xml.tag, context=context, path="(fromET)")
 
     def preprocess(self, obj, **contextkw):
         r"""
@@ -1284,6 +1321,22 @@ class FormatField(Construct):
         data = str(get_current_field(context, name))
         parent.attrib[name] = data
         return None
+
+    def _fromET(self, parent, name, context, path):
+        assert(parent is not None)
+        assert(name is not None)
+
+        elem = parent.attrib[name]
+
+        assert (len(self.fmtstr) == 2)
+        if self.fmtstr[1] in ["B", "H", "L", "Q", "b", "h", "l", "q"]:
+            insert_or_append_field(context, name, int(elem))
+            return context, self.length
+        elif self.fmtstr[1] in ["e", "f", "d"]:
+            insert_or_append_field(context, name, float(elem))
+            return context, self.length
+
+        assert (0)
 
     def _sizeof(self, context, path):
         return self.length
@@ -2429,6 +2482,36 @@ class Struct(Construct):
                 elem.append(child)
 
         return elem
+
+    def _fromET(self, parent, name, context, path):
+        # we go down one layer
+        ctx = create_parent_context(context)
+
+        # get the xml element
+        elem = parent.findall(name)
+        if len(elem) == 1:
+            elem = elem[0]
+
+        assert(elem is not None)
+
+        for sc in self.subcons:
+            ctx = sc.fromET(context=ctx, parent=elem, name=sc.name, offset=offset)
+
+        ctx["_size"] = size
+        ctx["_endoffset"] = offset
+
+        # remove _, because construct rebuild will fail otherwise
+        if "_" in ctx.keys():
+            ctx.pop("_")
+
+        # now we have to go back up
+        if not is_root or "_ignore_root" in context.keys():
+            ret_ctx = context
+            insert_or_append_field(ret_ctx, name, ctx)
+        else:
+            ret_ctx = context | ctx
+
+        return ret_ctx
 
     def _sizeof(self, context, path):
         context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = None, _index = context.get("_index", None))
