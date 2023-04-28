@@ -34,7 +34,7 @@ def test_toET_struct_2():
     assert(ET.tostring(xml) == b'<test a="1" b="2"><s c="3" d="4" /></test>')
 
 def test_fromET_struct():
-    s = Struct(
+    s = "test" / Struct(
         "a" / Int32ul,
         "b" / Int32ul,
     )

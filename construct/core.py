@@ -601,7 +601,10 @@ class Construct(object):
         context._building = False
         context._sizing = False
         context._params = context
-        return self._fromET(parent=xml, name=xml.tag, context=context, path="(fromET)")
+        # cretae root node
+        parent = ET.Element("Root")
+        parent.append(xml)
+        return self._fromET(parent=parent, name=xml.tag, context=context, path="(fromET)")
 
     def preprocess(self, obj, **contextkw):
         r"""
@@ -1331,10 +1334,10 @@ class FormatField(Construct):
         assert (len(self.fmtstr) == 2)
         if self.fmtstr[1] in ["B", "H", "L", "Q", "b", "h", "l", "q"]:
             insert_or_append_field(context, name, int(elem))
-            return context, self.length
+            return context
         elif self.fmtstr[1] in ["e", "f", "d"]:
             insert_or_append_field(context, name, float(elem))
-            return context, self.length
+            return context
 
         assert (0)
 
@@ -2495,21 +2498,15 @@ class Struct(Construct):
         assert(elem is not None)
 
         for sc in self.subcons:
-            ctx = sc.fromET(context=ctx, parent=elem, name=sc.name, offset=offset)
-
-        ctx["_size"] = size
-        ctx["_endoffset"] = offset
+            ctx = sc._fromET(context=ctx, parent=elem, name=sc.name, path=f"{path} -> {name}")
 
         # remove _, because construct rebuild will fail otherwise
         if "_" in ctx.keys():
             ctx.pop("_")
 
         # now we have to go back up
-        if not is_root or "_ignore_root" in context.keys():
-            ret_ctx = context
-            insert_or_append_field(ret_ctx, name, ctx)
-        else:
-            ret_ctx = context | ctx
+        ret_ctx = context
+        insert_or_append_field(ret_ctx, name, ctx)
 
         return ret_ctx
 
@@ -3102,6 +3099,28 @@ class Renamed(Subconstruct):
             ctx = rename_in_context(context=context, name=name, new_name=self.name)
 
         return self.subcon._toET(context=ctx, name=self.name, parent=parent, path=f"{path} -> {name}")
+
+    def _fromET(self, parent, name, context, path):
+        ctx = context
+
+        # this renaming is necessary e.g. for GenericList,
+        # because it creates a list which needs to be renamed accordingly, so the following objects
+        # can append themselves to the list
+        renamed = False
+        if name != self.name and name in ctx.keys():
+            renamed = True
+            ctx = rename_in_context(context=context, name=name, new_name=self.name)
+
+        ctx = self.subcon._fromET(context=ctx, parent=parent, name=self.name, path=f"{path} -> {name}")
+
+        if renamed:
+            ctx = rename_in_context(context=context, name=self.name, new_name=name)
+
+        # construct requires this when rebuilding, else key error is raised
+        if not self.name in ctx.keys():
+            ctx[self.name] = None
+
+        return ctx
 
     def _sizeof(self, context, path):
         path += " -> %s" % (self.name,)
