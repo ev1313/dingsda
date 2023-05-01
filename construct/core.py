@@ -604,7 +604,8 @@ class Construct(object):
         # cretae root node
         parent = ET.Element("Root")
         parent.append(xml)
-        return self._fromET(parent=parent, name=xml.tag, context=context, path="(fromET)")
+        result = self._fromET(parent=parent, name=xml.tag, context=context, path="(fromET)")
+        return result.get(xml.tag)
 
     def preprocess(self, obj, **contextkw):
         r"""
