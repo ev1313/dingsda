@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import pdb
 import struct, io, binascii, itertools, collections, pickle, sys, os, hashlib, importlib, importlib.machinery, importlib.util
 
 from construct.lib import *
@@ -315,6 +315,18 @@ def rename_in_context(context, name, new_name):
         ctx[name] = None
 
     return ctx
+
+import csv
+from io import StringIO
+def list_to_string(string_list):
+    output = StringIO()
+    writer = csv.writer(output, quoting=csv.QUOTE_MINIMAL)
+    writer.writerow(string_list)
+    return output.getvalue().strip()
+
+def string_to_list(string):
+    reader = csv.reader([string])
+    return next(reader)
 
 class CodeGen:
     def __init__(self):
@@ -1323,7 +1335,12 @@ class FormatField(Construct):
         assert(parent is not None)
 
         data = str(get_current_field(context, name))
-        parent.attrib[name] = data
+        if parent.attrib.get(name, None) is not None:
+            if parent.attrib[name] != "[":
+                parent.attrib[name] += ","
+            parent.attrib[name] += data
+        else:
+            parent.attrib[name] = data
         return None
 
     def _fromET(self, parent, name, context, path):
@@ -2821,6 +2838,13 @@ class Array(Subconstruct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
         return count * self.subcon._sizeof(context, path)
+
+    def _toET(self, parent, name, context, path):
+
+        pass
+
+    def _fromET(self, parent, name, context, path):
+        pass
 
     def _emitparse(self, code):
         return f"ListContainer(({self.subcon._compileparse(code)}) for i in range({self.count}))"
