@@ -5,6 +5,7 @@ import struct, io, binascii, itertools, collections, pickle, sys, os, hashlib, i
 from construct.lib import *
 from construct.expr import *
 from construct.version import *
+from construct.helpers import *
 
 import xml.etree.ElementTree as ET
 
@@ -235,99 +236,6 @@ def stream_iseof(stream):
     except Exception:
         raise StreamError("stream. read() seek() tell() failed", path="???")
 
-
-def get_current_field(context, name):
-    idx = context.get("_index", None)
-    if idx is not None:
-        return context[f"{name}_{idx}"]
-    else:
-        return context[name]
-
-def create_child_context(context, name, list_index=None):
-    assert (context is not None)
-    assert (name is not None)
-
-    data = get_current_field(context, name)
-
-    if isinstance(data, Container) or isinstance(data, dict):
-        ctx = Container(_=context, **data)
-    elif isinstance(data, ListContainer) or isinstance(data, list):
-        assert (list_index is not None)
-        # does not add an additional _ layer for arrays
-        ctx = Container(**context)
-        ctx._index = list_index
-        ctx[f"{name}_{list_index}"] = data[list_index]
-    else:
-        # this is needed when the item is part of a list
-        # then the name is e.g. "bar_1"
-        ctx = Container(_=context)
-        ctx[name] = data
-    _root = ctx.get("_root", None)
-    if _root is None:
-        ctx["_root"] = context
-    else:
-        ctx["_root"] = _root
-    return ctx
-
-
-def get_current_field(context, name):
-    idx = context.get("_index", None)
-    if idx is not None:
-        return context[f"{name}_{idx}"]
-    else:
-        return context[name]
-
-def create_parent_context(context):
-    # we go down one layer
-    ctx = Container()
-    ctx["_"] = context
-    # add root node
-    _root = context.get("_root", None)
-    if _root is None:
-        ctx["_root"] = context
-    else:
-        ctx["_root"] = _root
-    return ctx
-
-def insert_or_append_field(context, name, value):
-    current = context.get(name, None)
-    if current is None:
-        context[name] = value
-    elif isinstance(current, ListContainer) or isinstance(current, list):
-        context[name].append(value)
-    else:
-        print("insert_or_append_field failed")
-        print(context)
-        print(name)
-        print(current)
-        assert (0)
-    return context
-
-
-def rename_in_context(context, name, new_name):
-    ctx = context
-    idx = context.get("_index", None)
-    if idx is not None:
-        ctx[f"{new_name}_{idx}"] = context[f"{name}_{idx}"]
-        ctx[f"{name}_{idx}"] = None
-    else:
-        ctx[new_name] = context[name]
-        ctx[name] = None
-
-    return ctx
-
-import csv
-from io import StringIO
-def list_to_string(string_list):
-    output = StringIO()
-    writer = csv.writer(output, quoting=csv.QUOTE_MINIMAL)
-    writer.writerow(string_list)
-    return output.getvalue().strip()
-
-def string_to_list(string):
-    reader = csv.reader([string])
-    return next(reader)
-
 class CodeGen:
     def __init__(self):
         self.blocks = []
@@ -510,7 +418,7 @@ class Construct(object):
     def _toET(self, parent, name, context, path):
         raise NotImplementedError
 
-    def _fromET(self, parent, name, context, path):
+    def _fromET(self, parent, name, context, path, is_root=False):
         raise NotImplementedError
 
     def _preprocess(self, obj, context, path, offset=0):
@@ -775,6 +683,10 @@ class Construct(object):
 
     def _emitbuild(self, code):
         """Override in your subclass."""
+        raise NotImplementedError
+
+    def _names(self):
+        """ Gets overriden by various classes and is used by _toET / _fromET for determining names of the XML tags"""
         raise NotImplementedError
 
     def benchmark(self, sampledata, filename=None):
@@ -1332,22 +1244,22 @@ class FormatField(Construct):
 
     def _toET(self, parent, name, context, path):
         assert (name is not None)
-        assert(parent is not None)
 
         data = str(get_current_field(context, name))
-        if parent.attrib.get(name, None) is not None:
-            if parent.attrib[name] != "[":
-                parent.attrib[name] += ","
-            parent.attrib[name] += data
+        if parent is None:
+            return data
         else:
             parent.attrib[name] = data
         return None
 
-    def _fromET(self, parent, name, context, path):
+    def _fromET(self, parent, name, context, path, is_root=False):
         assert(parent is not None)
         assert(name is not None)
 
-        elem = parent.attrib[name]
+        if isinstance(parent, str):
+            elem = parent
+        else:
+            elem = parent.attrib[name]
 
         assert (len(self.fmtstr) == 2)
         if self.fmtstr[1] in ["B", "H", "L", "Q", "b", "h", "l", "q"]:
@@ -1361,6 +1273,9 @@ class FormatField(Construct):
 
     def _sizeof(self, context, path):
         return self.length
+
+    def _names(self):
+        return []
 
     def _emitparse(self, code):
         fname = f"formatfield_{code.allocateId()}"
@@ -1914,6 +1829,38 @@ class StringEncoded(Adapter):
         if obj == u"":
             return b""
         return obj.encode(self.encoding)
+
+    def _toET(self, parent, name, context, path):
+        assert (name is not None)
+
+        data = str(get_current_field(context, name))
+        if parent is None:
+            return data
+        else:
+            parent.attrib[name] = data
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        assert(parent is not None)
+        assert(name is not None)
+
+        if isinstance(parent, str):
+            elem = parent
+        else:
+            elem = parent.attrib[name]
+
+        assert (len(self.fmtstr) == 2)
+        if self.fmtstr[1] in ["B", "H", "L", "Q", "b", "h", "l", "q"]:
+            insert_or_append_field(context, name, int(elem))
+            return context
+        elif self.fmtstr[1] in ["e", "f", "d"]:
+            insert_or_append_field(context, name, float(elem))
+            return context
+
+        assert (0)
+
+    def _names(self):
+        return []
 
     def _emitparse(self, code):
         return f"({self.subcon._compileparse(code)}).decode({repr(self.encoding)})"
@@ -2504,14 +2451,17 @@ class Struct(Construct):
 
         return elem
 
-    def _fromET(self, parent, name, context, path):
+    def _fromET(self, parent, name, context, path, is_root=False):
         # we go down one layer
         ctx = create_parent_context(context)
 
         # get the xml element
-        elem = parent.findall(name)
-        if len(elem) == 1:
-            elem = elem[0]
+        if not is_root:
+            elem = parent.findall(name)
+            if len(elem) == 1:
+                elem = elem[0]
+        else:
+            elem = parent
 
         assert(elem is not None)
 
@@ -2535,6 +2485,9 @@ class Struct(Construct):
             return sum(sc._sizeof(context, path) for sc in self.subcons)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _names(self):
+        return [self.__class__.__name__]
 
     def _emitparse(self, code):
         fname = f"parse_struct_{code.allocateId()}"
@@ -2840,11 +2793,63 @@ class Array(Subconstruct):
         return count * self.subcon._sizeof(context, path)
 
     def _toET(self, parent, name, context, path):
+        data = get_current_field(context, name)
 
-        pass
+        # Simple fields -> FormatFields and Strings return None for _name
+        sc_names = self.subcon._names()
 
-    def _fromET(self, parent, name, context, path):
-        pass
+        if len(sc_names) == 0:
+            arr = []
+            for idx, item in enumerate(data):
+                # create new context including the index
+                context._index = idx
+                context[f"{name}_{idx}"] = data[idx]
+
+                obj = self.subcon._toET(None, name, context, path)
+                arr += [obj]
+                context._index = None
+            parent.attrib[name] = "[" + list_to_string(arr) + "]"
+        else:
+            assert(len(sc_names) == 1)
+            for idx, item in enumerate(data):
+                # create new context including the index
+                context._index = idx
+                context[f"{name}_{idx}"] = data[idx]
+
+                obj = self.subcon._toET(parent, sc_names[0], context, path)
+                assert(obj == None)
+
+                context._index = None
+
+        return None
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        context[name] = []
+
+        # Simple fields -> FormatFields and Strings return None for _name
+        sc_names = self.subcon._names()
+        if len(sc_names) == 0:
+            data = parent.attrib[name]
+            assert(data[0] == "[")
+            assert(data[-1] == "]")
+            arr = string_to_list(data[1:-1])
+
+            for x in arr:
+                self.subcon._fromET(x, name, context, path, is_root=True)
+        else:
+            items = []
+            for n in sc_names:
+                items += parent.findall(n)
+
+            for item in items:
+                self.subcon._fromET(item, name, context, path, is_root=True)
+
+            for n in sc_names:
+                if context.get(n, 1) == None:
+                    context.pop(n)
+
+        return context
 
     def _emitparse(self, code):
         return f"ListContainer(({self.subcon._compileparse(code)}) for i in range({self.count}))"
@@ -3125,7 +3130,7 @@ class Renamed(Subconstruct):
 
         return self.subcon._toET(context=ctx, name=self.name, parent=parent, path=f"{path} -> {name}")
 
-    def _fromET(self, parent, name, context, path):
+    def _fromET(self, parent, name, context, path, is_root=False):
         ctx = context
 
         # this renaming is necessary e.g. for GenericList,
@@ -3136,7 +3141,7 @@ class Renamed(Subconstruct):
             renamed = True
             ctx = rename_in_context(context=context, name=name, new_name=self.name)
 
-        ctx = self.subcon._fromET(context=ctx, parent=parent, name=self.name, path=f"{path} -> {name}")
+        ctx = self.subcon._fromET(context=ctx, parent=parent, name=self.name, path=f"{path} -> {name}", is_root=is_root)
 
         if renamed:
             ctx = rename_in_context(context=context, name=self.name, new_name=name)
@@ -3171,6 +3176,9 @@ class Renamed(Subconstruct):
         if self.docs:
             r.update(doc=self.docs)
         return r
+
+    def _names(self):
+        return [self.name]
 
 
 #===============================================================================
@@ -3380,6 +3388,12 @@ class Rebuild(Subconstruct):
     def _preprocess(self, obj, context, path, offset=0):
         size = self.subcon._sizeof(context, path)
         return self.func, {"_offset_": offset, "_size": size, "_endoffset": offset + size}
+
+    def _toET(self, parent, name, context, path):
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return context
 
     def _emitparse(self, code):
         return self.subcon._compileparse(code)
@@ -3635,6 +3649,50 @@ class FocusedSeq(Construct):
             return sum(sc._sizeof(context, path) for sc in self.subcons)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _toET(self, parent, name, context, path):
+        assert (isinstance(self.parsebuildfrom, str))
+        for sc in self.subcons:
+            if sc.name == self.parsebuildfrom:
+                # FocusedSeq has to ignore the Rename
+                # because e.g. PrefixedArray adds custom names
+                if sc.__class__.__name__ == "Renamed":
+                    sc = sc.subcon
+                else:
+                    raise NotImplementedError
+                return sc._toET(parent, name, context, path)
+
+        raise NotImplementedError
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        # we go down one layer
+        ctx = create_parent_context(context)
+
+        # get the xml element
+        if not is_root:
+            elem = parent.findall(name)
+            if len(elem) == 1:
+                elem = elem[0]
+        else:
+            elem = parent
+
+        assert(elem is not None)
+
+        for sc in self.subcons:
+            if sc.name == self.parsebuildfrom:
+                assert (sc.__class__.__name__ == "Renamed")
+                s = sc.subcon
+                ctx = sc._fromET(context=ctx, parent=elem, name=sc.name, path=f"{path} -> {name}")
+
+        # remove _, because construct rebuild will fail otherwise
+        if "_" in ctx.keys():
+            ctx.pop("_")
+
+        # now we have to go back up
+        ret_ctx = context
+        insert_or_append_field(ret_ctx, name, ctx)
+
+        return ret_ctx
 
     def _emitparse(self, code):
         fname = f"parse_focusedseq_{code.allocateId()}"
@@ -4426,6 +4484,28 @@ class Switch(Construct):
 
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _toET(self, parent, name, context, path):
+        keyfunc = evaluate(self.keyfunc, context)
+        sc = self.cases.get(keyfunc, self.default)
+
+        assert(isinstance(sc, Renamed))
+
+        return sc._toET(parent, name, context, path)
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        if not is_root:
+            elem = parent.find(name)
+        else:
+            raise NotImplementedError
+
+
+
+    def _names(self):
+        for case in self.cases.values():
+            assert(isinstance(case, Renamed))
+        names = [case.name for case in self.cases.values()]
+        return names
 
     def _emitparse(self, code):
         fname = f"switch_cases_{code.allocateId()}"

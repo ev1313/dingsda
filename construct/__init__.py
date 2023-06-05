@@ -23,6 +23,7 @@ from construct.core import *
 from construct.expr import *
 from construct.debug import *
 from construct.version import *
+from construct.helpers import *
 from construct import lib
 
 
