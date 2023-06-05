@@ -194,6 +194,23 @@ def test_toET_switch():
 
     assert (ET.tostring(xml) == b'<test><b32bit value="32" /></test>')
 
+def test_toET_switch_array():
+    s = "test" / Struct(
+        "a" / Array(2, "foo" / Struct(
+            "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
+            "data" / Switch(this.type, {
+                1: "b32bit" / Struct("value" / Int32ul),
+                2: "b16bit" / Struct("value" / Int16ul),
+                3: "test2" / Struct("a" / Int32ul, "b" / Int32ul)
+            }),
+            )),
+        "b" / Array(3, Int32ul),
+        )
+    obj = {"a": [{"type": 1, "data": {"value": 32}}, {"type": 2, "data": {"value": 16}}], "b": [1,2,2]}
+    xml = s.toET(obj=obj, name="test")
+    assert(ET.tostring(xml) == b'<test b="[1,2,2]"><foo><b32bit value="32" /></foo><foo><b16bit value="16" /></foo></test>')
+
+
 def test_fromET_switch():
     s = "test" / Struct(
         "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),

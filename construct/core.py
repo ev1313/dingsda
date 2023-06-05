@@ -2814,10 +2814,9 @@ class Array(Subconstruct):
             for idx, item in enumerate(data):
                 # create new context including the index
                 context._index = idx
-                context[f"{name}_{idx}"] = data[idx]
+                context[f"{sc_names[0]}_{idx}"] = data[idx]
 
-                obj = self.subcon._toET(parent, sc_names[0], context, path)
-                assert(obj == None)
+                self.subcon._toET(parent, sc_names[0], context, path)
 
                 context._index = None
 
@@ -4494,12 +4493,16 @@ class Switch(Construct):
         return sc._toET(parent, name, context, path)
 
     def _fromET(self, parent, name, context, path, is_root=False):
-        if not is_root:
-            elem = parent.find(name)
-        else:
+        if is_root:
             raise NotImplementedError
 
-
+        for case in self.cases.values():
+            assert(isinstance(case, Renamed))
+            elems = parent.findall(case.name)
+            assert(len(elems) == 1)
+            elem = elems[0]
+            context[f"_switchid_{name}"] = case.name
+            return case._fromET(elem, name, context, path, is_root=True)
 
     def _names(self):
         for case in self.cases.values():
