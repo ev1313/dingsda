@@ -2816,7 +2816,9 @@ class Array(Subconstruct):
                 context._index = idx
                 context[f"{sc_names[0]}_{idx}"] = data[idx]
 
-                self.subcon._toET(parent, sc_names[0], context, path)
+                elem = self.subcon._toET(parent, sc_names[0], context, path)
+                if elem is not None:
+                    parent.append(elem)
 
                 context._index = None
 
@@ -3135,15 +3137,13 @@ class Renamed(Subconstruct):
         # this renaming is necessary e.g. for GenericList,
         # because it creates a list which needs to be renamed accordingly, so the following objects
         # can append themselves to the list
-        renamed = False
         if name != self.name and name in ctx.keys():
-            renamed = True
             ctx = rename_in_context(context=context, name=name, new_name=self.name)
 
         ctx = self.subcon._fromET(context=ctx, parent=parent, name=self.name, path=f"{path} -> {name}", is_root=is_root)
 
-        if renamed:
-            ctx = rename_in_context(context=context, name=self.name, new_name=name)
+        if name != self.name:
+            ctx = rename_in_context(context=ctx, name=self.name, new_name=name)
 
         # construct requires this when rebuilding, else key error is raised
         if not self.name in ctx.keys():
@@ -4499,6 +4499,10 @@ class Switch(Construct):
         for case in self.cases.values():
             assert(isinstance(case, Renamed))
             elems = parent.findall(case.name)
+
+            if len(elems) == 0:
+                continue
+
             assert(len(elems) == 1)
             elem = elems[0]
             context[f"_switchid_{name}"] = case.name
