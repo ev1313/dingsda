@@ -288,6 +288,31 @@ def test_fromET_focusedseq():
     data = {"value": 2}
     assert(obj == data)
 
+def test_toET_focusedseq_struct():
+    s = Struct("a" / FocusedSeq("b",
+                   "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                   "b" / Struct("value" / Int32ul),
+                   "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                                ))
+
+    data = {"a": {"value": 2}}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test><a value="2" /></test>')
+
+
+def test_fromET_focusedseq_struct():
+    s = "test" / Struct( "a" / FocusedSeq("b",
+                            "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                            "b" / Struct("value" / Int32ul),
+                            "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                                          ))
+    xml = ET.fromstring(b'<test><a value="2" /></test>')
+    obj = s.fromET(xml=xml)
+
+    data = {"b": None, "a": {"value": 2}}
+    assert(obj == data)
+
 def test_toET_switch_focusedseq():
     s = "test" / Struct(
         "a" / Array(2, "foo" / FocusedSeq("data",

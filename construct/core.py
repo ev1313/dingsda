@@ -3684,18 +3684,9 @@ class FocusedSeq(Construct):
         for sc in self.subcons:
             if sc.name == self.parsebuildfrom:
                 assert (sc.__class__.__name__ == "Renamed")
-                s = sc.subcon
-                return sc._fromET(context=ctx, parent=elem, name=sc.name, path=f"{path} -> {name}", is_root=True)
+                return sc._fromET(context=ctx, parent=elem, name=name, path=f"{path} -> {name}", is_root=True)
 
-        # remove _, because construct rebuild will fail otherwise
-        if "_" in ctx.keys():
-            ctx.pop("_")
-
-        # now we have to go back up
-        ret_ctx = context
-        insert_or_append_field(ret_ctx, name, ctx)
-
-        return ret_ctx
+        assert(False)
 
     def _emitparse(self, code):
         fname = f"parse_focusedseq_{code.allocateId()}"
