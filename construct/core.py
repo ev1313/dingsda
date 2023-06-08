@@ -521,7 +521,7 @@ class Construct(object):
         context._building = False
         context._sizing = False
         context._params = context
-        # cretae root node
+        # create root node
         parent = ET.Element("Root")
         parent.append(xml)
         result = self._fromET(parent=parent, name=xml.tag, context=context, path="(fromET)")
@@ -3659,7 +3659,11 @@ class FocusedSeq(Construct):
                     sc = sc.subcon
                 else:
                     raise NotImplementedError
-                return sc._toET(parent, name, context, path)
+                elem = sc._toET(parent, name, context, path)
+                if elem is None:
+                    return parent
+
+                return elem
 
         raise NotImplementedError
 
@@ -3681,7 +3685,7 @@ class FocusedSeq(Construct):
             if sc.name == self.parsebuildfrom:
                 assert (sc.__class__.__name__ == "Renamed")
                 s = sc.subcon
-                ctx = sc._fromET(context=ctx, parent=elem, name=sc.name, path=f"{path} -> {name}")
+                return sc._fromET(context=ctx, parent=elem, name=sc.name, path=f"{path} -> {name}", is_root=True)
 
         # remove _, because construct rebuild will fail otherwise
         if "_" in ctx.keys():

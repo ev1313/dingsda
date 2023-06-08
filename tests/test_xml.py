@@ -262,6 +262,32 @@ def test_fromET_switch_array():
 
     assert(obj == {"a": [{"type": None, "b32bit": None, "data": {"value": 32}}, {"type": None, "b16bit": None, "data": {"value": 16}}], "b": [1,2,2]})
 
+
+def test_toET_focusedseq():
+    s = FocusedSeq("b",
+        "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+        "b" / Struct("value" / Int32ul),
+        "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+        )
+
+    data = {"value": 2}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test value="2" />')
+
+
+def test_fromET_focusedseq():
+    s = "test" / FocusedSeq("b",
+                   "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                   "b" / Struct("value" / Int32ul),
+                   "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                   )
+    xml = ET.fromstring(b'<test value="2" />')
+    obj = s.fromET(xml=xml)
+
+    data = {"value": 2}
+    assert(obj == data)
+
 def test_toET_switch_focusedseq():
     s = "test" / Struct(
         "a" / Array(2, "foo" / FocusedSeq("data",
