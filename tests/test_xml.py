@@ -87,6 +87,15 @@ def test_fromET_struct_array():
 
     assert(obj == {"a": [1,1,1,1], "b": [1,2,2]})
 
+def test_toET_struct_unnamed_struct_array():
+    s = "test" / Struct(
+        "a" / Array(4, Struct("value" / Int32ul)),
+        "b" / Array(3, Int32ul),
+        )
+
+    obj = {"a": [{"value": 1}], "b": [1,2,2]}
+    xml = s.toET(obj=obj, name="test")
+    assert(ET.tostring(xml) == b'<test b="[1,2,2]"><Struct value="1"/></test>')
 
 def test_fromET_struct_unnamed_struct_array():
     s = "test" / Struct(
@@ -313,9 +322,34 @@ def test_fromET_focusedseq_struct():
     data = {"b": None, "a": {"value": 2}}
     assert(obj == data)
 
+def test_toET_focusedseq_array():
+    s = Struct("arr" / Array(2, "a" / FocusedSeq("b",
+                                "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                                "b" / Struct("value" / Int32ul),
+                                "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                                )))
+
+    data = {"arr": [{"value": 4}, {"value": 2}]}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test><a value="4" /><a value="2" /></test>')
+
+
+def test_fromET_focusedseq_array():
+    s = "test" / Struct( "arr" / Array(2, "a" / FocusedSeq("b",
+                                          "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                                          "b" / Struct("value" / Int32ul),
+                                          "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                                                   )))
+    xml = ET.fromstring(b'<test><a value="4" /><a value="2" /></test>')
+    obj = s.fromET(xml=xml)
+
+    data = {"b": None, "arr": [{"value": 4}, {"value": 2}]}
+    assert(obj == data)
+
 def test_toET_switch_focusedseq():
     s = "test" / Struct(
-        "a" / Array(2, "foo" / FocusedSeq("data",
+        "a" / Array(2, FocusedSeq("data",
                                           "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
                                           "data" / Switch(this.type, {
                                               1: "b32bit" / Struct("value" / Int32ul),
@@ -332,7 +366,7 @@ def test_toET_switch_focusedseq():
 
 def test_fromET_switch_focusedseq():
     s = "test" / Struct(
-        "a" / Array(2, "foo" / FocusedSeq("data",
+        "a" / Array(2, FocusedSeq("data",
             "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
             "data" / Switch(this.type, {
                 1: "b32bit" / Struct("value" / Int32ul),

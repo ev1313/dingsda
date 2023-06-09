@@ -686,8 +686,16 @@ class Construct(object):
         raise NotImplementedError
 
     def _names(self):
-        """ Gets overriden by various classes and is used by _toET / _fromET for determining names of the XML tags"""
-        raise NotImplementedError
+        """
+        determines the name of the XML tag, normal classes just return an empty list,
+        however Renamed, FocusedSeq, and Switch override this, because they use these names for
+        identification
+        """
+        return []
+
+    def _is_simple_type(self):
+        """ is used by Array to determine, whether the type can be stored in a string array as XML attribute """
+        return False
 
     def benchmark(self, sampledata, filename=None):
         """
@@ -1274,8 +1282,8 @@ class FormatField(Construct):
     def _sizeof(self, context, path):
         return self.length
 
-    def _names(self):
-        return []
+    def _is_simple_type(self):
+        return True
 
     def _emitparse(self, code):
         fname = f"formatfield_{code.allocateId()}"
@@ -1859,8 +1867,8 @@ class StringEncoded(Adapter):
 
         assert (0)
 
-    def _names(self):
-        return []
+    def _is_simple_type(self):
+        return True
 
     def _emitparse(self, code):
         return f"({self.subcon._compileparse(code)}).decode({repr(self.encoding)})"
@@ -2486,9 +2494,6 @@ class Struct(Construct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
-    def _names(self):
-        return [self.__class__.__name__]
-
     def _emitparse(self, code):
         fname = f"parse_struct_{code.allocateId()}"
         block = f"""
@@ -2828,9 +2833,8 @@ class Array(Subconstruct):
     def _fromET(self, parent, name, context, path, is_root=False):
         context[name] = []
 
-        # Simple fields -> FormatFields and Strings return None for _name
-        sc_names = self.subcon._names()
-        if len(sc_names) == 0:
+        # Simple fields -> FormatFields and Strings
+        if self.subcon._is_simple_type():
             data = parent.attrib[name]
             assert(data[0] == "[")
             assert(data[-1] == "]")
@@ -2840,6 +2844,8 @@ class Array(Subconstruct):
                 self.subcon._fromET(x, name, context, path, is_root=True)
         else:
             items = []
+            sc_names = self.subcon._names()
+            assert(len(sc_names) > 0)
             for n in sc_names:
                 items += parent.findall(n)
 
@@ -3177,7 +3183,8 @@ class Renamed(Subconstruct):
         return r
 
     def _names(self):
-        return [self.name]
+        sc_names = self.subcon._names()
+        return [self.name] if len(sc_names) == 0 else sc_names
 
 
 #===============================================================================
@@ -3668,9 +3675,6 @@ class FocusedSeq(Construct):
         raise NotImplementedError
 
     def _fromET(self, parent, name, context, path, is_root=False):
-        # we go down one layer
-        ctx = create_parent_context(context)
-
         # get the xml element
         if not is_root:
             elem = parent.findall(name)
@@ -3684,9 +3688,18 @@ class FocusedSeq(Construct):
         for sc in self.subcons:
             if sc.name == self.parsebuildfrom:
                 assert (sc.__class__.__name__ == "Renamed")
-                return sc._fromET(context=ctx, parent=elem, name=name, path=f"{path} -> {name}", is_root=True)
+                return sc._fromET(context=context, parent=elem, name=name, path=f"{path} -> {name}", is_root=True)
 
         assert(False)
+
+    def _names(self):
+        sc = None
+        for s in self.subcons:
+            if s.name == self.parsebuildfrom:
+                sc = s
+                break
+        assert(sc is not None)
+        return sc._names()
 
     def _emitparse(self, code):
         fname = f"parse_focusedseq_{code.allocateId()}"
