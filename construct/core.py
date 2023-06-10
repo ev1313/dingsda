@@ -2800,10 +2800,8 @@ class Array(Subconstruct):
     def _toET(self, parent, name, context, path):
         data = get_current_field(context, name)
 
-        # Simple fields -> FormatFields and Strings return None for _name
-        sc_names = self.subcon._names()
-
-        if len(sc_names) == 0:
+        # Simple fields -> FormatFields and Strings
+        if self.subcon._is_simple_type():
             arr = []
             for idx, item in enumerate(data):
                 # create new context including the index
@@ -2815,7 +2813,11 @@ class Array(Subconstruct):
                 context._index = None
             parent.attrib[name] = "[" + list_to_string(arr) + "]"
         else:
-            assert(len(sc_names) == 1)
+            sc_names = self.subcon._names()
+            if len(sc_names) == 0:
+                sc_names = [self.subcon.__class__.__name__]
+            else:
+                assert(len(sc_names) == 1)
             for idx, item in enumerate(data):
                 # create new context including the index
                 context._index = idx
@@ -2845,7 +2847,9 @@ class Array(Subconstruct):
         else:
             items = []
             sc_names = self.subcon._names()
-            assert(len(sc_names) > 0)
+            if len(sc_names) == 0:
+                sc_names = [self.subcon.__class__.__name__]
+
             for n in sc_names:
                 items += parent.findall(n)
 

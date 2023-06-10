@@ -95,7 +95,7 @@ def test_toET_struct_unnamed_struct_array():
 
     obj = {"a": [{"value": 1}], "b": [1,2,2]}
     xml = s.toET(obj=obj, name="test")
-    assert(ET.tostring(xml) == b'<test b="[1,2,2]"><Struct value="1"/></test>')
+    assert(ET.tostring(xml) == b'<test b="[1,2,2]"><Struct value="1" /></test>')
 
 def test_fromET_struct_unnamed_struct_array():
     s = "test" / Struct(
