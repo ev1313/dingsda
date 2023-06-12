@@ -344,7 +344,33 @@ def test_fromET_focusedseq_array():
     xml = ET.fromstring(b'<test><a value="4" /><a value="2" /></test>')
     obj = s.fromET(xml=xml)
 
-    data = {"b": None, "arr": [{"value": 4}, {"value": 2}]}
+    data = {"arr": [{"value": 4}, {"value": 2}]}
+    assert(obj == data)
+
+
+def test_toET_focusedseq_unnamed_array():
+    s = Struct("arr" / Array(2, FocusedSeq("b",
+                                                 "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                                                 "b" / Struct("value" / Int32ul),
+                                                 "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                                                 )))
+
+    data = {"arr": [{"value": 4}, {"value": 2}]}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test><b value="4" /><b value="2" /></test>')
+
+
+def test_fromET_focusedseq_unnamed_array():
+    s = "test" / Struct( "arr" / Array(2, FocusedSeq("b",
+                                                           "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                                                           "b" / Struct("value" / Int32ul),
+                                                           "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
+                                                           )))
+    xml = ET.fromstring(b'<test><b value="4" /><b value="2" /></test>')
+    obj = s.fromET(xml=xml)
+
+    data = {"arr": [{"value": 4}, {"value": 2}]}
     assert(obj == data)
 
 def test_toET_switch_focusedseq():

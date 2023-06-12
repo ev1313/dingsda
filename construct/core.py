@@ -2816,8 +2816,6 @@ class Array(Subconstruct):
             sc_names = self.subcon._names()
             if len(sc_names) == 0:
                 sc_names = [self.subcon.__class__.__name__]
-            else:
-                assert(len(sc_names) == 1)
             for idx, item in enumerate(data):
                 # create new context including the index
                 context._index = idx
@@ -3187,8 +3185,9 @@ class Renamed(Subconstruct):
         return r
 
     def _names(self):
-        sc_names = self.subcon._names()
-        return [self.name] if len(sc_names) == 0 else sc_names
+        sc_names = [self.name]
+        sc_names += self.subcon._names()
+        return sc_names
 
 
 #===============================================================================
