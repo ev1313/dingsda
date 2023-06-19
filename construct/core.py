@@ -2805,12 +2805,12 @@ class Array(Subconstruct):
             arr = []
             for idx, item in enumerate(data):
                 # create new context including the index
-                context._index = idx
-                context[f"{name}_{idx}"] = data[idx]
+                ctx = create_parent_context(context)
+                ctx._index = idx
+                ctx[f"{name}_{idx}"] = data[idx]
 
-                obj = self.subcon._toET(None, name, context, path)
+                obj = self.subcon._toET(None, name, ctx, path)
                 arr += [obj]
-                context._index = None
             parent.attrib[name] = "[" + list_to_string(arr) + "]"
         else:
             sc_names = self.subcon._names()
@@ -2818,14 +2818,13 @@ class Array(Subconstruct):
                 sc_names = [self.subcon.__class__.__name__]
             for idx, item in enumerate(data):
                 # create new context including the index
-                context._index = idx
-                context[f"{sc_names[0]}_{idx}"] = data[idx]
+                ctx = create_parent_context(context)
+                ctx._index = idx
+                ctx[f"{sc_names[0]}_{idx}"] = data[idx]
 
-                elem = self.subcon._toET(parent, sc_names[0], context, path)
+                elem = self.subcon._toET(parent, sc_names[0], ctx, path)
                 if elem is not None:
                     parent.append(elem)
-
-                context._index = None
 
         return None
 
@@ -4496,20 +4495,26 @@ class Switch(Construct):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
     def _toET(self, parent, name, context, path):
-        keyfunc = evaluate(self.keyfunc, context)
+        ctx = context
+        keyfunc = None
+        idx = context.get("_index", None)
+        if idx is not None:
+            ctx = context[f"{name}_{idx}"]
+
+        keyfunc = evaluate(self.keyfunc, ctx)
         sc = self.cases.get(keyfunc, self.default)
 
         assert(isinstance(sc, Renamed))
 
-        return sc._toET(parent, name, context, path)
+        return sc._toET(parent, name, ctx, path)
 
     def _fromET(self, parent, name, context, path, is_root=False):
-        if is_root:
-            raise NotImplementedError
-
         for case in self.cases.values():
             assert(isinstance(case, Renamed))
-            elems = parent.findall(case.name)
+            if not is_root:
+                elems = parent.findall(case.name)
+            else:
+                elems = [parent]
 
             if len(elems) == 0:
                 continue
