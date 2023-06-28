@@ -407,3 +407,96 @@ def test_fromET_switch_focusedseq():
     obj = s.fromET(xml=xml)
 
     assert(obj == {"a": [{"data": {"value": 32}}, {"data": {"value": 16}}], "b": [1,2,2]})
+
+def test_toET_repeatuntil():
+    s = Struct(
+        "a" / RepeatUntil(lambda obj, lst, ctx: obj.x == 0x4, "Property" / Struct("x" / Int32ul)),
+        "b" / Int32ul,
+        )
+
+    data = {"a": [{"x": 0}, {"x": 1}, {"x": 4}], "b": 2}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test b="2"><Property x="0" /><Property x="1" /><Property x="4" /></test>')
+
+def test_fromET_repeatuntil():
+    s = "test" / Struct(
+        "a" / RepeatUntil(lambda obj, lst, ctx: obj.x == 0x4, "Property" / Struct("x" / Int32ul)),
+        "b" / Int32ul,
+        )
+
+    xml = ET.fromstring(b'<test b="2"><Property x="0" /><Property x="1" /><Property x="4" /></test>')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"a": [{"x": 0}, {"x": 1}, {"x": 4}], "b": 2})
+
+def test_toET_pointer():
+    s = Struct(
+        "b" / Int32ul,
+        "a" / Pointer(lambda obj: int(obj.x), "Property" / Struct("x" / Int32ul)),
+        )
+
+    data = {"b": 2, "a": {"x": 0}}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test b="2"><Property x="0" /></test>')
+
+
+def test_fromET_pointer():
+    s = "test" / Struct(
+        "b" / Int32ul,
+        "a" / Pointer(lambda obj: int(obj.x), "Property" / Struct("x" / Int32ul)),
+        )
+
+    xml = ET.fromstring(b'<test b="2"><Property x="4" /></test>')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"b": 2, "a": {"x": 4}})
+
+def test_toET_lazy():
+    s = Struct(
+        "b" / Int32ul,
+        "a" / Lazy("Property" / Struct("x" / Int32ul)),
+        )
+
+    data = {"b": 2, "a": {"x": 0}}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test b="2"><a x="0" /></test>')
+
+
+def test_fromET_lazy():
+    s = Struct(
+        "b" / Int32ul,
+        "a" / Lazy("Property" / Struct("x" / Int32ul)),
+        )
+
+    xml = ET.fromstring(b'<test b="2"><a x="4" /></test>')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"b": 2, "a": {"x": 4}})
+
+def test_toET_lazybound():
+    p = "Property" / Struct("x" / Int32ul)
+    s = Struct(
+        "b" / Int32ul,
+        "a" / LazyBound(lambda: p),
+        )
+
+    data = {"b": 2, "a": {"x": 0}}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test b="2"><a x="0" /></test>')
+
+
+def test_fromET_lazybound():
+    p = "Property" / Struct("x" / Int32ul)
+    s = Struct(
+        "b" / Int32ul,
+        "a" / LazyBound(lambda: p),
+        )
+
+    xml = ET.fromstring(b'<test b="2"><Property x="4" /></test>')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"b": 2, "a": {"x": 4}})
