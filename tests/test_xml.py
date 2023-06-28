@@ -500,3 +500,50 @@ def test_fromET_lazybound():
     obj = s.fromET(xml=xml)
 
     assert(obj == {"b": 2, "Property": None, "a": {"x": 4}})
+
+def test_toET_const():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / Const(b"test"),
+        )
+
+    data = {"a": 1}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test a="1" />')
+
+
+def test_fromET_const():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / Const(b"test"),
+        )
+
+    xml = ET.fromstring(b'<test a="1" />')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"a": 1, "b": None})
+
+
+def test_toET_enum():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / Enum(Int32ul, test=1, foo=2, bar=3),
+        )
+
+    data = {"a": 1, "b": 2}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test a="1" b="foo" />')
+
+
+def test_fromET_enum():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / Enum(Int32ul, test=1, foo=2, bar=3),
+        )
+
+    xml = ET.fromstring(b'<test a="1" b="foo"/>')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"a": 1, "b": "foo"})

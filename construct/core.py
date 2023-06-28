@@ -2124,6 +2124,29 @@ class Enum(Adapter):
         except KeyError:
             raise MappingError("building failed, no mapping for %r" % (obj,), path=path)
 
+
+    def _toET(self, parent, name, context, path):
+        mapping = self.decmapping.get(context[name], None)
+        if mapping is None:
+            return self.subcon._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
+        else:
+            # FIXME: only works for FormatFields (/ Strings)
+            parent.attrib[name] = mapping
+            return None
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        # FIXME: only works for FormatFields (/ Strings)
+        elem = parent.attrib[name]
+
+        mapping = self.encmapping.get(elem, None)
+
+        if mapping is None:
+            return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
+        else:
+            context[name] = elem
+            return context
+
     def _emitparse(self, code):
         fname = f"factory_{code.allocateId()}"
         code.append(f"{fname} = {repr(self.decmapping)}")
@@ -3313,6 +3336,12 @@ class Const(Subconstruct):
     def _sizeof(self, context, path):
         return self.subcon._sizeof(context, path)
 
+    def _toET(self, parent, name, context, path):
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return context
+
     def _emitparse(self, code):
         code.append(f"""
             def parse_const(value, expected):
@@ -3331,6 +3360,7 @@ class Const(Subconstruct):
         data = self.subcon.build(self.value)
         return dict(contents=list(data))
 
+Magic = Const
 
 class Computed(Construct):
     r"""
