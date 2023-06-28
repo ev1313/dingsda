@@ -4986,6 +4986,15 @@ class Pointer(Subconstruct):
         stream_seek(stream, fallback, 0, path)
         return buildret
 
+
+    def _toET(self, parent, name, context, path):
+        return self.subcon._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
+
+
     def _sizeof(self, context, path):
         return 0
 
@@ -6470,6 +6479,14 @@ class Lazy(Subconstruct):
             obj = obj()
         return self.subcon._build(obj, stream, context, path)
 
+    def _toET(self, parent, name, context, path):
+        return self.subcon._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
+
+
 
 class LazyContainer(dict):
     """Used internally."""
@@ -6781,6 +6798,15 @@ class LazyBound(Construct):
     def _build(self, obj, stream, context, path):
         sc = self.subconfunc()
         return sc._build(obj, stream, context, path)
+
+    def _toET(self, parent, name, context, path):
+        sc = self.subconfunc()
+        return sc._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        sc = self.subconfunc()
+        return sc._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
 
 
 #===============================================================================

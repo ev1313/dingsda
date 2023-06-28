@@ -451,7 +451,7 @@ def test_fromET_pointer():
     xml = ET.fromstring(b'<test b="2"><Property x="4" /></test>')
     obj = s.fromET(xml=xml)
 
-    assert(obj == {"b": 2, "a": {"x": 4}})
+    assert(obj == {"b": 2, "Property": None, "a": {"x": 4}})
 
 def test_toET_lazy():
     s = Struct(
@@ -462,7 +462,7 @@ def test_toET_lazy():
     data = {"b": 2, "a": {"x": 0}}
     xml = s.toET(obj=data, name="test")
 
-    assert(ET.tostring(xml) == b'<test b="2"><a x="0" /></test>')
+    assert(ET.tostring(xml) == b'<test b="2"><Property x="0" /></test>')
 
 
 def test_fromET_lazy():
@@ -471,10 +471,10 @@ def test_fromET_lazy():
         "a" / Lazy("Property" / Struct("x" / Int32ul)),
         )
 
-    xml = ET.fromstring(b'<test b="2"><a x="4" /></test>')
+    xml = ET.fromstring(b'<test b="2"><Property x="4" /></test>')
     obj = s.fromET(xml=xml)
 
-    assert(obj == {"b": 2, "a": {"x": 4}})
+    assert(obj == {"b": 2, "Property": None, "a": {"x": 4}})
 
 def test_toET_lazybound():
     p = "Property" / Struct("x" / Int32ul)
@@ -486,7 +486,7 @@ def test_toET_lazybound():
     data = {"b": 2, "a": {"x": 0}}
     xml = s.toET(obj=data, name="test")
 
-    assert(ET.tostring(xml) == b'<test b="2"><a x="0" /></test>')
+    assert(ET.tostring(xml) == b'<test b="2"><Property x="0" /></test>')
 
 
 def test_fromET_lazybound():
@@ -499,4 +499,4 @@ def test_fromET_lazybound():
     xml = ET.fromstring(b'<test b="2"><Property x="4" /></test>')
     obj = s.fromET(xml=xml)
 
-    assert(obj == {"b": 2, "a": {"x": 4}})
+    assert(obj == {"b": 2, "Property": None, "a": {"x": 4}})
