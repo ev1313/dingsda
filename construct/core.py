@@ -3049,8 +3049,78 @@ class RepeatUntil(Subconstruct):
             raise RepeatError("expected any item to match predicate, when building", path=path)
         return retlist
 
+
+    def _toET(self, parent, name, context, path):
+        data = get_current_field(context, name)
+
+        # Simple fields -> FormatFields and Strings
+        if self.subcon._is_simple_type():
+            arr = []
+            for idx, item in enumerate(data):
+                # create new context including the index
+                ctx = create_parent_context(context)
+                ctx._index = idx
+                ctx[f"{name}_{idx}"] = data[idx]
+
+                obj = self.subcon._toET(None, name, ctx, path)
+                arr += [obj]
+            parent.attrib[name] = "[" + list_to_string(arr) + "]"
+        else:
+            sc_names = self.subcon._names()
+            if len(sc_names) == 0:
+                sc_names = [self.subcon.__class__.__name__]
+            for idx, item in enumerate(data):
+                # create new context including the index
+                ctx = create_parent_context(context)
+                ctx._index = idx
+                ctx[f"{sc_names[0]}_{idx}"] = data[idx]
+
+                elem = self.subcon._toET(parent, sc_names[0], ctx, path)
+                if elem is not None:
+                    parent.append(elem)
+
+        return None
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        context[name] = []
+
+        # Simple fields -> FormatFields and Strings
+        if self.subcon._is_simple_type():
+            data = parent.attrib[name]
+            assert(data[0] == "[")
+            assert(data[-1] == "]")
+            arr = string_to_list(data[1:-1])
+
+            for x in arr:
+                self.subcon._fromET(x, name, context, path, is_root=True)
+        else:
+            items = []
+            sc_names = self.subcon._names()
+            if len(sc_names) == 0:
+                sc_names = [self.subcon.__class__.__name__]
+
+            for n in sc_names:
+                items += parent.findall(n)
+
+            for item in items:
+                self.subcon._fromET(item, name, context, path, is_root=True)
+
+            for n in sc_names:
+                if context.get(n, 1) == None:
+                    context.pop(n)
+
+        return context
+
+
     def _sizeof(self, context, path):
         raise SizeofError("cannot calculate size, amount depends on actual data", path=path)
+
+
+    def _names(self):
+        sc_names = [self.name]
+        sc_names += self.subcon._names()
+        return sc_names
 
     def _emitparse(self, code):
         fname = f"parse_repeatuntil_{code.allocateId()}"
