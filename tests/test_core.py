@@ -354,23 +354,6 @@ def test_enum_issue_298():
     )
     common(d, b"\x01", dict(flag=True), 1)
 
-def test_enum_issue_677():
-    d = Enum(Byte, one=1)
-    common(d, b"\xff", 255, 1)
-    common(d, b"\x01", EnumIntegerString.new(1, "one"), 1)
-    assert isinstance(d.parse(b"\x01"), EnumIntegerString)
-    d = Enum(Byte, one=1).compile()
-    common(d, b"\xff", 255, 1)
-    common(d, b"\x01", EnumIntegerString.new(1, "one"), 1)
-    assert isinstance(d.parse(b"\x01"), EnumIntegerString)
-
-    d = Struct("e" / Enum(Byte, one=1))
-    assert str(d.parse(b"\x01")) == 'Container: \n    e = (enum) one 1'
-    assert str(d.parse(b"\xff")) == 'Container: \n    e = (enum) (unknown) 255'
-    d = Struct("e" / Enum(Byte, one=1)).compile()
-    assert str(d.parse(b"\x01")) == 'Container: \n    e = (enum) one 1'
-    assert str(d.parse(b"\xff")) == 'Container: \n    e = (enum) (unknown) 255'
-
 @xfail(reason="Cannot implement this in EnumIntegerString.")
 def test_enum_issue_992():
     import enum
@@ -2153,77 +2136,6 @@ def test_parsedhook_repeatersdiscard():
     assert d.parse(b"\x01\x02\x03") == []
     assert outputs == [1,2,3]
 
-def test_exportksy():
-    d = Struct(
-        "nothing" / Pass * "field docstring",
-
-        "data1" / Bytes(10),
-        "data2" / GreedyBytes,
-
-        "bitstruct" / BitStruct(
-            "flag" / Flag,
-            "padding" / Padding(7),
-            "int32" / Int32ub,
-            "int32le" / BytesInteger(4),
-            "int4a" / Nibble,
-            "int4b" / BitsInteger(4),
-        ),
-
-        "int32" / Int32ub,
-        "float32" / Float32b,
-        "int32le" / BytesInteger(4, swapped=True),
-        "varint" / VarInt,
-
-        "string1" / PaddedString(10, "utf8"),
-        "string2" / PascalString(Byte, "utf8"),
-        "string3" / CString("utf8"),
-        "string4" / GreedyString("utf8"),
-
-        "flag" / Flag,
-        "enum" / Enum(Byte, one=1, two=2),
-        "flagsenum" / FlagsEnum(Byte, one=1, two=2),
-
-        "struct1" / Struct(Byte, "named"/Byte),
-        "sequence1" / Sequence(Byte, "named"/Byte),
-
-        "array2d" / Array(5, Array(5, Byte)),
-        "greedyrange" / GreedyRange(Byte),
-        "repeatuntil" / RepeatUntil(obj_ == 0, Byte),
-
-        "const1" / Const(b"ABCD"),
-        "const2" / Const(1, Int32ub),
-        # Computed
-        # Index
-        "rebuild" / Rebuild(Byte, 0),
-        "default" / Default(Byte, 0),
-        "namedtuple1" / NamedTuple("coord", "x y z", "x"/Byte + "y"/Byte + "z"/Byte),
-        "namedtuple2" / NamedTuple("coord", "x y z", Byte >> Byte >> Byte),
-        "namedtuple3" / NamedTuple("coord", "x y z", Byte[3]),
-        "namedtuple4" / NamedTuple("coord", "x y z", GreedyRange(Byte)),
-        "timestamp1" / Timestamp(Int32ub, 1, 1970),
-        "timestamp2" / Timestamp(Int32ub, "msdos", "msdos"),
-        "hex" / Hex(Int32ub),
-        "hexdump" / HexDump(Int32ub),
-
-        # Union
-        "if1" / If(this.num == 0, Byte),
-        "ifthenelse1" / IfThenElse(this.num == 0, Byte, Byte),
-        # Switch
-
-        "padding" / Padding(5),
-        "padded" / Padded(5, Byte),
-
-        "pointer1" / Pointer(0x1000, Int32ub),
-        "pointer2" / Pointer(this.pointer1, Int32ub),
-        "pass1" / Pass,
-        # Terminated
-
-        "prefixed" / Prefixed(Byte, GreedyBytes),
-        "prefixedarray" / PrefixedArray(Byte, Byte),
-        # Compressed
-    ) * \
-    "struct docstring"
-    print(d.export_ksy(filename="example_ksy.ksy"))
 
 @xfail(reason="both sizeof fail because length is 1 level up than when parsing")
 def test_from_issue_692():

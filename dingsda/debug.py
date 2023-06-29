@@ -64,12 +64,6 @@ class Probe(Construct):
         self.printout(None, context, path)
         return 0
 
-    def _emitparse(self, code):
-        return f"print({self.into})" if self.into else "print(this)"
-
-    def _emitbuild(self, code):
-        return f"print({self.into})" if self.into else "print(this)"
-
     def printout(self, stream, context, path):
         print("--------------------------------------------------")
         print("Probe, path is %s, into is %r" % (path, self.into, ))
@@ -142,12 +136,6 @@ class Debugger(Subconstruct):
             return self.subcon._sizeof(context, path)
         except Exception:
             self.handle_exc(path)
-
-    def _emitparse(self, code):
-        return self.subcon._compileparse(code)
-
-    def _emitbuild(self, code):
-        return self.subcon._compilebuild(code)
 
     def handle_exc(self, path, msg=None):
         print("--------------------------------------------------")

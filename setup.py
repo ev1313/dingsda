@@ -36,7 +36,7 @@ setup(
     },
     keywords = [
         "dingsda",
-        "dingsda",
+        "construct",
         "kaitai",
         "declarative",
         "data structure",

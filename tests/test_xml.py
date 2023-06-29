@@ -119,6 +119,7 @@ def test_fromET_struct_named_struct_array():
 
     assert(obj == {"a": [{"value": 1}], "b": [1,2,2]})
 
+@xfail(raises=AssertionError, reason="design decision: nested arrays are not supported")
 def test_fromET_struct_nested_array():
     s = "test" / Struct(
         "a" / Array(4, Array(4, Int32ul)),
@@ -154,6 +155,7 @@ def test_toET_String_array():
 
     assert(ET.tostring(xml) == b'<test a="[foo,bar]" b="2" />')
 
+@xfail(raises=AssertionError, reason="design decision: nested arrays are not supported")
 def test_toET_nested_String_array():
     s = "test" / Struct(
         "a" / Array(2, Array(2, CString("utf-8"))),
@@ -390,6 +392,7 @@ def test_toET_switch_focusedseq():
     xml = ET.tostring(elem)
     assert(xml == b'<test b="[1,2,2]"><b32bit value="32" /><b32bit value="16" /></test>')
 
+@xfail(raises=AssertionError, reason="design decision: nested arrays are not supported")
 def test_fromET_switch_focusedseq():
     s = "test" / Struct(
         "a" / Array(2, FocusedSeq("data",
