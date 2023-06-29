@@ -1,4 +1,4 @@
-from construct.lib.containers import Container, ListContainer
+from dingsda.lib.containers import Container, ListContainer
 def get_current_field(context, name):
     idx = context.get("_index", None)
     if idx is not None:

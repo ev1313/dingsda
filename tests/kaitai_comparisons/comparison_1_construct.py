@@ -1,4 +1,4 @@
-from construct import *
+from dingsda import *
 
 d = Struct(
     "count" / Int32ul,

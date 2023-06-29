@@ -1,7 +1,7 @@
 #!/usr/bin/python3.9
 
-import construct
-x,y,z = construct.version
+import dingsda
+x,y,z = dingsda.version
 z += 1
 
 import arrow
@@ -13,7 +13,7 @@ version_string = "{x}.{y}.{z}"
 release_date = "{date.year}.{date.month:02}.{date.day:02}"
 """.lstrip()
 
-with open("construct/version.py","wt") as f:
+with open("dingsda/version.py", "wt") as f:
     f.write(content)
 
 import os

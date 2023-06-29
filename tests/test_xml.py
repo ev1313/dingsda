@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from tests.declarativeunittest import *
-from construct import *
-from construct.lib import *
-from construct.core import list_to_string, string_to_list
+from dingsda import *
+from dingsda.lib import *
+from dingsda.core import list_to_string, string_to_list
 
 from xml.etree import ElementTree as ET
 
@@ -547,3 +547,26 @@ def test_fromET_enum():
     obj = s.fromET(xml=xml)
 
     assert(obj == {"a": 1, "b": "foo"})
+
+def test_toET_bytes():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / Bytes(4),
+        )
+
+    data = {"a": 1, "b": b"fooo"}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test a="1" b="666f6f6f" />')
+
+
+def test_fromET_bytes():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / Bytes(4),
+        )
+
+    xml = ET.fromstring(b'<test a="1" b="666f6f6f"/>')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"a": 1, "b": b"fooo"})

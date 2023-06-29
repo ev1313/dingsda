@@ -114,7 +114,7 @@ html_theme_options = {"full_logo" : True}
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/construct-logo2.png"
+html_logo = "_static/dingsda-logo2.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -182,7 +182,7 @@ htmlhelp_basename = 'Constructdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'construct.tex', u'Construct Documentation', u'Arkadiusz Bulski', 'manual'),
+  ('index', 'dingsda.tex', u'Construct Documentation', u'Arkadiusz Bulski', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -214,6 +214,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'construct', u'Construct Documentation',
+    ('index', 'dingsda', u'Construct Documentation',
      [u'Arkadiusz Bulski (taken over from Tomer Filiba and Corbin Simpson)'], 1)
 ]

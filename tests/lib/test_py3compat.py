@@ -1,5 +1,5 @@
 from tests.declarativeunittest import *
-from construct.lib.py3compat import *
+from dingsda.lib.py3compat import *
 
 
 def test_int_byte():

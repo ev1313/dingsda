@@ -1,7 +1,9 @@
-Construct 2.10
+DingsDa 1.0.0
 ===================
 
-Construct is a powerful **declarative** and **symmetrical** parser and builder for binary data.
+DingsDa is a powerful **declarative** and **symmetrical** parser and builder for binary data.
+It is a fork of Construct 2.1, which removes the parser generator features, but adds preprocessing and XML de- and
+encoding.
 
 Instead of writing *imperative code* to parse a piece of data, you declaratively define a *data structure* that describes your data. As this data structure is not code, you can use it in one direction to *parse* data into Pythonic objects, and in the other direction, to *build* objects into binary data.
 
