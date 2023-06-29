@@ -1,6 +1,6 @@
 from tests.declarativeunittest import *
-from construct import *
-from construct.lib import *
+from dingsda import *
+from dingsda.lib import *
 
 from deprecated_gallery import  *
 

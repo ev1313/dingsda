@@ -6,7 +6,7 @@ Homepage:
     http://construct.readthedocs.org
 
 Hands-on example:
-    >>> from construct import *
+    >>> from dingsda import *
     >>> s = Struct(
     ...     "a" / Byte,
     ...     "b" / Short,
@@ -19,11 +19,12 @@ Hands-on example:
     b"\x01\x02\x03"
 """
 
-from construct.core import *
-from construct.expr import *
-from construct.debug import *
-from construct.version import *
-from construct import lib
+from dingsda.core import *
+from dingsda.expr import *
+from dingsda.debug import *
+from dingsda.version import *
+from dingsda.helpers import *
+from dingsda import lib
 
 
 #===============================================================================

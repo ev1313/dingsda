@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from tests.declarativeunittest import *
-from construct import *
-from construct.lib import *
+from dingsda import *
+from dingsda.lib import *
 from tests.test_compiler import example, exampledata
 
 

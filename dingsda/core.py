@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
-
+import pdb
 import struct, io, binascii, itertools, collections, pickle, sys, os, hashlib, importlib, importlib.machinery, importlib.util
 
-from construct.lib import *
-from construct.expr import *
-from construct.version import *
+from dingsda.lib import *
+from dingsda.expr import *
+from dingsda.version import *
+from dingsda.helpers import *
 
+import xml.etree.ElementTree as ET
 
 #===============================================================================
 # exceptions
@@ -234,7 +236,6 @@ def stream_iseof(stream):
     except Exception:
         raise StreamError("stream. read() seek() tell() failed", path="???")
 
-
 class CodeGen:
     def __init__(self):
         self.blocks = []
@@ -305,6 +306,7 @@ class Construct(object):
     * `parse`
     * `parse_stream`
     * `parse_file`
+    * `preprocess`
     * `build`
     * `build_stream`
     * `build_file`
@@ -315,6 +317,7 @@ class Construct(object):
     Subclass authors should not override the external methods. Instead, another API is available:
 
     * `_parse`
+    * `_preprocess`
     * `_build`
     * `_sizeof`
     * `_actualsize`
@@ -328,7 +331,7 @@ class Construct(object):
 
     Attributes and Inheritance:
 
-    All constructs have a name and flags. The name is used for naming struct members and context dictionaries. Note that the name can be a string, or None by default. A single underscore "_" is a reserved name, used as up-level in nested containers. The name should be descriptive, short, and valid as a Python identifier, although these rules are not enforced. The flags specify additional behavioral information about this construct. Flags are used by enclosing constructs to determine a proper course of action. Flags are often inherited from inner subconstructs but that depends on each class.
+    All constructs have a name and flags. The name is used for naming struct members and context dictionaries. Note that the name can be a string, or None by default. A single underscore "_" is a reserved name, used as up-level in nested containers. The name should be descriptive, short, and valid as a Python identifier, although these rules are not enforced. The flags specify additional behavioral information about this dingsda. Flags are used by enclosing constructs to determine a proper course of action. Flags are often inherited from inner subconstructs but that depends on each class.
     """
 
     def __init__(self):
@@ -385,6 +388,7 @@ class Construct(object):
         Parse a stream. Files, pipes, sockets, and other streaming sources of data are handled by this method. See parse().
         """
         context = Container(**contextkw)
+        context._preprocessing = False
         context._parsing = True
         context._building = False
         context._sizing = False
@@ -411,6 +415,30 @@ class Construct(object):
         """Override in your subclass."""
         raise NotImplementedError
 
+    def _toET(self, parent, name, context, path):
+        raise NotImplementedError
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        raise NotImplementedError
+
+    def _preprocess(self, obj, context, path, offset=0):
+        r"""
+           Preprocess an object before building or sizing, called by the preprocess function.
+
+            The basic preprocess function just returns the object and calls the
+            standard _sizeof function. This doesn't work for all constructs, so
+            these need to implement their own _preprocess function for correct _sizeof.
+
+            :param obj: the object to preprocess
+            :param context: the context dictionary
+            :param path: the path to the dingsda
+
+            :return obj: the preprocessed object
+            :return extra_info: a dictionary containing extra information regarding offset, size, etc.
+        """
+        size = self._sizeof(context, path)
+        return obj, {"_offset": offset, "_size": size, "_endoffset": offset + size}
+
     def build(self, obj, **contextkw):
         r"""
         Build an object in memory (a bytes object).
@@ -435,6 +463,7 @@ class Construct(object):
         """
         context = Container(**contextkw)
         context._parsing = False
+        context._preprocessing = False
         context._building = True
         context._sizing = False
         context._params = context
@@ -454,6 +483,69 @@ class Construct(object):
         """Override in your subclass."""
         raise NotImplementedError
 
+    def toET(self, obj, name="Root", **contextkw):
+        r"""
+            Convert a parsed dingsda to a XML ElementTree.
+
+            This method creates the root node for the following _toET calls, so
+            even FormatFields can attach their values to an attrib.
+
+        :param obj: The object
+        :param contextkw: further arguments
+        :returns: an ElementTree 
+        """
+
+        context = Container(**contextkw)
+        context._preprocessing = False
+        context._parsing = False
+        context._building = False
+        context._sizing = False
+        context._params = context
+        context[name] = obj
+        # create root node
+        xml = ET.Element(name)
+        return self._toET(parent=xml, context=context, name=name, path="(toET)")
+
+    def fromET(self, xml, **contextkw):
+        r"""
+            Convert an XML ElementTree to a dingsda.
+
+        :param xml: The ElementTree
+        :param contextkw: further arguments
+        :returns: a Container
+        """
+
+        context = Container(**contextkw)
+        context._preprocessing = False
+        context._parsing = False
+        context._building = False
+        context._sizing = False
+        context._params = context
+        # create root node
+        parent = ET.Element("Root")
+        parent.append(xml)
+        result = self._fromET(parent=parent, name=xml.tag, context=context, path="(fromET)")
+        return result.get(xml.tag)
+
+    def preprocess(self, obj, **contextkw):
+        r"""
+            Preprocess an object before building.
+
+            This generates some special attributes in the returned Container, like _size and _ptrsize.
+            Furthermore the second returned value is the size of the object in bytes.
+
+            :param obj: the object to preprocess
+            :return obj: the preprocessed Container
+            :return extra_info: the dictionary containing extra information for the *current* object, like offset, size, etc.
+        """
+        context = Container(**contextkw)
+        context._preprocessing = True
+        context._parsing = False
+        context._building = False
+        context._sizing = False
+        context._params = context
+        return self._preprocess(obj=obj, context=context, path="(preprocess)", offset=0)
+
     def sizeof(self, **contextkw):
         r"""
         Calculate the size of this object, optionally using a context.
@@ -471,6 +563,7 @@ class Construct(object):
         :raises SizeofError: size could not be determined in actual context, or is impossible to be determined
         """
         context = Container(**contextkw)
+        context._preprocessing = False
         context._parsing = False
         context._building = False
         context._sizing = True
@@ -486,7 +579,7 @@ class Construct(object):
 
     def compile(self, filename=None):
         """
-        Transforms a construct into another construct that does same thing (has same parsing and building semantics) but is much faster when parsing. Already compiled instances just compile into itself.
+        Transforms a dingsda into another dingsda that does same thing (has same parsing and building semantics) but is much faster when parsing. Already compiled instances just compile into itself.
 
         Optionally, partial source code can be saved to a text file. This is meant only to inspect the generated code, not to import it from external scripts.
 
@@ -497,8 +590,8 @@ class Construct(object):
         code.append("""
             # generated by Construct, this source is for inspection only! do not import!
 
-            from construct import *
-            from construct.lib import *
+            from dingsda import *
+            from dingsda.lib import *
             from io import BytesIO
             import struct
             import collections
@@ -592,13 +685,25 @@ class Construct(object):
         """Override in your subclass."""
         raise NotImplementedError
 
+    def _names(self):
+        """
+        determines the name of the XML tag, normal classes just return an empty list,
+        however Renamed, FocusedSeq, and Switch override this, because they use these names for
+        identification
+        """
+        return []
+
+    def _is_simple_type(self):
+        """ is used by Array to determine, whether the type can be stored in a string array as XML attribute """
+        return False
+
     def benchmark(self, sampledata, filename=None):
         """
-        Measures performance of your construct (its parsing and building runtime), both for the original instance and the compiled instance. Uses timeit module, over at min 1 loop, and at max over 100 millisecond time.
+        Measures performance of your dingsda (its parsing and building runtime), both for the original instance and the compiled instance. Uses timeit module, over at min 1 loop, and at max over 100 millisecond time.
 
         Optionally, results are saved to a text file for later inspection. Otherwise you can print the resulting string to terminal.
 
-        :param sampledata: bytes, a valid blob parsable by this construct
+        :param sampledata: bytes, a valid blob parsable by this dingsda
         :param filename: optional, string, results are saved to that file
 
         :returns: string containing measurements
@@ -667,7 +772,7 @@ class Construct(object):
 
     def _compileseq(self, ksy, bitwise=False, recursion=0):
         if recursion >= 3:
-            raise ConstructError("construct does not implement KSY export")
+            raise ConstructError("dingsda does not implement KSY export")
         try:
             return hyphenatelist(self._emitseq(ksy, bitwise))
         except NotImplementedError:
@@ -675,7 +780,7 @@ class Construct(object):
 
     def _compileprimitivetype(self, ksy, bitwise=False, recursion=0):
         if recursion >= 3:
-            raise ConstructError("construct does not implement KSY export")
+            raise ConstructError("dingsda does not implement KSY export")
         try:
             return self._emitprimitivetype(ksy, bitwise)
         except NotImplementedError:
@@ -685,7 +790,7 @@ class Construct(object):
 
     def _compilefulltype(self, ksy, bitwise=False, recursion=0):
         if recursion >= 3:
-            raise ConstructError("construct does not implement KSY export")
+            raise ConstructError("dingsda does not implement KSY export")
         try:
             return hyphenatedict(self._emitfulltype(ksy, bitwise))
         except NotImplementedError:
@@ -760,7 +865,7 @@ class Construct(object):
 
 class Subconstruct(Construct):
     r"""
-    Abstract subconstruct (wraps an inner construct, inheriting its name and flags). Parsing and building is by default deferred to subcon, same as sizeof.
+    Abstract subconstruct (wraps an inner dingsda, inheriting its name and flags). Parsing and building is by default deferred to subcon, same as sizeof.
 
     :param subcon: Construct instance
     """
@@ -929,7 +1034,7 @@ class Bytes(Construct):
         >>> d.parse(b"\x04beef")
         Container(length=4, data=b'beef')
         >>> d.sizeof()
-        construct.core.SizeofError: cannot calculate size, key not found in context
+        dingsda.core.SizeofError: cannot calculate size, key not found in context
     """
 
     def __init__(self, length):
@@ -952,6 +1057,34 @@ class Bytes(Construct):
             return self.length(context) if callable(self.length) else self.length
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _toET(self, parent, name, context, path):
+        assert (name is not None)
+
+        f = get_current_field(context, name)
+        assert (isinstance(f, bytes))
+        data = f.hex()
+        if parent is None:
+            return data
+        else:
+            parent.attrib[name] = data
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        assert(parent is not None)
+        assert(name is not None)
+
+        if isinstance(parent, str):
+            elem = parent
+        else:
+            elem = parent.attrib[name]
+
+        elem = b"".fromhex(elem)
+        insert_or_append_field(context, name, elem)
+        return context
+
+    def _is_simple_type(self):
+        return True
 
     def _emitparse(self, code):
         return f"io.read({self.length})"
@@ -1007,11 +1140,11 @@ def Bitwise(subcon):
 
     Parsing building and size are deferred to subcon, although size gets divided by 8 (therefore the subcon's size must be a multiple of 8).
     
-    Note that by default the bit ordering is from MSB to LSB for every byte (ie. bit-level big-endian). If you need it reversed, wrap this subcon with :class:`construct.core.BitsSwapped`.
+    Note that by default the bit ordering is from MSB to LSB for every byte (ie. bit-level big-endian). If you need it reversed, wrap this subcon with :class:`dingsda.core.BitsSwapped`.
 
     :param subcon: Construct instance, any field that works with bits (like BitsInteger) or is bit-byte agnostic (like Struct or Flag)
 
-    See :class:`~construct.core.Transformed` and :class:`~construct.core.Restreamed` for raisable exceptions.
+    See :class:`~dingsda.core.Transformed` and :class:`~dingsda.core.Restreamed` for raisable exceptions.
 
     Example::
 
@@ -1054,13 +1187,13 @@ def Bitwise(subcon):
 
 def Bytewise(subcon):
     r"""
-    Converts the bitstream back to normal byte stream. Must be used within :class:`~construct.core.Bitwise`.
+    Converts the bitstream back to normal byte stream. Must be used within :class:`~dingsda.core.Bitwise`.
 
     Parsing building and size are deferred to subcon, although size gets multiplied by 8.
 
     :param subcon: Construct instance, any field that works with bytes or is bit-byte agnostic
 
-    See :class:`~construct.core.Transformed` and :class:`~construct.core.Restreamed` for raisable exceptions.
+    See :class:`~dingsda.core.Transformed` and :class:`~dingsda.core.Restreamed` for raisable exceptions.
 
     Example::
 
@@ -1097,7 +1230,7 @@ def Bytewise(subcon):
 #===============================================================================
 class FormatField(Construct):
     r"""
-    Field that uses `struct` module to pack and unpack CPU-sized integers and floats and booleans. This is used to implement most Int* Float* fields, but for example cannot pack 24-bit integers, which is left to :class:`~construct.core.BytesInteger` class. For booleans I also recommend using Flag class instead.
+    Field that uses `struct` module to pack and unpack CPU-sized integers and floats and booleans. This is used to implement most Int* Float* fields, but for example cannot pack 24-bit integers, which is left to :class:`~dingsda.core.BytesInteger` class. For booleans I also recommend using Flag class instead.
 
     See `struct module <https://docs.python.org/3/library/struct.html>`_ documentation for instructions on crafting format strings.
 
@@ -1145,8 +1278,40 @@ class FormatField(Construct):
         stream_write(stream, data, self.length, path)
         return obj
 
+    def _toET(self, parent, name, context, path):
+        assert (name is not None)
+
+        data = str(get_current_field(context, name))
+        if parent is None:
+            return data
+        else:
+            parent.attrib[name] = data
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        assert(parent is not None)
+        assert(name is not None)
+
+        if isinstance(parent, str):
+            elem = parent
+        else:
+            elem = parent.attrib[name]
+
+        assert (len(self.fmtstr) == 2)
+        if self.fmtstr[1] in ["B", "H", "L", "Q", "b", "h", "l", "q"]:
+            insert_or_append_field(context, name, int(elem))
+            return context
+        elif self.fmtstr[1] in ["e", "f", "d"]:
+            insert_or_append_field(context, name, float(elem))
+            return context
+
+        assert (0)
+
     def _sizeof(self, context, path):
         return self.length
+
+    def _is_simple_type(self):
+        return True
 
     def _emitparse(self, code):
         fname = f"formatfield_{code.allocateId()}"
@@ -1180,7 +1345,7 @@ class BytesInteger(Construct):
 
     Parses into an integer. Builds from an integer into specified byte count and endianness. Size is specified in ctor.
 
-    Analog to :class:`~construct.core.BitsInteger` which operates on bits. In fact::
+    Analog to :class:`~dingsda.core.BitsInteger` which operates on bits. In fact::
 
         BytesInteger(n) <--> Bitwise(BitsInteger(8*n))
         BitsInteger(8*n) <--> Bytewise(BytesInteger(n))
@@ -1268,11 +1433,11 @@ class BytesInteger(Construct):
 
 class BitsInteger(Construct):
     r"""
-    Field that packs arbitrarily large (or small) integers. Some fields (Bit Nibble Octet) use this class. Must be enclosed in :class:`~construct.core.Bitwise` context.
+    Field that packs arbitrarily large (or small) integers. Some fields (Bit Nibble Octet) use this class. Must be enclosed in :class:`~dingsda.core.Bitwise` context.
 
     Parses into an integer. Builds from an integer into specified bit count and endianness. Size (in bits) is specified in ctor.
 
-    Analog to :class:`~construct.core.BytesInteger` which operates on bytes. In fact::
+    Analog to :class:`~dingsda.core.BytesInteger` which operates on bytes. In fact::
 
         BytesInteger(n) <--> Bitwise(BitsInteger(8*n))
         BitsInteger(8*n) <--> Bytewise(BytesInteger(n))
@@ -1701,6 +1866,38 @@ class StringEncoded(Adapter):
             return b""
         return obj.encode(self.encoding)
 
+    def _toET(self, parent, name, context, path):
+        assert (name is not None)
+
+        data = str(get_current_field(context, name))
+        if parent is None:
+            return data
+        else:
+            parent.attrib[name] = data
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        assert(parent is not None)
+        assert(name is not None)
+
+        if isinstance(parent, str):
+            elem = parent
+        else:
+            elem = parent.attrib[name]
+
+        assert (len(self.fmtstr) == 2)
+        if self.fmtstr[1] in ["B", "H", "L", "Q", "b", "h", "l", "q"]:
+            insert_or_append_field(context, name, int(elem))
+            return context
+        elif self.fmtstr[1] in ["e", "f", "d"]:
+            insert_or_append_field(context, name, float(elem))
+            return context
+
+        assert (0)
+
+    def _is_simple_type(self):
+        return True
+
     def _emitparse(self, code):
         return f"({self.subcon._compileparse(code)}).decode({repr(self.encoding)})"
 
@@ -1716,7 +1913,7 @@ def PaddedString(length, encoding):
 
     When parsing, the byte string is stripped of null bytes (per encoding unit), then decoded. Length is an integer or context lambda. When building, the string is encoded and then padded to specified length. If encoded string is larger than the specified length, it fails with PaddingError. Size is same as length parameter.
 
-    .. warning:: PaddedString and CString only support encodings explicitly listed in :class:`~construct.core.possiblestringencodings` .
+    .. warning:: PaddedString and CString only support encodings explicitly listed in :class:`~dingsda.core.possiblestringencodings` .
 
     :param length: integer or context lambda, length in bytes (not unicode characters)
     :param encoding: string like: utf8 utf16 utf32 ascii
@@ -1743,7 +1940,7 @@ def PaddedString(length, encoding):
 
 def PascalString(lengthfield, encoding):
     r"""
-    Length-prefixed string. The length field can be variable length (such as VarInt) or fixed length (such as Int64ub). :class:`~construct.core.VarInt` is recommended when designing new protocols. Stored length is in bytes, not characters. Size is not defined.
+    Length-prefixed string. The length field can be variable length (such as VarInt) or fixed length (such as Int64ub). :class:`~dingsda.core.VarInt` is recommended when designing new protocols. Stored length is in bytes, not characters. Size is not defined.
 
     :param lengthfield: Construct instance, field used to parse and build the length (like VarInt Int64ub)
     :param encoding: string like: utf8 utf16 utf32 ascii
@@ -1778,7 +1975,7 @@ def CString(encoding):
     r"""
     String ending in a terminating null byte (or null bytes in case of UTF16 UTF32).
 
-    .. warning:: String and CString only support encodings explicitly listed in :class:`~construct.core.possiblestringencodings` .
+    .. warning:: String and CString only support encodings explicitly listed in :class:`~dingsda.core.possiblestringencodings` .
 
     :param encoding: string like: utf8 utf16 utf32 ascii
 
@@ -1802,7 +1999,7 @@ def CString(encoding):
 
 def GreedyString(encoding):
     r"""
-    String that reads entire stream until EOF, and writes a given string as-is. Analog to :class:`~construct.core.GreedyBytes` but also applies unicode-to-bytes encoding.
+    String that reads entire stream until EOF, and writes a given string as-is. Analog to :class:`~dingsda.core.GreedyBytes` but also applies unicode-to-bytes encoding.
 
     :param encoding: string like: utf8 utf16 utf32 ascii
 
@@ -1954,6 +2151,29 @@ class Enum(Adapter):
             return self.encmapping[obj]
         except KeyError:
             raise MappingError("building failed, no mapping for %r" % (obj,), path=path)
+
+
+    def _toET(self, parent, name, context, path):
+        mapping = self.decmapping.get(context[name], None)
+        if mapping is None:
+            return self.subcon._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
+        else:
+            # FIXME: only works for FormatFields (/ Strings)
+            parent.attrib[name] = mapping
+            return None
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        # FIXME: only works for FormatFields (/ Strings)
+        elem = parent.attrib[name]
+
+        mapping = self.encmapping.get(elem, None)
+
+        if mapping is None:
+            return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
+        else:
+            context[name] = elem
+            return context
 
     def _emitparse(self, code):
         fname = f"factory_{code.allocateId()}"
@@ -2141,7 +2361,7 @@ class Struct(Construct):
 
     This class exposes subcons in the context. You can refer to subcons that were inlined (and therefore do not exist as variable in the namespace) within other inlined fields using the context. Note that you need to use a lambda (`this` expression is not supported). Also note that compiler does not support this feature. See examples.
 
-    This class supports stopping. If :class:`~construct.core.StopIf` field is a member, and it evaluates its lambda as positive, this class ends parsing or building as successful without processing further fields.
+    This class supports stopping. If :class:`~dingsda.core.StopIf` field is a member, and it evaluates its lambda as positive, this class ends parsing or building as successful without processing further fields.
 
     :param \*subcons: Construct instances, list of members, some can be anonymous
     :param \*\*subconskw: Construct instances, list of members (requires Python 3.6)
@@ -2209,6 +2429,46 @@ class Struct(Construct):
             except StopFieldError:
                 break
         return obj
+    
+    def _preprocess(self, obj, context, path, offset=0):
+        size = 0
+        extra_info = {}
+        if obj is None:
+            obj = Container()
+        ctx = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _index = context.get("_index", None))
+        ctx._root = ctx._.get("_root", context)
+        ctx.update(obj)
+        extra_info["_offset"] = offset
+        for sc in self.subcons:
+            subobj = obj.get(sc.name, None)
+
+            if sc.name:
+                context[sc.name] = subobj
+
+            preprocessret, child_extra_info = sc._preprocess(subobj, ctx, path, offset=offset)
+            # put named extra info to the context
+            extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+
+            # update offset & size
+            retsize = child_extra_info["_size"]
+            offset += retsize
+            size += retsize
+            if sc.name:
+                ctx[sc.name] = preprocessret
+
+            # add current extra_info to context, so e.g. lambdas can use them already
+            ctx.update(extra_info)
+
+        extra_info["_size"] = size
+        extra_info["_endoffset"] = offset
+        ctx.update(extra_info)
+
+        # remove _, because dingsda rebuild will fail otherwise (?)
+        #if "_" in context.keys():
+        #    context.pop("_")
+
+        return ctx, extra_info
 
     def _build(self, obj, stream, context, path):
         if obj is None:
@@ -2232,6 +2492,50 @@ class Struct(Construct):
             except StopFieldError:
                 break
         return context
+
+    def _toET(self, parent, name, context, path):
+        assert(name is not None)
+        assert(parent is not None)
+
+        ctx = create_child_context(context, name)
+
+        elem = ET.Element(name)
+        for sc in self.subcons:
+            if sc.name is None or sc.name.startswith("_"):
+                continue
+
+            child = sc._toET(context=ctx, name=sc.name, parent=elem, path=f"{path} -> {name}")
+            if child is not None:
+                elem.append(child)
+
+        return elem
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        # we go down one layer
+        ctx = create_parent_context(context)
+
+        # get the xml element
+        if not is_root:
+            elem = parent.findall(name)
+            if len(elem) == 1:
+                elem = elem[0]
+        else:
+            elem = parent
+
+        assert(elem is not None)
+
+        for sc in self.subcons:
+            ctx = sc._fromET(context=ctx, parent=elem, name=sc.name, path=f"{path} -> {name}")
+
+        # remove _, because dingsda rebuild will fail otherwise
+        if "_" in ctx.keys():
+            ctx.pop("_")
+
+        # now we have to go back up
+        ret_ctx = context
+        insert_or_append_field(ret_ctx, name, ctx)
+
+        return ret_ctx
 
     def _sizeof(self, context, path):
         context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = None, _index = context.get("_index", None))
@@ -2305,7 +2609,7 @@ class Sequence(Construct):
 
     This class exposes subcons in the context. You can refer to subcons that were inlined (and therefore do not exist as variable in the namespace) within other inlined fields using the context. Note that you need to use a lambda (`this` expression is not supported). Also note that compiler does not support this feature. See examples.
 
-    This class supports stopping. If :class:`~construct.core.StopIf` field is a member, and it evaluates its lambda as positive, this class ends parsing or building as successful without processing further fields.
+    This class supports stopping. If :class:`~dingsda.core.StopIf` field is a member, and it evaluates its lambda as positive, this class ends parsing or building as successful without processing further fields.
 
     :param \*subcons: Construct instances, list of members, some can be named
     :param \*\*subconskw: Construct instances, list of members (requires Python 3.6)
@@ -2487,6 +2791,28 @@ class Array(Subconstruct):
         self.count = count
         self.discard = discard
 
+    def _preprocess(self, obj, context, path, offset=0):
+        # count isn't checked here, this is done in the build phase
+        retlist = ListContainer()
+        extra_info = {"_offset": offset}
+        size = 0
+        for i,e in enumerate(obj):
+            context._index = i
+            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            retlist.append(obj)
+
+            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+            offset += child_extra_info["_size"]
+            size += child_extra_info["_size"]
+
+            context.update(extra_info)
+
+        extra_info["_size"] = size
+        extra_info["_endoffset"] = offset
+
+        return retlist, extra_info
+
     def _parse(self, stream, context, path):
         count = evaluate(self.count, context)
         if not 0 <= count:
@@ -2522,6 +2848,68 @@ class Array(Subconstruct):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
         return count * self.subcon._sizeof(context, path)
 
+    def _toET(self, parent, name, context, path):
+        data = get_current_field(context, name)
+
+        # Simple fields -> FormatFields and Strings
+        if self.subcon._is_simple_type():
+            arr = []
+            for idx, item in enumerate(data):
+                # create new context including the index
+                ctx = create_parent_context(context)
+                ctx._index = idx
+                ctx[f"{name}_{idx}"] = data[idx]
+
+                obj = self.subcon._toET(None, name, ctx, path)
+                arr += [obj]
+            parent.attrib[name] = "[" + list_to_string(arr) + "]"
+        else:
+            sc_names = self.subcon._names()
+            if len(sc_names) == 0:
+                sc_names = [self.subcon.__class__.__name__]
+            for idx, item in enumerate(data):
+                # create new context including the index
+                ctx = create_parent_context(context)
+                ctx._index = idx
+                ctx[f"{sc_names[0]}_{idx}"] = data[idx]
+
+                elem = self.subcon._toET(parent, sc_names[0], ctx, path)
+                if elem is not None:
+                    parent.append(elem)
+
+        return None
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        context[name] = []
+
+        # Simple fields -> FormatFields and Strings
+        if self.subcon._is_simple_type():
+            data = parent.attrib[name]
+            assert(data[0] == "[")
+            assert(data[-1] == "]")
+            arr = string_to_list(data[1:-1])
+
+            for x in arr:
+                self.subcon._fromET(x, name, context, path, is_root=True)
+        else:
+            items = []
+            sc_names = self.subcon._names()
+            if len(sc_names) == 0:
+                sc_names = [self.subcon.__class__.__name__]
+
+            for n in sc_names:
+                items += parent.findall(n)
+
+            for item in items:
+                self.subcon._fromET(item, name, context, path, is_root=True)
+
+            for n in sc_names:
+                if context.get(n, 1) == None:
+                    context.pop(n)
+
+        return context
+
     def _emitparse(self, code):
         return f"ListContainer(({self.subcon._compileparse(code)}) for i in range({self.count}))"
 
@@ -2538,7 +2926,7 @@ class GreedyRange(Subconstruct):
 
     Parses into a ListContainer (a list). Parsing stops when an exception occured when parsing the subcon, either due to EOF or subcon format not being able to parse the data. Either way, when GreedyRange encounters either failure it seeks the stream back to a position after last successful subcon parsing. Builds from enumerable, each element as-is. Size is undefined.
 
-    This class supports stopping. If :class:`~construct.core.StopIf` field is a member, and it evaluates its lambda as positive, this class ends parsing or building as successful without processing further fields.
+    This class supports stopping. If :class:`~dingsda.core.StopIf` field is a member, and it evaluates its lambda as positive, this class ends parsing or building as successful without processing further fields.
 
     :param subcon: Construct instance, subcon to process individual elements
     :param discard: optional, bool, if set then parsing returns empty list
@@ -2560,6 +2948,30 @@ class GreedyRange(Subconstruct):
     def __init__(self, subcon, discard=False):
         super().__init__(subcon)
         self.discard = discard
+
+
+    def _preprocess(self, obj, context, path, offset=0):
+        # predicates don't need to be checked in preprocessing
+        retlist = ListContainer()
+        extra_info = {"_offset": offset}
+        size = 0
+        for i,e in enumerate(obj):
+            context._index = i
+            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            retlist.append(obj)
+
+            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+            offset += child_extra_info["_size"]
+            size += child_extra_info["_size"]
+
+            context.update(extra_info)
+
+        extra_info["_size"] = size
+        extra_info["_endoffset"] = offset
+
+        return retlist, extra_info
+
 
     def _parse(self, stream, context, path):
         discard = self.discard
@@ -2632,6 +3044,29 @@ class RepeatUntil(Subconstruct):
         self.predicate = predicate
         self.discard = discard
 
+
+    def _preprocess(self, obj, context, path, offset=0):
+        # predicates don't need to be checked in preprocessing
+        retlist = ListContainer()
+        extra_info = {"_offset": offset}
+        size = 0
+        for i,e in enumerate(obj):
+            context._index = i
+            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            retlist.append(obj)
+
+            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+            offset += child_extra_info["_size"]
+            size += child_extra_info["_size"]
+
+            context.update(extra_info)
+
+        extra_info["_size"] = size
+        extra_info["_endoffset"] = offset
+
+        return retlist, extra_info
+
     def _parse(self, stream, context, path):
         predicate = self.predicate
         discard = self.discard
@@ -2665,8 +3100,78 @@ class RepeatUntil(Subconstruct):
             raise RepeatError("expected any item to match predicate, when building", path=path)
         return retlist
 
+
+    def _toET(self, parent, name, context, path):
+        data = get_current_field(context, name)
+
+        # Simple fields -> FormatFields and Strings
+        if self.subcon._is_simple_type():
+            arr = []
+            for idx, item in enumerate(data):
+                # create new context including the index
+                ctx = create_parent_context(context)
+                ctx._index = idx
+                ctx[f"{name}_{idx}"] = data[idx]
+
+                obj = self.subcon._toET(None, name, ctx, path)
+                arr += [obj]
+            parent.attrib[name] = "[" + list_to_string(arr) + "]"
+        else:
+            sc_names = self.subcon._names()
+            if len(sc_names) == 0:
+                sc_names = [self.subcon.__class__.__name__]
+            for idx, item in enumerate(data):
+                # create new context including the index
+                ctx = create_parent_context(context)
+                ctx._index = idx
+                ctx[f"{sc_names[0]}_{idx}"] = data[idx]
+
+                elem = self.subcon._toET(parent, sc_names[0], ctx, path)
+                if elem is not None:
+                    parent.append(elem)
+
+        return None
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        context[name] = []
+
+        # Simple fields -> FormatFields and Strings
+        if self.subcon._is_simple_type():
+            data = parent.attrib[name]
+            assert(data[0] == "[")
+            assert(data[-1] == "]")
+            arr = string_to_list(data[1:-1])
+
+            for x in arr:
+                self.subcon._fromET(x, name, context, path, is_root=True)
+        else:
+            items = []
+            sc_names = self.subcon._names()
+            if len(sc_names) == 0:
+                sc_names = [self.subcon.__class__.__name__]
+
+            for n in sc_names:
+                items += parent.findall(n)
+
+            for item in items:
+                self.subcon._fromET(item, name, context, path, is_root=True)
+
+            for n in sc_names:
+                if context.get(n, 1) == None:
+                    context.pop(n)
+
+        return context
+
+
     def _sizeof(self, context, path):
         raise SizeofError("cannot calculate size, amount depends on actual data", path=path)
+
+
+    def _names(self):
+        sc_names = [self.name]
+        sc_names += self.subcon._names()
+        return sc_names
 
     def _emitparse(self, code):
         fname = f"parse_repeatuntil_{code.allocateId()}"
@@ -2736,10 +3241,43 @@ class Renamed(Subconstruct):
     def _parse(self, stream, context, path):
         path += " -> %s" % (self.name,)
         return self.subcon._parsereport(stream, context, path)
+    
+    def _preprocess(self, obj, context, path, offset=0):
+        path += " -> %s" % (self.name,)
+        return self.subcon._preprocess(obj, context, path, offset)
 
     def _build(self, obj, stream, context, path):
         path += " -> %s" % (self.name,)
         return self.subcon._build(obj, stream, context, path)
+
+    def _toET(self, parent, name, context, path):
+        ctx = context
+
+        # corner case with Switch e.g.
+        if name != self.name:
+            ctx = rename_in_context(context=context, name=name, new_name=self.name)
+
+        return self.subcon._toET(context=ctx, name=self.name, parent=parent, path=f"{path} -> {name}")
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        ctx = context
+
+        # this renaming is necessary e.g. for GenericList,
+        # because it creates a list which needs to be renamed accordingly, so the following objects
+        # can append themselves to the list
+        if name != self.name and name in ctx.keys():
+            ctx = rename_in_context(context=context, name=name, new_name=self.name)
+
+        ctx = self.subcon._fromET(context=ctx, parent=parent, name=self.name, path=f"{path} -> {name}", is_root=is_root)
+
+        if name != self.name:
+            ctx = rename_in_context(context=ctx, name=self.name, new_name=name)
+
+        # dingsda requires this when rebuilding, else key error is raised
+        if not self.name in ctx.keys():
+            ctx[self.name] = None
+
+        return ctx
 
     def _sizeof(self, context, path):
         path += " -> %s" % (self.name,)
@@ -2766,6 +3304,11 @@ class Renamed(Subconstruct):
             r.update(doc=self.docs)
         return r
 
+    def _names(self):
+        sc_names = [self.name]
+        sc_names += self.subcon._names()
+        return sc_names
+
 
 #===============================================================================
 # miscellaneous
@@ -2791,7 +3334,7 @@ class Const(Subconstruct):
         >>> d.build(None)
         b'IHDR'
         >>> d.parse(b"JPEG")
-        construct.core.ConstError: expected b'IHDR' but parsed b'JPEG'
+        dingsda.core.ConstError: expected b'IHDR' but parsed b'JPEG'
 
         >>> d = Const(255, Int32ul)
         >>> d.build(None)
@@ -2821,6 +3364,12 @@ class Const(Subconstruct):
     def _sizeof(self, context, path):
         return self.subcon._sizeof(context, path)
 
+    def _toET(self, parent, name, context, path):
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return context
+
     def _emitparse(self, code):
         code.append(f"""
             def parse_const(value, expected):
@@ -2839,6 +3388,7 @@ class Const(Subconstruct):
         data = self.subcon.build(self.value)
         return dict(contents=list(data))
 
+Magic = Const
 
 class Computed(Construct):
     r"""
@@ -2898,7 +3448,7 @@ class Computed(Construct):
 @singleton
 class Index(Construct):
     r"""
-    Indexes a field inside outer :class:`~construct.core.Array` :class:`~construct.core.GreedyRange` :class:`~construct.core.RepeatUntil` context.
+    Indexes a field inside outer :class:`~dingsda.core.Array` :class:`~dingsda.core.GreedyRange` :class:`~dingsda.core.RepeatUntil` context.
 
     Note that you can use this class, or use `this._index` expression instead, depending on how its used. See the examples.
 
@@ -2939,7 +3489,7 @@ class Index(Construct):
 
 class Rebuild(Subconstruct):
     r"""
-    Field where building does not require a value, because the value gets recomputed when needed. Comes handy when building a Struct from a dict with missing keys. Useful for length and count fields when :class:`~construct.core.Prefixed` and :class:`~construct.core.PrefixedArray` cannot be used.
+    Field where building does not require a value, because the value gets recomputed when needed. Comes handy when building a Struct from a dict with missing keys. Useful for length and count fields when :class:`~dingsda.core.Prefixed` and :class:`~dingsda.core.PrefixedArray` cannot be used.
 
     Parsing defers to subcon. Building is defered to subcon, but it builds from a value provided by the context lambda (or constant). Size is the same as subcon, unless it raises SizeofError.
 
@@ -2970,6 +3520,16 @@ class Rebuild(Subconstruct):
     def _build(self, obj, stream, context, path):
         obj = evaluate(self.func, context)
         return self.subcon._build(obj, stream, context, path)
+
+    def _preprocess(self, obj, context, path, offset=0):
+        size = self.subcon._sizeof(context, path)
+        return self.func, {"_offset_": offset, "_size": size, "_endoffset": offset + size}
+
+    def _toET(self, parent, name, context, path):
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return context
 
     def _emitparse(self, code):
         return self.subcon._compileparse(code)
@@ -3102,7 +3662,7 @@ class Error(Construct):
 
         >>> d = Struct("num"/Byte, Error)
         >>> d.parse(b"data...")
-        construct.core.ExplicitError: Error field was activated during parsing
+        dingsda.core.ExplicitError: Error field was activated during parsing
     """
 
     def __init__(self):
@@ -3145,7 +3705,7 @@ class FocusedSeq(Construct):
 
     This class exposes subcons in the context. You can refer to subcons that were inlined (and therefore do not exist as variable in the namespace) within other inlined fields using the context. Note that you need to use a lambda (`this` expression is not supported). Also note that compiler does not support this feature. See examples.
 
-    This class is used internally to implement :class:`~construct.core.PrefixedArray`.
+    This class is used internally to implement :class:`~dingsda.core.PrefixedArray`.
 
     :param parsebuildfrom: string name or context lambda, selects a subcon
     :param \*subcons: Construct instances, list of members, some can be named
@@ -3225,6 +3785,51 @@ class FocusedSeq(Construct):
             return sum(sc._sizeof(context, path) for sc in self.subcons)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _toET(self, parent, name, context, path):
+        assert (isinstance(self.parsebuildfrom, str))
+        for sc in self.subcons:
+            if sc.name == self.parsebuildfrom:
+                # FocusedSeq has to ignore the Rename
+                # because e.g. PrefixedArray adds custom names
+                if sc.__class__.__name__ == "Renamed":
+                    sc = sc.subcon
+                else:
+                    raise NotImplementedError
+                elem = sc._toET(parent, name, context, path)
+                if elem is None:
+                    return parent
+
+                return elem
+
+        raise NotImplementedError
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        # get the xml element
+        if not is_root:
+            elem = parent.findall(name)
+            if len(elem) == 1:
+                elem = elem[0]
+        else:
+            elem = parent
+
+        assert(elem is not None)
+
+        for sc in self.subcons:
+            if sc.name == self.parsebuildfrom:
+                assert (sc.__class__.__name__ == "Renamed")
+                return sc._fromET(context=context, parent=elem, name=name, path=f"{path} -> {name}", is_root=True)
+
+        assert(False)
+
+    def _names(self):
+        sc = None
+        for s in self.subcons:
+            if s.name == self.parsebuildfrom:
+                sc = s
+                break
+        assert(sc is not None)
+        return sc._names()
 
     def _emitparse(self, code):
         fname = f"parse_focusedseq_{code.allocateId()}"
@@ -3546,7 +4151,7 @@ class HexDump(Adapter):
 
     Parsing results in bytes-alike or dict-alike object, whose only difference from original is pretty-printing. If you look at the result, you will be presented with its `repr` which remains as-is. If you print it, then you will see its `str` whic is a hexlified representation. Building and sizeof defer to subcon.
 
-    To obtain a hexlified string (like before Hex HexDump changed semantics) use construct.lib.hexdump on parsed results.
+    To obtain a hexlified string (like before Hex HexDump changed semantics) use dingsda.lib.hexdump on parsed results.
 
     Example::
 
@@ -3871,7 +4476,7 @@ def Optional(subcon):
 
 def If(condfunc, subcon):
     r"""
-    If-then conditional construct.
+    If-then conditional dingsda.
 
     Parsing evaluates condition, if True then subcon is parsed, otherwise just returns None. Building also evaluates condition, if True then subcon gets build from, otherwise does nothing. Size is either same as subcon or 0, depending how condfunc evaluates.
 
@@ -3903,7 +4508,7 @@ def If(condfunc, subcon):
 
 class IfThenElse(Construct):
     r"""
-    If-then-else conditional construct, similar to ternary operator.
+    If-then-else conditional dingsda, similar to ternary operator.
 
     Parsing and building evaluates condition, and defers to either subcon depending on the value. Size is computed the same way.
 
@@ -4017,6 +4622,42 @@ class Switch(Construct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
+    def _toET(self, parent, name, context, path):
+        ctx = context
+        keyfunc = None
+        idx = context.get("_index", None)
+        if idx is not None:
+            ctx = context[f"{name}_{idx}"]
+
+        keyfunc = evaluate(self.keyfunc, ctx)
+        sc = self.cases.get(keyfunc, self.default)
+
+        assert(isinstance(sc, Renamed))
+
+        return sc._toET(parent, name, ctx, path)
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        for case in self.cases.values():
+            assert(isinstance(case, Renamed))
+            if not is_root:
+                elems = parent.findall(case.name)
+            else:
+                elems = [parent]
+
+            if len(elems) == 0:
+                continue
+
+            assert(len(elems) == 1)
+            elem = elems[0]
+            context[f"_switchid_{name}"] = case.name
+            return case._fromET(elem, name, context, path, is_root=True)
+
+    def _names(self):
+        for case in self.cases.values():
+            assert(isinstance(case, Renamed))
+        names = [case.name for case in self.cases.values()]
+        return names
+
     def _emitparse(self, code):
         fname = f"switch_cases_{code.allocateId()}"
         code.append(f"{fname} = {{}}")
@@ -4038,7 +4679,7 @@ class Switch(Construct):
 
 class StopIf(Construct):
     r"""
-    Checks for a condition, and stops certain classes (:class:`~construct.core.Struct` :class:`~construct.core.Sequence` :class:`~construct.core.GreedyRange`) from parsing or building further.
+    Checks for a condition, and stops certain classes (:class:`~dingsda.core.Struct` :class:`~dingsda.core.Sequence` :class:`~dingsda.core.GreedyRange`) from parsing or building further.
 
     Parsing and building check the condition, and raise StopFieldError if indicated. Size is undefined.
 
@@ -4295,7 +4936,7 @@ def AlignedStruct(modulus, *subcons, **subconskw):
     r"""
     Makes a structure where each field is aligned to the same modulus (it is a struct of aligned fields, NOT an aligned struct).
 
-    See :class:`~construct.core.Aligned` and :class:`~construct.core.Struct` for semantics and raisable exceptions.
+    See :class:`~dingsda.core.Aligned` and :class:`~dingsda.core.Struct` for semantics and raisable exceptions.
 
     :param modulus: integer or context lambda, passed to each member
     :param \*subcons: Construct instances, list of members, some can be anonymous
@@ -4315,7 +4956,7 @@ def BitStruct(*subcons, **subconskw):
     r"""
     Makes a structure inside a Bitwise.
 
-    See :class:`~construct.core.Bitwise` and :class:`~construct.core.Struct` for semantics and raisable exceptions.
+    See :class:`~dingsda.core.Bitwise` and :class:`~dingsda.core.Struct` for semantics and raisable exceptions.
 
     :param \*subcons: Construct instances, list of members, some can be anonymous
     :param \*\*subconskw: Construct instances, list of members (requires Python 3.6)
@@ -4372,6 +5013,19 @@ class Pointer(Subconstruct):
         self.offset = offset
         self.stream = stream
 
+
+    def _preprocess(self, obj, context, path, offset=0):
+        # the offset doesn't change, because the pointer itself has no size
+        # therefor just generate relative offsets from here
+        obj, child_extra_info = self.subcon._preprocess(obj, context, path, offset=0)
+
+        extra_info = {f"_ptr{k}": v for k, v in child_extra_info.items()}
+        extra_info["_offset"] = offset
+        extra_info["_size"] = 0
+        extra_info["_endoffset"] = offset
+
+        return obj, extra_info
+
     def _parse(self, stream, context, path):
         offset = evaluate(self.offset, context)
         stream = evaluate(self.stream, context) or stream
@@ -4389,6 +5043,15 @@ class Pointer(Subconstruct):
         buildret = self.subcon._build(obj, stream, context, path)
         stream_seek(stream, fallback, 0, path)
         return buildret
+
+
+    def _toET(self, parent, name, context, path):
+        return self.subcon._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
+
 
     def _sizeof(self, context, path):
         return 0
@@ -4428,7 +5091,7 @@ class Peek(Subconstruct):
 
     Parsing sub-parses (and returns None if failed), then reverts stream to original position. Building does nothing (its NOT deferred). Size is defined as 0 because there is no building.
 
-    This class is used in :class:`~construct.core.Union` class to parse each member.
+    This class is used in :class:`~dingsda.core.Union` class to parse each member.
 
     :param subcon: Construct instance
 
@@ -4488,7 +5151,7 @@ class OffsettedEnd(Subconstruct):
     r"""
     Parses all bytes in the stream till `EOF plus a negative endoffset` is reached.
 
-    This is useful when GreedyBytes (or any other greedy construct) is followed by a fixed-size footer.
+    This is useful when GreedyBytes (or any other greedy dingsda) is followed by a fixed-size footer.
 
     Parsing determines the length of the stream and reads all bytes till EOF plus `endoffset` is reached, then defers to subcon using new BytesIO with said bytes. Building defers to subcon as-is. Size is undefined.
 
@@ -4536,7 +5199,7 @@ class Seek(Construct):
 
     Parsing and building seek the stream to given location (and whence), and return stream.seek() return value. Size is not defined.
 
-    .. seealso:: Analog :class:`~construct.core.Pointer` wrapper that has same side effect but also processes a subcon, and also seeks back.
+    .. seealso:: Analog :class:`~dingsda.core.Pointer` wrapper that has same side effect but also processes a subcon, and also seeks back.
 
     :param at: integer or context lambda, where to jump to
     :param whence: optional, integer or context lambda, is the offset from beginning (0) or from current position (1) or from EOF (2), default is 0
@@ -4589,7 +5252,7 @@ class Tell(Construct):
 
     Parsing and building return current stream offset using using stream.tell(). Size is defined as 0 because parsing and building does not consume or add into the stream.
 
-    Tell is useful for adjusting relative offsets to absolute positions, or to measure sizes of Constructs. To get an absolute pointer, use a Tell plus a relative offset. To get a size, place two Tells and measure their difference using a Compute field. However, its recommended to use :class:`~construct.core.RawCopy` instead of manually extracting two positions and computing difference.
+    Tell is useful for adjusting relative offsets to absolute positions, or to measure sizes of Constructs. To get an absolute pointer, use a Tell plus a relative offset. To get a size, place two Tells and measure their difference using a Compute field. However, its recommended to use :class:`~dingsda.core.RawCopy` instead of manually extracting two positions and computing difference.
 
     :raises StreamError: stream is not tellable
 
@@ -4625,7 +5288,7 @@ class Tell(Construct):
 @singleton
 class Pass(Construct):
     r"""
-    No-op construct, useful as default cases for Switch and Enum.
+    No-op dingsda, useful as default cases for Switch and Enum.
 
     Parsing returns None. Building does nothing. Size is 0 by definition.
 
@@ -4676,7 +5339,7 @@ class Terminated(Construct):
         >>> Terminated.parse(b"")
         None
         >>> Terminated.parse(b"remaining")
-        construct.core.TerminatedError: expected end of stream
+        dingsda.core.TerminatedError: expected end of stream
     """
 
     def __init__(self):
@@ -4761,7 +5424,7 @@ def ByteSwapped(subcon):
 
     :raises SizeofError: ctor or compiler could not compute subcon size
 
-    See :class:`~construct.core.Transformed` and :class:`~construct.core.Restreamed` for raisable exceptions.
+    See :class:`~dingsda.core.Transformed` and :class:`~dingsda.core.Restreamed` for raisable exceptions.
 
     Example::
 
@@ -4780,7 +5443,7 @@ def BitsSwapped(subcon):
 
     :raises SizeofError: compiler could not compute subcon size
 
-    See :class:`~construct.core.Transformed` and :class:`~construct.core.Restreamed` for raisable exceptions.
+    See :class:`~dingsda.core.Transformed` and :class:`~dingsda.core.Restreamed` for raisable exceptions.
 
     Example::
 
@@ -4804,9 +5467,9 @@ class Prefixed(Subconstruct):
 
     Parses the length field. Then reads that amount of bytes, and parses subcon using only those bytes. Constructs that consume entire remaining stream are constrained to consuming only the specified amount of bytes (a substream). When building, data gets prefixed by its length. Optionally, length field can include its own size. Size is the sum of both fields sizes, unless either raises SizeofError.
 
-    Analog to :class:`~construct.core.PrefixedArray` which prefixes with an element count, instead of byte count. Semantics is similar but implementation is different.
+    Analog to :class:`~dingsda.core.PrefixedArray` which prefixes with an element count, instead of byte count. Semantics is similar but implementation is different.
 
-    :class:`~construct.core.VarInt` is recommended for new protocols, as it is more compact and never overflows.
+    :class:`~dingsda.core.VarInt` is recommended for new protocols, as it is more compact and never overflows.
 
     :param lengthfield: Construct instance, field used for storing the length
     :param subcon: Construct instance, subcon used for storing the value
@@ -4872,9 +5535,9 @@ class Prefixed(Subconstruct):
 
 def PrefixedArray(countfield, subcon):
     r"""
-    Prefixes an array with item count (as opposed to prefixed by byte count, see :class:`~construct.core.Prefixed`).
+    Prefixes an array with item count (as opposed to prefixed by byte count, see :class:`~dingsda.core.Prefixed`).
 
-    :class:`~construct.core.VarInt` is recommended for new protocols, as it is more compact and never overflows.
+    :class:`~dingsda.core.VarInt` is recommended for new protocols, as it is more compact and never overflows.
 
     :param countfield: Construct instance, field used for storing the element count
     :param subcon: Construct instance, subcon used for storing each element
@@ -5171,7 +5834,7 @@ class Transformed(Subconstruct):
 
     Parsing reads a specified amount (or till EOF), processes data using a bytes-to-bytes decoding function, then parses subcon using those data. Building does build subcon into separate bytes, then processes it using encoding bytes-to-bytes function, then writes those data into main stream. Size is reported as `decodeamount` or `encodeamount` if those are equal, otherwise its SizeofError.
 
-    Used internally to implement :class:`~construct.core.Bitwise` :class:`~construct.core.Bytewise` :class:`~construct.core.ByteSwapped` :class:`~construct.core.BitsSwapped` .
+    Used internally to implement :class:`~dingsda.core.Bitwise` :class:`~dingsda.core.Bytewise` :class:`~dingsda.core.ByteSwapped` :class:`~dingsda.core.BitsSwapped` .
 
     Possible use-cases include encryption, obfuscation, byte-level encoding.
 
@@ -5240,7 +5903,7 @@ class Restreamed(Subconstruct):
     r"""
     Transforms bytes between the underlying stream and the (variable-sized) subcon.
 
-    Used internally to implement :class:`~construct.core.Bitwise` :class:`~construct.core.Bytewise` :class:`~construct.core.ByteSwapped` :class:`~construct.core.BitsSwapped` .
+    Used internally to implement :class:`~dingsda.core.Bitwise` :class:`~dingsda.core.Bytewise` :class:`~dingsda.core.ByteSwapped` :class:`~dingsda.core.BitsSwapped` .
 
     .. warning:: Remember that subcon must consume or produce an amount of bytes that is a multiple of encoding or decoding units. For example, in a Bitwise context you should process a multiple of 8 bits or the stream will fail during parsing/building.
 
@@ -5466,7 +6129,7 @@ class ProcessRotateLeft(Subconstruct):
 
 class Checksum(Construct):
     r"""
-    Field that is build or validated by a hash of a given byte range. Usually used with :class:`~construct.core.RawCopy` .
+    Field that is build or validated by a hash of a given byte range. Usually used with :class:`~dingsda.core.RawCopy` .
 
     Parsing compares parsed subcon `checksumfield` with a context entry provided by `bytesfunc` and transformed by `hashfunc`. Building fetches the contect entry, transforms it, then writes is using subcon. Size is same as subcon.
 
@@ -5537,7 +6200,7 @@ class Checksum(Construct):
 
 class Compressed(Tunnel):
     r"""
-    Compresses and decompresses underlying stream when processing subcon. When parsing, entire stream is consumed. When building, it puts compressed bytes without marking the end. This construct should be used with :class:`~construct.core.Prefixed` .
+    Compresses and decompresses underlying stream when processing subcon. When parsing, entire stream is consumed. When building, it puts compressed bytes without marking the end. This dingsda should be used with :class:`~dingsda.core.Prefixed` .
 
     Parsing and building transforms all bytes using a specified codec. Since data is processed until EOF, it behaves similar to `GreedyBytes`. Size is undefined.
 
@@ -5593,7 +6256,7 @@ class Compressed(Tunnel):
 
 class CompressedLZ4(Tunnel):
     r"""
-    Compresses and decompresses underlying stream before processing subcon. When parsing, entire stream is consumed. When building, it puts compressed bytes without marking the end. This construct should be used with :class:`~construct.core.Prefixed` .
+    Compresses and decompresses underlying stream before processing subcon. When parsing, entire stream is consumed. When building, it puts compressed bytes without marking the end. This dingsda should be used with :class:`~dingsda.core.Prefixed` .
 
     Parsing and building transforms all bytes using LZ4 library. Since data is processed until EOF, it behaves similar to `GreedyBytes`. Size is undefined.
 
@@ -5633,7 +6296,7 @@ class EncryptedSym(Tunnel):
 
     The key for encryption and decryption should be passed via `contextkw` to `build` and `parse` methods.
 
-    This construct is heavily based on the `cryptography` library, which supports the following algorithms and modes. For more details please see the documentation of that library.
+    This dingsda is heavily based on the `cryptography` library, which supports the following algorithms and modes. For more details please see the documentation of that library.
     
     Algorithms:
     - AES
@@ -5656,8 +6319,8 @@ class EncryptedSym(Tunnel):
     - XTS
     - ECB (insecure)
 
-    .. note:: Keep in mind that some of the algorithms require padding of the data. This can be done e.g. with :class:`~construct.core.Aligned`.
-    .. note:: For GCM mode use :class:`~construct.core.EncryptedSymAead`.
+    .. note:: Keep in mind that some of the algorithms require padding of the data. This can be done e.g. with :class:`~dingsda.core.Aligned`.
+    .. note:: For GCM mode use :class:`~dingsda.core.EncryptedSymAead`.
 
     :param subcon: Construct instance, subcon used for storing the value
     :param cipher: Cipher object or context lambda from cryptography.hazmat.primitives.ciphers
@@ -5728,7 +6391,7 @@ class EncryptedSymAead(Tunnel):
 
     The key for encryption and decryption should be passed via `contextkw` to `build` and `parse` methods.
 
-    This construct is heavily based on the `cryptography` library, which supports the following AEAD ciphers. For more details please see the documentation of that library.
+    This dingsda is heavily based on the `cryptography` library, which supports the following AEAD ciphers. For more details please see the documentation of that library.
     
     AEAD ciphers:
     - AESGCM
@@ -5843,7 +6506,7 @@ class Lazy(Subconstruct):
         >>> d = Lazy(Byte)
         >>> x = d.parse(b'\x00')
         >>> x
-        <function construct.core.Lazy._parse.<locals>.execute>
+        <function dingsda.core.Lazy._parse.<locals>.execute>
         >>> x()
         0
         >>> d.build(0)
@@ -5873,6 +6536,14 @@ class Lazy(Subconstruct):
         if callable(obj):
             obj = obj()
         return self.subcon._build(obj, stream, context, path)
+
+    def _toET(self, parent, name, context, path):
+        return self.subcon._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
+
 
 
 class LazyContainer(dict):
@@ -5924,7 +6595,7 @@ class LazyContainer(dict):
 
 class LazyStruct(Construct):
     r"""
-    Equivalent to :class:`~construct.core.Struct`, but when this class is parsed, most fields are not parsed (they are skipped if their size can be measured by _actualsize or _sizeof method). See its docstring for details.
+    Equivalent to :class:`~dingsda.core.Struct`, but when this class is parsed, most fields are not parsed (they are skipped if their size can be measured by _actualsize or _sizeof method). See its docstring for details.
 
     Fields are parsed depending on some factors:
 
@@ -6052,7 +6723,7 @@ class LazyListContainer(list):
 
 class LazyArray(Subconstruct):
     r"""
-    Equivalent to :class:`~construct.core.Array`, but the subcon is not parsed when possible (it gets skipped if the size can be measured by _actualsize or _sizeof method). See its docstring for details.
+    Equivalent to :class:`~dingsda.core.Array`, but the subcon is not parsed when possible (it gets skipped if the size can be measured by _actualsize or _sizeof method). See its docstring for details.
 
     Fields are parsed depending on some factors:
 
@@ -6126,7 +6797,7 @@ class LazyArray(Subconstruct):
 
 class LazyBound(Construct):
     r"""
-    Field that binds to the subcon only at runtime (during parsing and building, not ctor). Useful for recursive data structures, like linked-lists and trees, where a construct needs to refer to itself (while it does not exist yet in the namespace).
+    Field that binds to the subcon only at runtime (during parsing and building, not ctor). Useful for recursive data structures, like linked-lists and trees, where a dingsda needs to refer to itself (while it does not exist yet in the namespace).
 
     Note that it is possible to obtain same effect without using this class, using a loop. However there are usecases where that is not possible (if remaining nodes cannot be sized-up, and there is data following the recursive structure). There is also a significant difference, namely that LazyBound actually does greedy parsing while the loop does lazy parsing. See examples.
 
@@ -6186,6 +6857,15 @@ class LazyBound(Construct):
         sc = self.subconfunc()
         return sc._build(obj, stream, context, path)
 
+    def _toET(self, parent, name, context, path):
+        sc = self.subconfunc()
+        return sc._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        sc = self.subconfunc()
+        return sc._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
+
 
 #===============================================================================
 # adapters and validators
@@ -6214,7 +6894,7 @@ class ExprAdapter(Adapter):
 
 class ExprSymmetricAdapter(ExprAdapter):
     """
-    Macro around :class:`~construct.core.ExprAdapter`.
+    Macro around :class:`~dingsda.core.ExprAdapter`.
 
     :param subcon: Construct instance, subcon to adapt
     :param encoder: lambda that takes (obj, context, path) and returns both encoded version and decoded version of obj
@@ -6269,7 +6949,7 @@ def OneOf(subcon, valids):
         >>> d.parse(b"\x01")
         1
         >>> d.parse(b"\xff")
-        construct.core.ValidationError: object failed validation: 255
+        dingsda.core.ValidationError: object failed validation: 255
     """
     return ExprValidator(subcon, lambda obj,ctx: obj in valids)
 

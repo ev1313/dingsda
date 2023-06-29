@@ -1,5 +1,5 @@
-from construct import *
-from construct.lib import *
+from dingsda import *
+from dingsda.lib import *
 import sys, traceback, pdb, inspect
 
 
@@ -108,13 +108,13 @@ class Debugger(Subconstruct):
         --------------------------------------------------
         Debugging exception of <Array: None>
         path is (building)
-          File "/media/arkadiusz/MAIN/GitHub/construct/construct/debug.py", line 192, in _build
+          File "/media/arkadiusz/MAIN/GitHub/dingsda/dingsda/debug.py", line 192, in _build
             return self.subcon._build(obj, stream, context, path)
-          File "/media/arkadiusz/MAIN/GitHub/construct/construct/core.py", line 2149, in _build
+          File "/media/arkadiusz/MAIN/GitHub/dingsda/dingsda/core.py", line 2149, in _build
             raise RangeError("expected %d elements, found %d" % (count, len(obj)))
-        construct.core.RangeError: expected 3 elements, found 0
+        dingsda.core.RangeError: expected 3 elements, found 0
 
-        > /media/arkadiusz/MAIN/GitHub/construct/construct/core.py(2149)_build()
+        > /media/arkadiusz/MAIN/GitHub/dingsda/dingsda/core.py(2149)_build()
         -> raise RangeError("expected %d elements, found %d" % (count, len(obj)))
         (Pdb) q
         --------------------------------------------------

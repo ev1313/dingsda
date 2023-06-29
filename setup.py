@@ -1,26 +1,26 @@
 #!/usr/bin/env python
 from setuptools import setup
-from construct.version import version_string
+from dingsda.version import version_string
 
 setup(
-    name = "construct",
+    name = "dingsda",
     version = version_string,
     packages = [
-        'construct',
-        'construct.lib',
+        'dingsda',
+        'dingsda.lib',
     ],
     license = "MIT",
-    description = "A powerful declarative symmetric parser/builder for binary data",
+    description = "A powerful declarative symmetric parser/builder for binary data with XML de- and encoding",
     long_description = open("README.rst").read(),
     platforms = ["POSIX", "Windows"],
-    url = "http://construct.readthedocs.org",
+#    url = "http://construct.readthedocs.org",
     project_urls = {
-        "Source": "https://github.com/construct/construct",
-        "Documentation": "https://construct.readthedocs.io/en/latest/",
-        "Issues": "https://github.com/construct/construct/issues",
+        "Source": "https://github.com/ev1313/dingsda",
+#        "Documentation": "https://construct.readthedocs.io/en/latest/",
+        "Issues": "https://github.com/ev1313/dingsda/issues",
     },
-    author = "Arkadiusz Bulski, Tomer Filiba, Corbin Simpson",
-    author_email = "arek.bulski@gmail.com, tomerfiliba@gmail.com, MostAwesomeDude@gmail.com",
+    author = "Tim Blume",
+    author_email = "dingsda@3nd.io",
     python_requires = ">=3.6",
     install_requires = [],
     extras_require = {
@@ -35,7 +35,8 @@ setup(
         ],
     },
     keywords = [
-        "construct",
+        "dingsda",
+        "dingsda",
         "kaitai",
         "declarative",
         "data structure",
