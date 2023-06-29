@@ -2,10 +2,10 @@
 Core API: Streaming
 ===============================
 
-.. autofunction:: construct.Pointer
-.. autofunction:: construct.Peek
-.. autofunction:: construct.OffsettedEnd
-.. autofunction:: construct.Seek
-.. autofunction:: construct.Tell
-.. autofunction:: construct.Pass
-.. autofunction:: construct.Terminated
+.. autofunction:: dingsda.Pointer
+.. autofunction:: dingsda.Peek
+.. autofunction:: dingsda.OffsettedEnd
+.. autofunction:: dingsda.Seek
+.. autofunction:: dingsda.Tell
+.. autofunction:: dingsda.Pass
+.. autofunction:: dingsda.Terminated

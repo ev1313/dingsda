@@ -2,17 +2,17 @@
 Core API: Miscellaneous
 ===============================
 
-.. autofunction:: construct.Const
-.. autofunction:: construct.Computed
-.. autofunction:: construct.Index
-.. autofunction:: construct.Rebuild
-.. autofunction:: construct.Default
-.. autofunction:: construct.Check
-.. autofunction:: construct.Error
-.. autofunction:: construct.FocusedSeq
-.. autofunction:: construct.Pickled
-.. autofunction:: construct.Numpy
-.. autofunction:: construct.NamedTuple
-.. autofunction:: construct.Timestamp
-.. autofunction:: construct.Hex
-.. autofunction:: construct.HexDump
+.. autofunction:: dingsda.Const
+.. autofunction:: dingsda.Computed
+.. autofunction:: dingsda.Index
+.. autofunction:: dingsda.Rebuild
+.. autofunction:: dingsda.Default
+.. autofunction:: dingsda.Check
+.. autofunction:: dingsda.Error
+.. autofunction:: dingsda.FocusedSeq
+.. autofunction:: dingsda.Pickled
+.. autofunction:: dingsda.Numpy
+.. autofunction:: dingsda.NamedTuple
+.. autofunction:: dingsda.Timestamp
+.. autofunction:: dingsda.Hex
+.. autofunction:: dingsda.HexDump

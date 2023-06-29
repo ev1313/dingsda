@@ -2,8 +2,8 @@
 Core API: Bytes and bits
 ========================
 
-.. autofunction:: construct.Bytes
-.. autofunction:: construct.GreedyBytes
-.. autofunction:: construct.setGlobalPrintFullStrings
-.. autofunction:: construct.Bitwise
-.. autofunction:: construct.Bytewise
+.. autofunction:: dingsda.Bytes
+.. autofunction:: dingsda.GreedyBytes
+.. autofunction:: dingsda.setGlobalPrintFullStrings
+.. autofunction:: dingsda.Bitwise
+.. autofunction:: dingsda.Bytewise

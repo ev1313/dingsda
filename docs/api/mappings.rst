@@ -2,8 +2,8 @@
 Core API: Mappings
 ===============================
 
-.. autofunction:: construct.Flag
-.. autofunction:: construct.Enum
-.. autofunction:: construct.FlagsEnum
-.. autofunction:: construct.setGlobalPrintFalseFlags
-.. autofunction:: construct.Mapping
+.. autofunction:: dingsda.Flag
+.. autofunction:: dingsda.Enum
+.. autofunction:: dingsda.FlagsEnum
+.. autofunction:: dingsda.setGlobalPrintFalseFlags
+.. autofunction:: dingsda.Mapping

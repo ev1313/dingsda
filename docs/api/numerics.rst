@@ -2,8 +2,8 @@
 Core API: Integers and Floats
 ========================
 
-.. autofunction:: construct.FormatField
-.. autofunction:: construct.BytesInteger
-.. autofunction:: construct.BitsInteger
-.. autofunction:: construct.VarInt
-.. autofunction:: construct.ZigZag
+.. autofunction:: dingsda.FormatField
+.. autofunction:: dingsda.BytesInteger
+.. autofunction:: dingsda.BitsInteger
+.. autofunction:: dingsda.VarInt
+.. autofunction:: dingsda.ZigZag

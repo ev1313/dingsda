@@ -2,9 +2,9 @@
 Core API: Strings
 ===================
 
-.. autodata:: construct.core.possiblestringencodings
-.. autofunction:: construct.PaddedString
-.. autofunction:: construct.PascalString
-.. autofunction:: construct.CString
-.. autofunction:: construct.GreedyString
-.. autofunction:: construct.setGlobalPrintFullStrings
+.. autodata:: dingsda.core.possiblestringencodings
+.. autofunction:: dingsda.PaddedString
+.. autofunction:: dingsda.PascalString
+.. autofunction:: dingsda.CString
+.. autofunction:: dingsda.GreedyString
+.. autofunction:: dingsda.setGlobalPrintFullStrings

@@ -2,7 +2,9 @@
 Introduction
 ============
 
-Construct is a powerful **declarative** and **symmetrical** parser and builder for binary data.
+DingsDa is a powerful **declarative** and **symmetrical** parser and builder for binary data.
+It is based on Construct 2.10, but removes some features and adds some new ones. The parser generator
+was removed, as well as the kaitai export.
 
 Instead of writing *imperative code* to parse a piece of data, you declaratively define a *data structure* that describes your data. As this data structure is not code, you can use it in one direction to *parse* data into Pythonic objects, and in the other direction, to *build* objects into binary data.
 
@@ -72,7 +74,6 @@ Following modules are needed only if you want to use certain features:
 * Numpy is optional, if you want to serialize arrays using Numpy protocol. Otherwise arrays can still be serialized using PrefixedArray.
 * Arrow is optional, if you want to use Timestamp class.
 * Different Python versions support different compression modules (like gzip lzma), if you want to use Compressed class.
-* Ruamel.yaml is optional, if you want to use KaitaiStruct (KSY) exporter.
 * Cloudpickle is optional, if you want to serialize the classes.
 * LZ4 is optional, if you want to use CompressedLZ4 class.
 
@@ -82,8 +83,8 @@ Installing
 
 The library is downloadable and installable from Pypi. Just use standard command-line. There are no hard dependencies, but if you would like to install all supported (not required) modules listed above, you can use the 2nd command-line form.
 
-* pip install construct
-* pip install construct[extras]
+* pip install dingsda
+* pip install dingsda[extras]
 
 
 Type Hints / Type Annotations

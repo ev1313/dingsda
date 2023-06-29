@@ -2,8 +2,8 @@
 Core API: Debugging
 ================================
 
-.. autofunction:: construct.Probe
-.. autofunction:: construct.setGlobalPrintFullStrings
-.. autofunction:: construct.setGlobalPrintFalseFlags
-.. autofunction:: construct.setGlobalPrintPrivateEntries
-.. autofunction:: construct.Debugger
+.. autofunction:: dingsda.Probe
+.. autofunction:: dingsda.setGlobalPrintFullStrings
+.. autofunction:: dingsda.setGlobalPrintFalseFlags
+.. autofunction:: dingsda.setGlobalPrintPrivateEntries
+.. autofunction:: dingsda.Debugger

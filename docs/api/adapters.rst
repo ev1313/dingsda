@@ -2,11 +2,11 @@
 Core API: Adapters and Validators
 ===============================
 
-.. autofunction:: construct.ExprAdapter
-.. autofunction:: construct.ExprSymmetricAdapter
-.. autofunction:: construct.ExprValidator
-.. autofunction:: construct.OneOf
-.. autofunction:: construct.NoneOf
-.. autofunction:: construct.Filter
-.. autofunction:: construct.Slicing
-.. autofunction:: construct.Indexing
+.. autofunction:: dingsda.ExprAdapter
+.. autofunction:: dingsda.ExprSymmetricAdapter
+.. autofunction:: dingsda.ExprValidator
+.. autofunction:: dingsda.OneOf
+.. autofunction:: dingsda.NoneOf
+.. autofunction:: dingsda.Filter
+.. autofunction:: dingsda.Slicing
+.. autofunction:: dingsda.Indexing
