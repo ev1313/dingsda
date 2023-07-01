@@ -327,7 +327,7 @@ class Construct(object):
 
     Attributes and Inheritance:
 
-    All constructs have a name and flags. The name is used for naming struct members and context dictionaries. Note that the name can be a string, or None by default. A single underscore "_" is a reserved name, used as up-level in nested containers. The name should be descriptive, short, and valid as a Python identifier, although these rules are not enforced. The flags specify additional behavioral information about this dingsda. Flags are used by enclosing constructs to determine a proper course of action. Flags are often inherited from inner subconstructs but that depends on each class.
+    All constructs have a name and flags. The name is used for naming struct members and context dictionaries. Note that the name can be a string, or None by default. A single underscore "_" is a reserved name, used as up-level in nested containers. The name should be descriptive, short, and valid as a Python identifier, although these rules are not enforced. The flags specify additional behavioral information about this construct. Flags are used by enclosing constructs to determine a proper course of action. Flags are often inherited from inner subconstructs but that depends on each class.
     """
 
     def __init__(self):
@@ -427,7 +427,7 @@ class Construct(object):
 
             :param obj: the object to preprocess
             :param context: the context dictionary
-            :param path: the path to the dingsda
+            :param path: the path to the construct
 
             :return obj: the preprocessed object
             :return extra_info: a dictionary containing extra information regarding offset, size, etc.
@@ -481,7 +481,7 @@ class Construct(object):
 
     def toET(self, obj, name="Root", **contextkw):
         r"""
-            Convert a parsed dingsda to a XML ElementTree.
+            Convert a parsed construct to a XML ElementTree.
 
             This method creates the root node for the following _toET calls, so
             even FormatFields can attach their values to an attrib.
@@ -504,7 +504,7 @@ class Construct(object):
 
     def fromET(self, xml, **contextkw):
         r"""
-            Convert an XML ElementTree to a dingsda.
+            Convert an XML ElementTree to a construct.
 
         :param xml: The ElementTree
         :param contextkw: further arguments, passed directly into the context
@@ -642,7 +642,7 @@ class Construct(object):
 
 class Subconstruct(Construct):
     r"""
-    Abstract subconstruct (wraps an inner dingsda, inheriting its name and flags). Parsing and building is by default deferred to subcon, same as sizeof.
+    Abstract subconstruct (wraps an inner construct, inheriting its name and flags). Parsing and building is by default deferred to subcon, same as sizeof.
 
     :param subcon: Construct instance
     """
@@ -2049,10 +2049,6 @@ class Struct(Construct):
         extra_info["_endoffset"] = offset
         ctx.update(extra_info)
 
-        # remove _, because dingsda rebuild will fail otherwise (?)
-        #if "_" in context.keys():
-        #    context.pop("_")
-
         return ctx, extra_info
 
     def _build(self, obj, stream, context, path):
@@ -2112,7 +2108,7 @@ class Struct(Construct):
         for sc in self.subcons:
             ctx = sc._fromET(context=ctx, parent=elem, name=sc.name, path=f"{path} -> {name}")
 
-        # remove _, because dingsda rebuild will fail otherwise
+        # remove _, because rebuild will fail otherwise
         if "_" in ctx.keys():
             ctx.pop("_")
 
@@ -2707,7 +2703,7 @@ class Renamed(Subconstruct):
         if name != self.name:
             ctx = rename_in_context(context=ctx, name=self.name, new_name=name)
 
-        # dingsda requires this when rebuilding, else key error is raised
+        #  requires when rebuilding, else key error is raised
         if not self.name in ctx.keys():
             ctx[self.name] = None
 
@@ -2833,6 +2829,12 @@ class Computed(Construct):
     def _sizeof(self, context, path):
         return 0
 
+    def _toET(self, parent, name, context, path):
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return context
+
 
 @singleton
 class Index(Construct):
@@ -2874,6 +2876,12 @@ class Index(Construct):
 
     def _sizeof(self, context, path):
         return 0
+
+    def _toET(self, parent, name, context, path):
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return context
 
 
 class Rebuild(Subconstruct):
@@ -2956,6 +2964,12 @@ class Default(Subconstruct):
         obj = evaluate(self.value, context) if obj is None else obj
         return self.subcon._build(obj, stream, context, path)
 
+    def _toET(self, parent, name, context, path):
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return context
+
 
 class Check(Construct):
     r"""
@@ -2992,6 +3006,12 @@ class Check(Construct):
 
     def _sizeof(self, context, path):
         return 0
+
+    def _toET(self, parent, name, context, path):
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return context
 
 
 @singleton
@@ -3631,7 +3651,7 @@ def Optional(subcon):
 
 def If(condfunc, subcon):
     r"""
-    If-then conditional dingsda.
+    If-then conditional construct.
 
     Parsing evaluates condition, if True then subcon is parsed, otherwise just returns None. Building also evaluates condition, if True then subcon gets build from, otherwise does nothing. Size is either same as subcon or 0, depending how condfunc evaluates.
 
@@ -3659,7 +3679,7 @@ def If(condfunc, subcon):
 
 class IfThenElse(Construct):
     r"""
-    If-then-else conditional dingsda, similar to ternary operator.
+    If-then-else conditional construct, similar to ternary operator.
 
     Parsing and building evaluates condition, and defers to either subcon depending on the value. Size is computed the same way.
 
@@ -3704,6 +3724,15 @@ class IfThenElse(Construct):
         condfunc = evaluate(self.condfunc, context)
         sc = self.thensubcon if condfunc else self.elsesubcon
         return sc._sizeof(context, path)
+
+    def _toET(self, parent, name, context, path):
+        assert(0)
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        assert(0)
+
+    def _names(self):
+        return self.thensubcon._names() + self.elsesubcon._names()
 
 
 class Switch(Construct):
@@ -4191,7 +4220,7 @@ class OffsettedEnd(Subconstruct):
     r"""
     Parses all bytes in the stream till `EOF plus a negative endoffset` is reached.
 
-    This is useful when GreedyBytes (or any other greedy dingsda) is followed by a fixed-size footer.
+    This is useful when GreedyBytes (or any other greedy construct) is followed by a fixed-size footer.
 
     Parsing determines the length of the stream and reads all bytes till EOF plus `endoffset` is reached, then defers to subcon using new BytesIO with said bytes. Building defers to subcon as-is. Size is undefined.
 
@@ -4314,7 +4343,7 @@ class Tell(Construct):
 @singleton
 class Pass(Construct):
     r"""
-    No-op dingsda, useful as default cases for Switch and Enum.
+    No-op construct, useful as default cases for Switch and Enum.
 
     Parsing returns None. Building does nothing. Size is 0 by definition.
 
@@ -4341,6 +4370,11 @@ class Pass(Construct):
     def _sizeof(self, context, path):
         return 0
 
+    def _toET(self, parent, name, context, path):
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return context
 
 @singleton
 class Terminated(Construct):
@@ -4372,6 +4406,12 @@ class Terminated(Construct):
 
     def _sizeof(self, context, path):
         raise SizeofError(path=path)
+
+    def _toET(self, parent, name, context, path):
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return context
 
 
 #===============================================================================

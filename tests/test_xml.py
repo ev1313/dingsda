@@ -596,6 +596,7 @@ def test_fromET_ifthenelse_formatfield():
     obj = s.fromET(xml=xml)
 
     assert(obj == {"a": 1, "b": 2})
+
 def test_toET_ifthenelse_string():
     s = "test" / Struct(
         "a" / Int32ul,
@@ -618,3 +619,52 @@ def test_fromET_ifthenelse_string():
     obj = s.fromET(xml=xml)
 
     assert(obj == {"a": 1, "b": "test"})
+
+
+def test_toET_ifthenelse_struct():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), "bar" / Struct("bar" / Int16ul))
+    )
+
+    data = {"a": 1, "b": {"bar": 3}}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test a="1"><foo bar="3"/></test>')
+
+
+def test_fromET_ifthenelse_struct():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), "bar" / Struct("bar" / Int16ul))
+    )
+
+    xml = ET.fromstring(b'<test a="1"><foo bar="3"/></test>')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"a": 1, "b": {"bar": 3}})
+
+def test_toET_pass():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / Pass,
+        "c" / Int32ul,
+        )
+
+    data = {"a": 1, "c": 2}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test a="1" c="2" />')
+
+
+def test_fromET_pass():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / Pass,
+        "c" / Int32ul,
+        )
+
+    xml = ET.fromstring(b'<test a="1" c="2"/>')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"a": 1, "b": None, "c": 2})

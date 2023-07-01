@@ -3,8 +3,10 @@ Introduction
 ============
 
 DingsDa is a powerful **declarative** and **symmetrical** parser and builder for binary data.
-It is based on Construct 2.10, but removes some features and adds some new ones. The parser generator
-was removed, as well as the kaitai export.
+It is a fork of Construct 2.10, but removes some features and adds some new ones. The parser generator
+was removed, as well as the kaitai export. It is focused for the use in reverse engineering data formats.
+
+Compared to Construct it adds XML building and parsing and preprocessing (allowing some fancy techniques).
 
 Instead of writing *imperative code* to parse a piece of data, you declaratively define a *data structure* that describes your data. As this data structure is not code, you can use it in one direction to *parse* data into Pythonic objects, and in the other direction, to *build* objects into binary data.
 
@@ -20,7 +22,8 @@ The library provides both simple, atomic constructs (such as integers of various
 * On-demand (lazy) parsing: read and parse only the fields what you require
 * Pointers: jump from here to there in the data stream
 * Tunneling: prefix data with a byte count or compress it
-
+* XML building/parsing: export and import constructs directly from/to XML
+* Preprocessing: custom attributes containing the current offsets or sizes in constructs
 
 Example
 ---------
@@ -54,19 +57,17 @@ Construct has been used to parse:
 * Executable binaries formats like ELF32, PE32
 * Filesystem layouts like Ext2, Fat16, MBR
 
-See more examples in `current gallery <https://github.com/construct/construct/tree/master/gallery>`_ and in `deprecated gallery <https://github.com/construct/construct/tree/master/deprecated_gallery>`_.
-
 
 Development and support
 -------------------------
-Please use `github issues <https://github.com/construct/construct/issues>`_ to ask general questions, make feature requests (and vote for them), report issues and bugs, and to submit PRs. Feel free to request any changes that would support your project.
+Please use `github issues <https://github.com/ev1313/dingsda/issues>`_ to ask general questions, make feature requests (and vote for them), report issues and bugs, and to submit PRs. Feel free to request any changes that would support your project.
 
-Main documentation is at `readthedocs <http://construct.readthedocs.org>`_, which is substantial. Source is at `github <https://github.com/construct/construct>`_. Releases are available at `pypi <https://pypi.org/project/construct/>`_.
+Main documentation is at `readthedocs <http://dingsda.readthedocs.org>`_, which is substantial. Source is at `github <https://github.com/ev1313/dingsda>`_.
 
 
 Requirements
 --------------
-Construct should run on CPython 3.6 3.7 3.8 3.9 3.10 and PyPy implementations. PyPy achieves much better performance. Therefore PyPy would be somewhat recommended.
+Construct should run on CPython 3.10, 3.11 and PyPy implementations.
 
 Following modules are needed only if you want to use certain features:
 
@@ -86,19 +87,3 @@ The library is downloadable and installable from Pypi. Just use standard command
 * pip install dingsda
 * pip install dingsda[extras]
 
-
-Type Hints / Type Annotations
----------------------------------
-
-As an extension to this library there is the `construct-typing <https://pypi.org/project/construct-typing/>`_ library, which provides PEP 561 compliant stub files for this library. It also provides extended adapters to describe complex structures using PEP 526 type annotations for improved static code analysis with mypy.
-
-* pip install construct-typing
-
-
-Visual Editor
------------------
-
-Another fancy extension to this library is the `construct-editor <https://pypi.org/project/construct-editor/>`_ visual editor for binary blobs that uses Construct parsing classes internally.
-
-* pip install construct-editor
-* construct-editor
