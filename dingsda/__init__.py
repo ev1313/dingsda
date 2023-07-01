@@ -1,5 +1,5 @@
 r"""
-Construct 2 -- Parsing Made Fun
+DingsDa -- Parsing Made Fun
 
 Homepage:
 	https://github.com/construct/construct
@@ -30,7 +30,7 @@ from dingsda import lib
 #===============================================================================
 # metadata
 #===============================================================================
-__author__ = "Arkadiusz Bulski <arek.bulski@gmail.com>, Tomer Filiba <tomerfiliba@gmail.com>, Corbin Simpson <MostAwesomeDude@gmail.com>"
+__author__ = "Tim Blume <dingsda@3nd.io>"
 __version__ = version_string
 
 #===============================================================================

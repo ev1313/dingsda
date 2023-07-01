@@ -573,3 +573,48 @@ def test_fromET_bytes():
     obj = s.fromET(xml=xml)
 
     assert(obj == {"a": 1, "b": b"fooo"})
+
+def test_toET_ifthenelse_formatfield():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Int16ul, "bar" / Int32ul)
+        )
+
+    data = {"a": 1, "b": 2}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test a="1" foo="2" />')
+
+
+def test_fromET_ifthenelse_formatfield():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Int16ul, "bar" / Int32ul)
+        )
+
+    xml = ET.fromstring(b'<test a="1" foo="2"/>')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"a": 1, "b": 2})
+def test_toET_ifthenelse_string():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / PascalString(4, "utf-8"), "bar" / Int32ul)
+    )
+
+    data = {"a": 1, "b": "test"}
+    xml = s.toET(obj=data, name="test")
+
+    assert(ET.tostring(xml) == b'<test a="1" foo="test" />')
+
+
+def test_fromET_ifthenelse_string():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / PascalString(4, "utf-8"), "bar" / Int32ul)
+    )
+
+    xml = ET.fromstring(b'<test a="1" foo="test"/>')
+    obj = s.fromET(xml=xml)
+
+    assert(obj == {"a": 1, "b": "test"})

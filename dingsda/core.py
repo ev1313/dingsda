@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import pdb
-import struct, io, binascii, itertools, collections, pickle, sys, os, hashlib, importlib, importlib.machinery, importlib.util
+import struct, io, binascii, itertools, collections, pickle, sys, os
 
 from dingsda.lib import *
 from dingsda.expr import *
@@ -310,6 +309,8 @@ class Construct(object):
     * `build`
     * `build_stream`
     * `build_file`
+    * `toET`
+    * `fromET`
     * `sizeof`
 
     Subclass authors should not override the external methods. Instead, another API is available:
@@ -318,6 +319,8 @@ class Construct(object):
     * `_preprocess`
     * `_build`
     * `_sizeof`
+    * `_toET`
+    * `_fromET`
     * `_actualsize`
     * `__getstate__`
     * `__setstate__`
@@ -484,7 +487,7 @@ class Construct(object):
             even FormatFields can attach their values to an attrib.
 
         :param obj: The object
-        :param contextkw: further arguments
+        :param contextkw: further arguments, passed directly into the context
         :returns: an ElementTree 
         """
 
@@ -504,7 +507,7 @@ class Construct(object):
             Convert an XML ElementTree to a dingsda.
 
         :param xml: The ElementTree
-        :param contextkw: further arguments
+        :param contextkw: further arguments, passed directly into the context
         :returns: a Container
         """
 
@@ -671,6 +674,7 @@ class Adapter(Subconstruct):
 
     :param subcon: Construct instance
     """
+
     def _parse(self, stream, context, path):
         obj = self.subcon._parsereport(stream, context, path)
         return self._decode(obj, context, path)
@@ -2169,9 +2173,6 @@ class Sequence(Construct):
         >>> d.build([3, b"12"])
         b'\x0312'
 
-        Alternative syntax (not recommended):
-        >>> (Byte >> "Byte >> "c"/Byte >> "d"/Byte)
-
         Alternative syntax, but requires Python 3.6 or any PyPy:
         >>> Sequence(a=Byte, b=Byte, c=Byte, d=Byte)
     """
@@ -2484,6 +2485,7 @@ class RepeatUntil(Subconstruct):
     :param predicate: lambda that takes (obj, list, context) and returns True to break or False to continue (or a truthy value)
     :param subcon: Construct instance, subcon used to parse and build each element
     :param discard: optional, bool, if set then parsing returns empty list
+    :param check_predicate: optional, bool, if set then the predicate is checked when building. Defaults to True.
 
     :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
     :raises RepeatError: consumed all elements in the stream but neither passed the predicate
@@ -2503,10 +2505,11 @@ class RepeatUntil(Subconstruct):
         [1, 0, 0]
     """
 
-    def __init__(self, predicate, subcon, discard=False):
+    def __init__(self, predicate, subcon, discard=False, check_predicate=True):
         super().__init__(subcon)
         self.predicate = predicate
         self.discard = discard
+        self.check_predicate = check_predicate
 
 
     def _preprocess(self, obj, context, path, offset=0):
@@ -2558,7 +2561,7 @@ class RepeatUntil(Subconstruct):
             if not discard:
                 retlist.append(buildret)
                 partiallist.append(buildret)
-            if predicate(e, partiallist, context):
+            if self.check_predicate and predicate(e, partiallist, context):
                 break
         else:
             raise RepeatError("expected any item to match predicate, when building", path=path)
@@ -3660,6 +3663,9 @@ class IfThenElse(Construct):
 
     Parsing and building evaluates condition, and defers to either subcon depending on the value. Size is computed the same way.
 
+    The XML builder/parser uses the XML tag name for determining the branch. Both branches need to be different Renamed
+    constructs to work properly. (Pass needs not to be named.)
+
     :param condfunc: bool or context lambda (or a truthy value)
     :param thensubcon: Construct instance, used if condition indicates True
     :param elsesubcon: Construct instance, used if condition indicates False
@@ -3705,6 +3711,9 @@ class Switch(Construct):
     A conditional branch.
 
     Parsing and building evaluate keyfunc and select a subcon based on the value and dictionary entries. Dictionary (cases) maps values into subcons. If no case matches then `default` is used (that is Pass by default). Note that `default` is a Construct instance, not a dictionary key. Size is evaluated in same way as parsing and building, by evaluating keyfunc and selecting a field accordingly.
+
+    The XML tag names are used for identifying the cases. It breaks, when these names are used on the same level in the XML tree, or when you try to create an array of switches.
+    Do not nest switches, add Struct() layers in between, so the names can be resolved properly.
 
     :param keyfunc: context lambda or constant, that matches some key in cases
     :param cases: dict mapping keys to Construct instances
