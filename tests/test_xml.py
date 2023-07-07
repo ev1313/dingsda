@@ -7,6 +7,15 @@ from dingsda.core import list_to_string, string_to_list
 
 from xml.etree import ElementTree as ET
 
+def common_xml_test(s, xml, obj, obj_from = None):
+    if obj_from is None:
+        obj_from = obj
+    test_et = ET.fromstring(xml)
+    test_obj = s.fromET(xml=test_et)
+    assert(obj_from == test_obj)
+    test_xml = s.toET(obj=obj, name="test")
+    assert(ET.tostring(test_xml) == xml)
+
 def test_list_to_string():
     lst = ["foo","bar","baz"]
     str = list_to_string(lst)
@@ -27,19 +36,15 @@ def test_quoted_string_to_list():
     lst = string_to_list(str)
     assert(lst == ["foo","bar","baz"])
 
-def test_toET_struct():
+def test_xml_struct():
     s = Struct(
         "a" / Int32ul,
         "b" / Int32ul,
     )
-
-    data = {"a": 1, "b": 2}
-    xml = s.toET(obj=data, name="test")
-
-    assert(ET.tostring(xml) == b'<test a="1" b="2" />')
+    common_xml_test(s, b'<test a="1" b="2" />', {"a": 1, "b": 2})
 
 
-def test_toET_struct_2():
+def test_xml_struct_2():
     s = Struct(
         "a" / Int32ul,
         "b" / Int32ul,
@@ -48,76 +53,65 @@ def test_toET_struct_2():
             "d" / Int32ul,
         ),
         )
-
     data = {"a": 1, "b": 2, "s": {"c": 3, "d": 4}}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test a="1" b="2"><s c="3" d="4" /></test>'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test a="1" b="2"><s c="3" d="4" /></test>')
-
-def test_fromET_struct():
+def test_xml_struct_3():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / Int32ul,
     )
+    xml = b'<test a="1" b="2" />'
+    obj = {"a": 1, "b": 2}
+    common_xml_test(s, xml, obj)
 
-    xml = ET.fromstring(b'<test a="1" b="2" />')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": 1, "b": 2})
-
-def test_toET_FormatField_array():
+def test_xml_FormatField_array():
     s = "test" / Struct(
         "a" / Array(2, Int32ul),
         "b" / Int32ul,
         )
 
     data = {"a": [1,2], "b": 2}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test a="[1,2]" b="2" />'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test a="[1,2]" b="2" />')
-
-def test_fromET_struct_array():
+def test_xml_struct_array():
     s = "test" / Struct(
         "a" / Array(4, Int32ul),
         "b" / Array(3, Int32ul),
         )
 
-    xml = ET.fromstring(b'<test a="[1,1,1,1]" b="[1,2,2]" />')
-    obj = s.fromET(xml=xml)
+    xml = b'<test a="[1,1,1,1]" b="[1,2,2]" />'
+    obj = {"a": [1,1,1,1], "b": [1,2,2]}
+    common_xml_test(s, xml, obj)
 
-    assert(obj == {"a": [1,1,1,1], "b": [1,2,2]})
-
-def test_toET_struct_unnamed_struct_array():
+def test_xml_struct_unnamed_struct_array():
     s = "test" / Struct(
         "a" / Array(4, Struct("value" / Int32ul)),
         "b" / Array(3, Int32ul),
         )
-
     obj = {"a": [{"value": 1}], "b": [1,2,2]}
-    xml = s.toET(obj=obj, name="test")
-    assert(ET.tostring(xml) == b'<test b="[1,2,2]"><Struct value="1" /></test>')
+    xml = b'<test b="[1,2,2]"><Struct value="1" /></test>'
+    common_xml_test(s, xml, obj)
 
-def test_fromET_struct_unnamed_struct_array():
+def test_xml_struct_unnamed_struct_array():
     s = "test" / Struct(
         "a" / Array(4, Struct("value" / Int32ul)),
         "b" / Array(3, Int32ul),
         )
+    xml = b'<test b="[1,2,2]"><Struct value="1" /></test>'
+    obj = {"a": [{"value": 1}], "b": [1,2,2]}
+    common_xml_test(s, xml, obj)
 
-    xml = ET.fromstring(b'<test b="[1,2,2]"><Struct value="1"/></test>')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": [{"value": 1}], "b": [1,2,2]})
-
-def test_fromET_struct_named_struct_array():
+def test_xml_struct_named_struct_array():
     s = "test" / Struct(
         "a" / Array(4, "Foo" / Struct("value" / Int32ul)),
         "b" / Array(3, Int32ul),
         )
-
-    xml = ET.fromstring(b'<test b="[1,2,2]"><Foo value="1"/></test>')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": [{"value": 1}], "b": [1,2,2]})
+    xml = b'<test b="[1,2,2]"><Foo value="1" /></test>'
+    obj = {"a": [{"value": 1}], "b": [1,2,2]}
+    common_xml_test(s, xml, obj)
 
 @xfail(raises=AssertionError, reason="design decision: nested arrays are not supported")
 def test_fromET_struct_nested_array():
@@ -144,16 +138,14 @@ def test_fromET_struct_multiple_named_struct_array():
 
     assert(obj == {"a": [1,1,1,1], "b": [{"value": 1}, {"value": 2}, {"value": 3}], "c": [{"value": 5}]})
 
-def test_toET_String_array():
+def test_xml_String_array():
     s = "test" / Struct(
         "a" / Array(2, CString("utf-8")),
         "b" / Int32ul,
         )
-
     data = {"a": ["foo","bar"], "b": 2}
-    xml = s.toET(obj=data, name="test")
-
-    assert(ET.tostring(xml) == b'<test a="[foo,bar]" b="2" />')
+    xml = b'<test a="[foo,bar]" b="2" />'
+    common_xml_test(s, xml, data)
 
 @xfail(raises=AssertionError, reason="design decision: nested arrays are not supported")
 def test_toET_nested_String_array():
@@ -168,30 +160,17 @@ def test_toET_nested_String_array():
     assert (ET.tostring(xml) == b'<test b="2"><a>[foo,bar]</a><a>[baz,foobar]</a></test>')
 
 
-def test_toET_rebuild():
+def test_xml_rebuild():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / Rebuild(Int32ul, lambda ctx: ctx.a + 1),
         )
 
     data = {"a": 1}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test a="1" />'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test a="1" />')
-
-
-def test_fromET_rebuild():
-    s = "test" / Struct(
-        "a" / Int32ul,
-        "b" / Rebuild(Int32ul, lambda ctx: ctx.a + 1),
-        )
-
-    xml = ET.fromstring(b'<test a="1" />')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": 1, "b": None})
-
-def test_toET_switch():
+def test_xml_switch():
     s = "test" / Struct(
         "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
         "data" / Switch(this.type, {
@@ -201,11 +180,10 @@ def test_toET_switch():
         }),
         )
     data = {"type": 1, "data": {"value": 32}}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test><b32bit value="32" /></test>'
+    common_xml_test(s, xml, data)
 
-    assert (ET.tostring(xml) == b'<test><b32bit value="32" /></test>')
-
-def test_toET_switch_array():
+def test_xml_switch_array():
     s = "test" / Struct(
         "a" / Array(2, "foo" / Struct(
             "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
@@ -218,11 +196,11 @@ def test_toET_switch_array():
         "b" / Array(3, Int32ul),
         )
     obj = {"a": [{"type": 1, "data": {"value": 32}}, {"type": 2, "data": {"value": 16}}], "b": [1,2,2]}
-    xml = s.toET(obj=obj, name="test")
-    assert(ET.tostring(xml) == b'<test b="[1,2,2]"><foo><b32bit value="32" /></foo><foo><b16bit value="16" /></foo></test>')
+    xml = b'<test b="[1,2,2]"><foo><b32bit value="32" /></foo><foo><b16bit value="16" /></foo></test>'
+    common_xml_test(s, xml, obj)
 
 
-def test_fromET_switch():
+def test_xml_switch():
     s = "test" / Struct(
         "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
         "data" / Switch(this.type, {
@@ -234,7 +212,7 @@ def test_fromET_switch():
     xml = ET.fromstring(b'<test><b32bit value="32" /></test>')
     obj = s.fromET(xml=xml)
 
-def test_toET_switch_2():
+def test_xml_switch_2():
     s = "test" / Struct(
         "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
         "data" / Switch(this.type, {
@@ -250,12 +228,12 @@ def test_toET_switch_2():
         }),
         )
     data = {"type": 1, "data": {"value": 32}, "second": {"value": 32}}
-    xml = s.toET(obj=data, name="test")
+    data_from = {"data": {"value": 32}, "second": {"value": 32}}
+    xml = b'<test><b32bit value="32" /><foo value="32" /></test>'
+    common_xml_test(s, xml, data, data_from)
 
-    assert (ET.tostring(xml) == b'<test><b32bit value="32" /><foo value="32" /></test>')
 
-
-def test_fromET_switch_array():
+def test_xml_switch_array():
     s = "test" / Struct(
         "a" / Array(2, "foo" / Struct(
             "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
@@ -268,13 +246,13 @@ def test_fromET_switch_array():
         "b" / Array(3, Int32ul),
         )
 
-    xml = ET.fromstring(b'<test b="[1,2,2]"><foo><b32bit value="32" /></foo><foo><b16bit value="16" /></foo></test>')
-    obj = s.fromET(xml=xml)
+    xml = b'<test b="[1,2,2]"><foo><b32bit value="32" /></foo><foo><b16bit value="16" /></foo></test>'
+    obj_from = {"a": [{"data": {"value": 32}}, {"data": {"value": 16}}], "b": [1,2,2]}
+    obj = {"a": [{"type": 1, "data": {"value": 32}}, {"type": 2, "data": {"value": 16}}], "b": [1,2,2]}
+    common_xml_test(s, xml, obj, obj_from)
 
-    assert(obj == {"a": [{"type": None, "b32bit": None, "data": {"value": 32}}, {"type": None, "b16bit": None, "data": {"value": 16}}], "b": [1,2,2]})
 
-
-def test_toET_focusedseq():
+def test_xml_focusedseq():
     s = FocusedSeq("b",
         "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
         "b" / Struct("value" / Int32ul),
@@ -282,24 +260,11 @@ def test_toET_focusedseq():
         )
 
     data = {"value": 2}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test value="2" />'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test value="2" />')
 
-
-def test_fromET_focusedseq():
-    s = "test" / FocusedSeq("b",
-                   "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
-                   "b" / Struct("value" / Int32ul),
-                   "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
-                   )
-    xml = ET.fromstring(b'<test value="2" />')
-    obj = s.fromET(xml=xml)
-
-    data = {"value": 2}
-    assert(obj == data)
-
-def test_toET_focusedseq_struct():
+def test_xml_focusedseq_struct():
     s = Struct("a" / FocusedSeq("b",
                    "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
                    "b" / Struct("value" / Int32ul),
@@ -307,24 +272,10 @@ def test_toET_focusedseq_struct():
                                 ))
 
     data = {"a": {"value": 2}}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test><a value="2" /></test>'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test><a value="2" /></test>')
-
-
-def test_fromET_focusedseq_struct():
-    s = "test" / Struct( "a" / FocusedSeq("b",
-                            "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
-                            "b" / Struct("value" / Int32ul),
-                            "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
-                                          ))
-    xml = ET.fromstring(b'<test><a value="2" /></test>')
-    obj = s.fromET(xml=xml)
-
-    data = {"b": None, "a": {"value": 2}}
-    assert(obj == data)
-
-def test_toET_focusedseq_array():
+def test_xml_focusedseq_array():
     s = Struct("arr" / Array(2, "a" / FocusedSeq("b",
                                 "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
                                 "b" / Struct("value" / Int32ul),
@@ -332,25 +283,11 @@ def test_toET_focusedseq_array():
                                 )))
 
     data = {"arr": [{"value": 4}, {"value": 2}]}
-    xml = s.toET(obj=data, name="test")
-
-    assert(ET.tostring(xml) == b'<test><a value="4" /><a value="2" /></test>')
-
-
-def test_fromET_focusedseq_array():
-    s = "test" / Struct( "arr" / Array(2, "a" / FocusedSeq("b",
-                                          "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
-                                          "b" / Struct("value" / Int32ul),
-                                          "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
-                                                   )))
-    xml = ET.fromstring(b'<test><a value="4" /><a value="2" /></test>')
-    obj = s.fromET(xml=xml)
-
-    data = {"arr": [{"value": 4}, {"value": 2}]}
-    assert(obj == data)
+    xml = b'<test><a value="4" /><a value="2" /></test>'
+    common_xml_test(s, xml, data)
 
 
-def test_toET_focusedseq_unnamed_array():
+def test_xml_focusedseq_unnamed_array():
     s = Struct("arr" / Array(2, FocusedSeq("b",
                                                  "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
                                                  "b" / Struct("value" / Int32ul),
@@ -358,24 +295,11 @@ def test_toET_focusedseq_unnamed_array():
                                                  )))
 
     data = {"arr": [{"value": 4}, {"value": 2}]}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test><b value="4" /><b value="2" /></test>'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test><b value="4" /><b value="2" /></test>')
-
-
-def test_fromET_focusedseq_unnamed_array():
-    s = "test" / Struct( "arr" / Array(2, FocusedSeq("b",
-                                                           "a" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
-                                                           "b" / Struct("value" / Int32ul),
-                                                           "c" / Rebuild(Int32ul, lambda ctx: ctx._.b.value),
-                                                           )))
-    xml = ET.fromstring(b'<test><b value="4" /><b value="2" /></test>')
-    obj = s.fromET(xml=xml)
-
-    data = {"arr": [{"value": 4}, {"value": 2}]}
-    assert(obj == data)
-
-def test_toET_switch_focusedseq():
+@xfail(raises=AssertionError, reason="design decision: nested arrays are not supported")
+def test_xml_switch_focusedseq():
     s = "test" / Struct(
         "a" / Array(2, FocusedSeq("data",
                                           "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
@@ -388,9 +312,9 @@ def test_toET_switch_focusedseq():
         "b" / Array(3, Int32ul),
         )
     obj = {"a": [{"type": 1, "data": {"value": 32}}, {"type": 1, "data": {"value": 16}}], "b": [1, 2, 2]}
-    elem = s.toET(obj=obj, name="test")
-    xml = ET.tostring(elem)
-    assert(xml == b'<test b="[1,2,2]"><b32bit value="32" /><b32bit value="16" /></test>')
+    obj_from = {"a": [{"data": {"value": 32}}, {"data": {"value": 16}}], "b": [1, 2, 2]}
+    xml = b'<test b="[1,2,2]"><b32bit value="32" /><b32bit value="16" /></test>'
+    common_xml_test(s, xml, obj, obj_from)
 
 @xfail(raises=AssertionError, reason="design decision: nested arrays are not supported")
 def test_fromET_switch_focusedseq():
@@ -411,75 +335,60 @@ def test_fromET_switch_focusedseq():
 
     assert(obj == {"a": [{"data": {"value": 32}}, {"data": {"value": 16}}], "b": [1,2,2]})
 
-def test_toET_repeatuntil():
+def test_xml_repeatuntil():
     s = Struct(
         "a" / RepeatUntil(lambda obj, lst, ctx: obj.x == 0x4, "Property" / Struct("x" / Int32ul)),
         "b" / Int32ul,
         )
 
     data = {"a": [{"x": 0}, {"x": 1}, {"x": 4}], "b": 2}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test b="2"><Property x="0" /><Property x="1" /><Property x="4" /></test>'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test b="2"><Property x="0" /><Property x="1" /><Property x="4" /></test>')
-
-def test_fromET_repeatuntil():
-    s = "test" / Struct(
-        "a" / RepeatUntil(lambda obj, lst, ctx: obj.x == 0x4, "Property" / Struct("x" / Int32ul)),
-        "b" / Int32ul,
-        )
-
-    xml = ET.fromstring(b'<test b="2"><Property x="0" /><Property x="1" /><Property x="4" /></test>')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": [{"x": 0}, {"x": 1}, {"x": 4}], "b": 2})
-
-def test_toET_pointer():
+def test_xml_pointer():
     s = Struct(
         "b" / Int32ul,
         "a" / Pointer(lambda obj: int(obj.x), "Property" / Struct("x" / Int32ul)),
         )
 
     data = {"b": 2, "a": {"x": 0}}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test b="2"><Property x="0" /></test>'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test b="2"><Property x="0" /></test>')
 
-
-def test_fromET_pointer():
+def test_xml_pointer_2():
     s = "test" / Struct(
         "b" / Int32ul,
         "a" / Pointer(lambda obj: int(obj.x), "Property" / Struct("x" / Int32ul)),
         )
 
-    xml = ET.fromstring(b'<test b="2"><Property x="4" /></test>')
-    obj = s.fromET(xml=xml)
+    xml = b'<test b="2"><Property x="4" /></test>'
+    obj = {"b": 2, "a": {"x": 4}}
+    common_xml_test(s, xml, obj)
 
-    assert(obj == {"b": 2, "Property": None, "a": {"x": 4}})
-
-def test_toET_lazy():
+def test_xml_lazy():
     s = Struct(
         "b" / Int32ul,
         "a" / Lazy("Property" / Struct("x" / Int32ul)),
         )
 
     data = {"b": 2, "a": {"x": 0}}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test b="2"><Property x="0" /></test>'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test b="2"><Property x="0" /></test>')
 
-
-def test_fromET_lazy():
+def test_xml_lazy_2():
     s = Struct(
         "b" / Int32ul,
         "a" / Lazy("Property" / Struct("x" / Int32ul)),
         )
 
-    xml = ET.fromstring(b'<test b="2"><Property x="4" /></test>')
-    obj = s.fromET(xml=xml)
+    xml = b'<test b="2"><Property x="4" /></test>'
+    obj = {"b": 2, "a": {"x": 4}}
+    common_xml_test(s, xml, obj)
 
-    assert(obj == {"b": 2, "Property": None, "a": {"x": 4}})
 
-def test_toET_lazybound():
+def test_xml_lazybound():
     p = "Property" / Struct("x" / Int32ul)
     s = Struct(
         "b" / Int32ul,
@@ -487,208 +396,115 @@ def test_toET_lazybound():
         )
 
     data = {"b": 2, "a": {"x": 0}}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test b="2"><Property x="0" /></test>'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test b="2"><Property x="0" /></test>')
-
-
-def test_fromET_lazybound():
+def test_xml_lazybound_2():
     p = "Property" / Struct("x" / Int32ul)
     s = Struct(
         "b" / Int32ul,
         "a" / LazyBound(lambda: p),
         )
 
-    xml = ET.fromstring(b'<test b="2"><Property x="4" /></test>')
-    obj = s.fromET(xml=xml)
+    xml = b'<test b="2"><Property x="4" /></test>'
+    obj = {"b": 2, "a": {"x": 4}}
+    common_xml_test(s, xml, obj)
 
-    assert(obj == {"b": 2, "Property": None, "a": {"x": 4}})
-
-def test_toET_const():
+def test_xml_const():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / Const(b"test"),
         )
 
-    data = {"a": 1}
-    xml = s.toET(obj=data, name="test")
-
-    assert(ET.tostring(xml) == b'<test a="1" />')
-
-
-def test_fromET_const():
-    s = "test" / Struct(
-        "a" / Int32ul,
-        "b" / Const(b"test"),
-        )
-
-    xml = ET.fromstring(b'<test a="1" />')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": 1, "b": None})
+    xml = b'<test a="1" />'
+    obj = {"a": 1}
+    common_xml_test(s, xml, obj)
 
 
-def test_toET_enum():
+def test_xml_enum():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / Enum(Int32ul, test=1, foo=2, bar=3),
         )
 
-    data = {"a": 1, "b": 2}
-    xml = s.toET(obj=data, name="test")
+    data = {"a": 1, "b": "foo"}
+    data_from = {"a": 1, "b": 2}
+    xml = b'<test a="1" b="foo" />'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test a="1" b="foo" />')
 
-
-def test_fromET_enum():
+def test_xml_enum_2():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / Enum(Int32ul, test=1, foo=2, bar=3),
         )
 
-    xml = ET.fromstring(b'<test a="1" b="foo"/>')
-    obj = s.fromET(xml=xml)
+    xml = b'<test a="1" b="foo" />'
+    obj = {"a": 1, "b": "foo"}
+    common_xml_test(s, xml, obj)
 
-    assert(obj == {"a": 1, "b": "foo"})
-
-def test_toET_bytes():
+def test_xml_bytes():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / Bytes(4),
         )
 
     data = {"a": 1, "b": b"fooo"}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test a="1" b="666f6f6f" />'
 
-    assert(ET.tostring(xml) == b'<test a="1" b="666f6f6f" />')
-
-
-def test_fromET_bytes():
-    s = "test" / Struct(
-        "a" / Int32ul,
-        "b" / Bytes(4),
-        )
-
-    xml = ET.fromstring(b'<test a="1" b="666f6f6f"/>')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": 1, "b": b"fooo"})
-
-def test_toET_ifthenelse_formatfield():
+def test_xml_ifthenelse_formatfield():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Int16ul, "bar" / Int32ul)
         )
 
     data = {"a": 1, "b": 2}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test a="1" foo="2" />'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test a="1" foo="2" />')
-
-
-def test_fromET_ifthenelse_formatfield():
-    s = "test" / Struct(
-        "a" / Int32ul,
-        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Int16ul, "bar" / Int32ul)
-        )
-
-    xml = ET.fromstring(b'<test a="1" foo="2"/>')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": 1, "b": 2})
-
-def test_toET_ifthenelse_string():
+def test_xml_ifthenelse_string():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / PascalString(4, "utf-8"), "bar" / Int32ul)
     )
 
     data = {"a": 1, "b": "test"}
-    xml = s.toET(obj=data, name="test")
-
-    assert(ET.tostring(xml) == b'<test a="1" foo="test" />')
-
-
-def test_fromET_ifthenelse_string():
-    s = "test" / Struct(
-        "a" / Int32ul,
-        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / PascalString(4, "utf-8"), "bar" / Int32ul)
-    )
-
-    xml = ET.fromstring(b'<test a="1" foo="test"/>')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": 1, "b": "test"})
+    xml = b'<test a="1" foo="test" />'
+    common_xml_test(s, xml, data)
 
 
-def test_toET_ifthenelse_struct():
+def test_xml_ifthenelse_struct():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), "bar" / Struct("bar" / Int16ul))
     )
 
     data = {"a": 1, "b": {"bar": 3}}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test a="1"><foo bar="3" /></test>'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test a="1"><foo bar="3"/></test>')
 
-
-def test_fromET_ifthenelse_struct():
-    s = "test" / Struct(
-        "a" / Int32ul,
-        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), "bar" / Struct("bar" / Int16ul))
-    )
-
-    xml = ET.fromstring(b'<test a="1"><foo bar="3"/></test>')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": 1, "b": {"bar": 3}})
-
-def test_toET_ifthenelse_pass():
+def test_xml_ifthenelse_pass():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), Pass)
     )
 
     data = {"a": 1, "b": {"bar": 3}}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test a="1"><foo bar="3" /></test>'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test a="1"><foo bar="3"/></test>')
-
-def test_fromET_ifthenelse_pass():
-    s = "test" / Struct(
-        "a" / Int32ul,
-        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), Pass)
-    )
-
-    xml = ET.fromstring(b'<test a="1"><foo bar="3"/></test>')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": 1, "b": {"bar": 3}})
-
-def test_toET_ifthenelse_pass_2():
+def test_xml_ifthenelse_pass_2():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), Pass)
     )
 
     data = {"a": 0}
-    xml = s.toET(obj=data, name="test")
+    xml = b'<test a="0" />'
+    common_xml_test(s, xml, data)
 
-    assert(ET.tostring(xml) == b'<test a="1" />')
-
-def test_fromET_ifthenelse_pass_2():
-    s = "test" / Struct(
-        "a" / Int32ul,
-        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), Pass)
-    )
-
-    xml = ET.fromstring(b'<test a="0" />')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": 0})
-
-def test_toET_pass():
+def test_xml_pass():
     s = "test" / Struct(
         "a" / Int32ul,
         "b" / Pass,
@@ -696,19 +512,5 @@ def test_toET_pass():
         )
 
     data = {"a": 1, "c": 2}
-    xml = s.toET(obj=data, name="test")
-
-    assert(ET.tostring(xml) == b'<test a="1" c="2" />')
-
-
-def test_fromET_pass():
-    s = "test" / Struct(
-        "a" / Int32ul,
-        "b" / Pass,
-        "c" / Int32ul,
-        )
-
-    xml = ET.fromstring(b'<test a="1" c="2"/>')
-    obj = s.fromET(xml=xml)
-
-    assert(obj == {"a": 1, "b": None, "c": 2})
+    xml = b'<test a="1" c="2" />'
+    common_xml_test(s, xml, data)

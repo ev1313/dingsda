@@ -72,10 +72,10 @@ def rename_in_context(context, name, new_name):
     idx = context.get("_index", None)
     if idx is not None:
         ctx[f"{new_name}_{idx}"] = context[f"{name}_{idx}"]
-        ctx[f"{name}_{idx}"] = None
+        ctx.pop(f"{name}_{idx}", None)
     else:
         ctx[new_name] = context[name]
-        ctx[name] = None
+        ctx.pop(name, None)
 
     return ctx
 

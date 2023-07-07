@@ -521,6 +521,7 @@ class Construct(object):
         parent = ET.Element("Root")
         parent.append(xml)
         result = self._fromET(parent=parent, name=xml.tag, context=context, path="(fromET)")
+
         return result.get(xml.tag)
 
     def preprocess(self, obj, **contextkw):
@@ -583,7 +584,7 @@ class Construct(object):
 
     def _is_simple_type(self):
         """ is used by Array to determine, whether the type can be stored in a string array as XML attribute """
-        return False
+        return False;
 
     def __rtruediv__(self, name):
         """
@@ -1547,15 +1548,8 @@ class StringEncoded(Adapter):
         else:
             elem = parent.attrib[name]
 
-        assert (len(self.fmtstr) == 2)
-        if self.fmtstr[1] in ["B", "H", "L", "Q", "b", "h", "l", "q"]:
-            insert_or_append_field(context, name, int(elem))
-            return context
-        elif self.fmtstr[1] in ["e", "f", "d"]:
-            insert_or_append_field(context, name, float(elem))
-            return context
-
-        assert (0)
+        insert_or_append_field(context, name, elem)
+        return context
 
     def _is_simple_type(self):
         return True
@@ -2705,13 +2699,16 @@ class Renamed(Subconstruct):
 
         #  requires when rebuilding, else key error is raised
         if not self.name in ctx.keys():
-            ctx[self.name] = None
+            ctx.pop(self.name, None)
 
         return ctx
 
     def _sizeof(self, context, path):
         path += " -> %s" % (self.name,)
         return self.subcon._sizeof(context, path)
+
+    def _is_simple_type(self):
+        return self.subcon._is_simple_type()
 
     def _names(self):
         sc_names = [self.name]
@@ -3726,10 +3723,47 @@ class IfThenElse(Construct):
         return sc._sizeof(context, path)
 
     def _toET(self, parent, name, context, path):
-        assert(0)
+        condfunc = evaluate(self.condfunc, context)
+        sc = self.thensubcon if condfunc else self.elsesubcon
+
+        return sc._toET(parent, name, context, path)
 
     def _fromET(self, parent, name, context, path, is_root=False):
-        assert(0)
+        elems = []
+
+        # this hack is necessary, because at this point in parsing we don't know which branch to take
+        # and can't infer it using the condition, because it might be a context lambda from Rebuild using
+        # information not parsed yet
+        sc_list = []
+        if isinstance(self.thensubcon, type(Pass)):
+            assert(isinstance(self.elsesubcon, Renamed))
+            sc_list = [self.elsesubcon]
+        elif isinstance(self.elsesubcon, type(Pass)):
+            assert(isinstance(self.thensubcon, Renamed))
+            sc_list = [self.thensubcon]
+        else:
+            assert(isinstance(self.elsesubcon, Renamed))
+            assert(isinstance(self.thensubcon, Renamed))
+            sc_list = [self.thensubcon, self.elsesubcon]
+        assert(len(sc_list))
+        for sc in sc_list:
+            if not sc._is_simple_type():
+                elems = parent.findall(sc.name)
+            else:
+                if parent.attrib.get(sc._names()[0], None) is not None:
+                    elems = [parent]
+
+            if len(elems) == 0:
+                continue
+            else:
+                assert(len(elems) == 1)
+                elem = elems[0]
+                return sc._fromET(elem, name, context, path, is_root=True)
+
+        # means: one pass is in there, but no element was found
+        # if len(sc_list == 2) -> no element was found, although at least one should have been
+        assert(len(sc_list) == 1)
+        return context
 
     def _names(self):
         return self.thensubcon._names() + self.elsesubcon._names()
