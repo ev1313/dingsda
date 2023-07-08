@@ -4013,6 +4013,13 @@ class Padded(Subconstruct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
+    def _toET(self, parent, name, context, path):
+        return self.subcon._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
+
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
+
 
 class Aligned(Subconstruct):
     r"""
@@ -4079,6 +4086,12 @@ class Aligned(Subconstruct):
             return subconlen + (-subconlen % modulus)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _toET(self, parent, name, context, path):
+        return self.subcon._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
 
 
 def AlignedStruct(modulus, *subcons, **subconskw):

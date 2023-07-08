@@ -16,6 +16,16 @@ def common_xml_test(s, xml, obj, obj_from = None):
     test_xml = s.toET(obj=obj, name="test")
     assert(ET.tostring(test_xml) == xml)
 
+def common_endtoend_xml_test(s, byte_data, obj=None, xml=None):
+    data = s.parse(byte_data)
+    if obj is not None:
+        assert(data == obj)
+    test_xml = s.toET(obj=data, name="test")
+    if xml is not None:
+        assert(ET.tostring(test_xml) == xml)
+    xml_data = s.fromET(xml=test_xml)
+    assert(byte_data == s.build(xml_data))
+
 def test_list_to_string():
     lst = ["foo","bar","baz"]
     str = list_to_string(lst)
@@ -42,6 +52,7 @@ def test_xml_struct():
         "b" / Int32ul,
     )
     common_xml_test(s, b'<test a="1" b="2" />', {"a": 1, "b": 2})
+    common_endtoend_xml_test(s, b'\x01\x00\x00\x00\x02\x00\x00\x00')
 
 
 def test_xml_struct_2():
@@ -56,6 +67,7 @@ def test_xml_struct_2():
     data = {"a": 1, "b": 2, "s": {"c": 3, "d": 4}}
     xml = b'<test a="1" b="2"><s c="3" d="4" /></test>'
     common_xml_test(s, xml, data)
+    common_endtoend_xml_test(s, b'\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00\x04\x00\x00\x00', data, xml)
 
 def test_xml_struct_3():
     s = "test" / Struct(
@@ -65,6 +77,7 @@ def test_xml_struct_3():
     xml = b'<test a="1" b="2" />'
     obj = {"a": 1, "b": 2}
     common_xml_test(s, xml, obj)
+    common_endtoend_xml_test(s, b'\x01\x00\x00\x00\x02\x00\x00\x00', obj, xml)
 
 def test_xml_FormatField_array():
     s = "test" / Struct(
