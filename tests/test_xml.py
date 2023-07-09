@@ -475,6 +475,16 @@ def test_xml_ifthenelse_formatfield():
     xml = b'<test a="1" foo="2" />'
     common_xml_test(s, xml, data)
 
+def test_xml_ifthenelse_formatfield_rebuild_hack():
+    s = "test" / Struct(
+        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Int16ul, "bar" / Int32ul, rebuild_hack=True),
+        "a" / Int32ul,
+    )
+
+    data = {"a": 1, "b": 2}
+    xml = b'<test foo="2" a="1" />'
+    common_xml_test(s, xml, data)
+
 def test_xml_ifthenelse_string():
     s = "test" / Struct(
         "a" / Int32ul,
@@ -483,6 +493,16 @@ def test_xml_ifthenelse_string():
 
     data = {"a": 1, "b": "test"}
     xml = b'<test a="1" foo="test" />'
+    common_xml_test(s, xml, data)
+
+def test_xml_ifthenelse_string_rebuildhack():
+    s = "test" / Struct(
+        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / PascalString(4, "utf-8"), "bar" / Int32ul, rebuild_hack=True),
+        "a" / Int32ul,
+    )
+
+    data = {"a": 1, "b": "test"}
+    xml = b'<test foo="test" a="1" />'
     common_xml_test(s, xml, data)
 
 
@@ -497,6 +517,16 @@ def test_xml_ifthenelse_struct():
     common_xml_test(s, xml, data)
 
 
+def test_xml_ifthenelse_struct():
+    s = "test" / Struct(
+        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), "bar" / Struct("bar" / Int16ul), rebuild_hack=True),
+        "a" / Int32ul,
+    )
+
+    data = {"a": 1, "b": {"bar": 3}}
+    xml = b'<test a="1"><foo bar="3" /></test>'
+    common_xml_test(s, xml, data)
+
 def test_xml_ifthenelse_pass():
     s = "test" / Struct(
         "a" / Int32ul,
@@ -505,6 +535,36 @@ def test_xml_ifthenelse_pass():
 
     data = {"a": 1, "b": {"bar": 3}}
     xml = b'<test a="1"><foo bar="3" /></test>'
+    common_xml_test(s, xml, data)
+
+def test_xml_ifthenelse_pass_rebuildhack():
+    s = "test" / Struct(
+        "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), Pass, rebuild_hack=True),
+        "a" / Int32ul,
+    )
+
+    data = {"a": 1, "b": {"bar": 3}}
+    xml = b'<test a="1"><foo bar="3" /></test>'
+    common_xml_test(s, xml, data)
+
+def test_xml_ifthenelse_pass_unnamed_rebuildhack():
+    s = "test" / Struct(
+        "b" / IfThenElse(lambda obj: obj.a == 1, Struct("bar" / Int32ul), Pass, rebuild_hack=True),
+        "a" / Int32ul,
+        )
+
+    data = {"a": 1, "b": {"bar": 3}}
+    xml = b'<test a="1"><b bar="3" /></test>'
+    common_xml_test(s, xml, data)
+
+def test_xml_ifthenelse_pass_unnamed_rebuildhack_2():
+    s = "test" / Struct(
+        "b" / IfThenElse(lambda obj: obj.a == 1, Struct("bar" / Int32ul), Pass, rebuild_hack=True),
+        "a" / Int32ul,
+        )
+
+    data = {"a": 0}
+    xml = b'<test a="0" />'
     common_xml_test(s, xml, data)
 
 def test_xml_ifthenelse_pass_2():

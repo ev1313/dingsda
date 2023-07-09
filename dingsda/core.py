@@ -3686,6 +3686,11 @@ class IfThenElse(Construct):
     :param condfunc: bool or context lambda (or a truthy value)
     :param thensubcon: Construct instance, used if condition indicates True
     :param elsesubcon: Construct instance, used if condition indicates False
+    :param rebuild_hack: if True, when using fromET the xml tag name is used to determine the subcon, instead
+    of evaluating the condition. This is a hack to support cases, where the value is not know while parsing the xml.
+    If using the hack, only Renamed subcons are allowed as thensubcon and elsesubcon. Exception: If either
+    thensubcon or elsesubcon are Pass, any subcon is allowed - it assumes that it was Passed, when the value is not
+    found in the XML.
 
     :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
 
@@ -3700,12 +3705,13 @@ class IfThenElse(Construct):
         b'\xff'
     """
 
-    def __init__(self, condfunc, thensubcon, elsesubcon):
+    def __init__(self, condfunc, thensubcon, elsesubcon, rebuild_hack = False):
         super().__init__()
         self.condfunc = condfunc
         self.thensubcon = thensubcon
         self.elsesubcon = elsesubcon
         self.flagbuildnone = thensubcon.flagbuildnone and elsesubcon.flagbuildnone
+        self.rebuild_hack = rebuild_hack
 
     def _parse(self, stream, context, path):
         condfunc = evaluate(self.condfunc, context)
@@ -3731,39 +3737,46 @@ class IfThenElse(Construct):
     def _fromET(self, parent, name, context, path, is_root=False):
         elems = []
 
-        # this hack is necessary, because at this point in parsing we don't know which branch to take
-        # and can't infer it using the condition, because it might be a context lambda from Rebuild using
-        # information not parsed yet
-        sc_list = []
-        if isinstance(self.thensubcon, type(Pass)):
-            assert(isinstance(self.elsesubcon, Renamed))
-            sc_list = [self.elsesubcon]
-        elif isinstance(self.elsesubcon, type(Pass)):
-            assert(isinstance(self.thensubcon, Renamed))
-            sc_list = [self.thensubcon]
-        else:
-            assert(isinstance(self.elsesubcon, Renamed))
-            assert(isinstance(self.thensubcon, Renamed))
-            sc_list = [self.thensubcon, self.elsesubcon]
-        assert(len(sc_list))
-        for sc in sc_list:
-            if not sc._is_simple_type():
-                elems = parent.findall(sc.name)
+        if self.rebuild_hack:
+            # this hack is necessary, because at this point in parsing we don't know which branch to take
+            # and can't infer it using the condition, because it might be a context lambda from Rebuild using
+            # information not parsed yet
+            sc_list = []
+            if isinstance(self.thensubcon, type(Pass)):
+                sc_list = [self.elsesubcon]
+            elif isinstance(self.elsesubcon, type(Pass)):
+                sc_list = [self.thensubcon]
             else:
-                if parent.attrib.get(sc._names()[0], None) is not None:
-                    elems = [parent]
+                assert(isinstance(self.elsesubcon, Renamed))
+                assert(isinstance(self.thensubcon, Renamed))
+                sc_list = [self.thensubcon, self.elsesubcon]
+            assert(len(sc_list) in [1,2])
+            for sc in sc_list:
+                if not sc._is_simple_type():
+                    n = sc.name if isinstance(sc, Renamed) else name
+                    elems = parent.findall(n)
+                else:
+                    if parent.attrib.get(sc._names()[0], None) is not None:
+                        elems = [parent]
 
-            if len(elems) == 0:
-                continue
-            else:
+                # no elements found => Pass
+                if len(elems) == 0:
+                    continue
+
                 assert(len(elems) == 1)
                 elem = elems[0]
                 return sc._fromET(elem, name, context, path, is_root=True)
 
-        # means: one pass is in there, but no element was found
-        # if len(sc_list == 2) -> no element was found, although at least one should have been
-        assert(len(sc_list) == 1)
-        return context
+            # means: one pass is in there, but no element was found
+            # if len(sc_list == 2) -> no element was found, although at least one should have been
+            # Pass does nothing -> return the context
+            assert(len(sc_list) == 1)
+            return context
+        else:
+            # without the hack, we can just evaluate the condfunc with the current context
+            condfunc = evaluate(self.condfunc, context)
+            sc = self.thensubcon if condfunc else self.elsesubcon
+            return sc._fromET(parent, name, context, path)
 
     def _names(self):
         return self.thensubcon._names() + self.elsesubcon._names()
