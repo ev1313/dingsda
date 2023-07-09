@@ -64,7 +64,8 @@ def common_xml_test(s, xml, obj, obj_from = None):
     test_obj = s.fromET(xml=test_et)
     assert(obj_from == test_obj)
     test_xml = s.toET(obj=obj, name="test")
-    assert(ET.tostring(test_xml) == xml)
+    test_xml_str = ET.tostring(test_xml)
+    assert(test_xml_str == xml)
 
 def common_endtoend_xml_test(s, byte_data, obj=None, xml=None):
     data = s.parse(byte_data)

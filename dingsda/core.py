@@ -586,6 +586,10 @@ class Construct(object):
         """ is used by Array to determine, whether the type can be stored in a string array as XML attribute """
         return False;
 
+    def _is_array(self):
+        """ is used by Array to detect nested arrays (is a problem with Array of Array of simple type) """
+        return False;
+
     def __rtruediv__(self, name):
         """
         Used for renaming subcons, usually part of a Struct, like Struct("index" / Byte).
@@ -2319,7 +2323,7 @@ class Array(Subconstruct):
         data = get_current_field(context, name)
 
         # Simple fields -> FormatFields and Strings
-        if self.subcon._is_simple_type():
+        if self.subcon._is_simple_type() and not self.subcon._is_array():
             arr = []
             for idx, item in enumerate(data):
                 # create new context including the index
@@ -2351,7 +2355,7 @@ class Array(Subconstruct):
         context[name] = []
 
         # Simple fields -> FormatFields and Strings
-        if self.subcon._is_simple_type():
+        if self.subcon._is_simple_type() and not self.subcon._is_array():
             data = parent.attrib[name]
             assert(data[0] == "[")
             assert(data[-1] == "]")
@@ -2377,6 +2381,14 @@ class Array(Subconstruct):
 
         return context
 
+    def _is_simple_type(self):
+        return self.subcon._is_simple_type()
+
+    def _is_array(self):
+        return True
+
+    def _names(self):
+        return self.subcon._names()
 
 class GreedyRange(Subconstruct):
     r"""
@@ -3756,8 +3768,14 @@ class IfThenElse(Construct):
                     n = sc.name if isinstance(sc, Renamed) else name
                     elems = parent.findall(n)
                 else:
-                    if parent.attrib.get(sc._names()[0], None) is not None:
+                    names = sc._names()
+                    if len(names) == 0:
                         elems = [parent]
+                    else:
+                        for name in names:
+                            if parent.attrib.get(name, None) is not None:
+                                elems = [parent]
+                                break
 
                 # no elements found => Pass
                 if len(elems) == 0:

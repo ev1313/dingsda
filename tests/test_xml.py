@@ -556,6 +556,27 @@ def test_xml_ifthenelse_pass_2():
     xml = b'<test a="0" />'
     common_xml_test(s, xml, data)
 
+
+def test_xml_ifthenelse_array():
+    s = "test" / Struct(
+        "a" / Int32ul,
+        "b" / IfThenElse(lambda obj: obj.a == 1, Array(4, Int32ul), Pass)
+    )
+
+    data = {"a": 1, "b": [1,2,3,4]}
+    xml = b'<test a="1" b="[1,2,3,4]" />'
+    common_xml_test(s, xml, data)
+
+def test_xml_ifthenelse_pass_unnamed_array_rebuildhack():
+    s = "test" / Struct(
+        "b" / IfThenElse(lambda obj: obj.a == 1, Array(4, Int32ul), Pass, rebuild_hack=True),
+        "a" / Int32ul,
+        )
+
+    data = {"a": 1, "b": [1,2,3,4]}
+    xml = b'<test b="[1,2,3,4]" a="1" />'
+    common_xml_test(s, xml, data)
+
 def test_xml_pass():
     s = "test" / Struct(
         "a" / Int32ul,
