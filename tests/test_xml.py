@@ -5,27 +5,6 @@ from dingsda import *
 from dingsda.lib import *
 from dingsda.core import list_to_string, string_to_list
 
-from xml.etree import ElementTree as ET
-
-def common_xml_test(s, xml, obj, obj_from = None):
-    if obj_from is None:
-        obj_from = obj
-    test_et = ET.fromstring(xml)
-    test_obj = s.fromET(xml=test_et)
-    assert(obj_from == test_obj)
-    test_xml = s.toET(obj=obj, name="test")
-    assert(ET.tostring(test_xml) == xml)
-
-def common_endtoend_xml_test(s, byte_data, obj=None, xml=None):
-    data = s.parse(byte_data)
-    if obj is not None:
-        assert(data == obj)
-    test_xml = s.toET(obj=data, name="test")
-    if xml is not None:
-        assert(ET.tostring(test_xml) == xml)
-    xml_data = s.fromET(xml=test_xml)
-    assert(byte_data == s.build(xml_data))
-
 def test_list_to_string():
     lst = ["foo","bar","baz"]
     str = list_to_string(lst)
