@@ -3772,8 +3772,8 @@ class IfThenElse(Construct):
                     if len(names) == 0:
                         elems = [parent]
                     else:
-                        for name in names:
-                            if parent.attrib.get(name, None) is not None:
+                        for n in names:
+                            if parent.attrib.get(n, None) is not None:
                                 elems = [parent]
                                 break
 
