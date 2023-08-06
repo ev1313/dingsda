@@ -3165,9 +3165,18 @@ class FocusedSeq(Construct):
         raise NotImplementedError
 
     def _fromET(self, parent, name, context, path, is_root=False):
+        parse_sc = None
+        for sc in self.subcons:
+            if sc.name == self.parsebuildfrom:
+                parse_sc = sc
+                # Necessary to find the sc in the parent
+                assert (sc.__class__.__name__ == "Renamed")
+        assert(parse_sc is not None)
+
         # get the xml element
         if not is_root:
             elem = parent.findall(name)
+            # FIXME: for what is this hack?
             if len(elem) == 1:
                 elem = elem[0]
         else:
@@ -3175,10 +3184,7 @@ class FocusedSeq(Construct):
 
         assert(elem is not None)
 
-        for sc in self.subcons:
-            if sc.name == self.parsebuildfrom:
-                assert (sc.__class__.__name__ == "Renamed")
-                return sc._fromET(context=context, parent=elem, name=name, path=f"{path} -> {name}", is_root=True)
+        return parse_sc._fromET(context=context, parent=elem, name=name, path=f"{path} -> {name}", is_root=True)
 
         assert(False)
 

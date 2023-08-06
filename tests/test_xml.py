@@ -327,6 +327,17 @@ def test_fromET_switch_focusedseq():
 
     assert(obj == {"a": [{"data": {"value": 32}}, {"data": {"value": 16}}], "b": [1,2,2]})
 
+# PrefixedArray is a FocusedSeq containing an array
+def test_xml_prefixedarray():
+    s = Struct(
+        "a" / PrefixedArray(Int32ul, "Property" / Struct("x" / Int32ul)),
+        "b" / Int32ul,
+        )
+
+    data = {"a": [{"x": 0}, {"x": 1}, {"x": 4}], "b": 2}
+    xml = b'<test b="2"><Property x="0" /><Property x="1" /><Property x="4" /></test>'
+    common_xml_test(s, xml, data)
+
 def test_xml_repeatuntil():
     s = Struct(
         "a" / RepeatUntil(lambda obj, lst, ctx: obj.x == 0x4, "Property" / Struct("x" / Int32ul)),
@@ -401,6 +412,20 @@ def test_xml_lazybound_2():
     xml = b'<test b="2"><Property x="4" /></test>'
     obj = {"b": 2, "a": {"x": 4}}
     common_xml_test(s, xml, obj)
+
+def test_xml_lazybound_nested():
+    NestedType = Struct(
+        "typeId" / Rebuild(Int32ul, this._switchid_data),
+        "data" / Switch(this.typeId, {
+            0x00000000: "Boolean" / Struct("value" / Enum(Int8ul, false=0, true=1)),
+            0x00000001: "Int8" / Struct("value" / Int8ul),
+            0x00000011: "ListItem" / PrefixedArray(Int32ul, "ListItem" / LazyBound(lambda: NestedType)),
+        }))
+
+    obj = {"typeId": 0x00000011, "data": [{"typeId": 0x00000000, "data": {"value": "true"}}, {"typeId": 0x00000001, "data": {"value": 0x01}}]}
+    xml = b'<test><ListItem><Boolean value="true" /></ListItem><ListItem><Int8 value="1" /></ListItem></test>'
+    common_xml_test(NestedType, xml, obj)
+
 
 def test_xml_const():
     s = "test" / Struct(
