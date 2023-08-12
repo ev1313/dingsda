@@ -30,4 +30,4 @@ jobs:
           pip install cryptography
       - name: Run tests
         run: |
-          py.test tests/--showlocals --verbose
+          py.test tests/ --showlocals --verbose
