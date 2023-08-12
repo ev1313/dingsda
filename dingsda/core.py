@@ -2722,6 +2722,9 @@ class Renamed(Subconstruct):
     def _is_simple_type(self):
         return self.subcon._is_simple_type()
 
+    def _is_array(self):
+        return self.subcon._is_array()
+
     def _names(self):
         sc_names = [self.name]
         sc_names += self.subcon._names()
@@ -3157,8 +3160,6 @@ class FocusedSeq(Construct):
                 else:
                     raise NotImplementedError
                 elem = sc._toET(parent, name, context, path)
-                if elem is None:
-                    return parent
 
                 return elem
 
@@ -3174,11 +3175,13 @@ class FocusedSeq(Construct):
         assert(parse_sc is not None)
 
         # get the xml element
-        if not is_root:
+        if not is_root and not parse_sc._is_array():
             elem = parent.findall(name)
-            # FIXME: for what is this hack?
+            # at this point, we should have only one element
             if len(elem) == 1:
                 elem = elem[0]
+            else:
+                assert(False)
         else:
             elem = parent
 
@@ -3188,14 +3191,23 @@ class FocusedSeq(Construct):
 
         assert(False)
 
-    def _names(self):
+    def _get_main_sc(self):
         sc = None
         for s in self.subcons:
             if s.name == self.parsebuildfrom:
                 sc = s
                 break
         assert(sc is not None)
-        return sc._names()
+        return sc
+
+    def _names(self):
+        return self._get_main_sc()._names()
+
+    def _is_simple_type(self):
+        return self._get_main_sc()._is_simple_type()
+
+    def _is_array(self):
+        return self._get_main_sc()._is_array()
 
 
 @singleton
@@ -3892,7 +3904,10 @@ class Switch(Construct):
             if len(elems) == 0:
                 continue
 
-            assert(len(elems) == 1)
+            if not case._is_array():
+                assert(len(elems) == 1)
+            else:
+                elems = [parent]
             elem = elems[0]
             context[f"_switchid_{name}"] = case.name
             return case._fromET(elem, name, context, path, is_root=True)

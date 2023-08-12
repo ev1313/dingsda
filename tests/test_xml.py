@@ -327,7 +327,6 @@ def test_fromET_switch_focusedseq():
 
     assert(obj == {"a": [{"data": {"value": 32}}, {"data": {"value": 16}}], "b": [1,2,2]})
 
-# PrefixedArray is a FocusedSeq containing an array
 def test_xml_prefixedarray():
     s = Struct(
         "a" / PrefixedArray(Int32ul, "Property" / Struct("x" / Int32ul)),
@@ -423,8 +422,9 @@ def test_xml_lazybound_nested():
         }))
 
     obj = {"typeId": 0x00000011, "data": [{"typeId": 0x00000000, "data": {"value": "true"}}, {"typeId": 0x00000001, "data": {"value": 0x01}}]}
+    obj_from = {"data": [{"data": {"value": "true"}}, {"data": {"value": 0x01}}]}
     xml = b'<test><ListItem><Boolean value="true" /></ListItem><ListItem><Int8 value="1" /></ListItem></test>'
-    common_xml_test(NestedType, xml, obj)
+    common_xml_test(NestedType, xml, obj, obj_from)
 
 
 def test_xml_const():
