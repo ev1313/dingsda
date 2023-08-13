@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import pdb
 import struct, io, binascii, itertools, collections, pickle, sys, os
 
 from dingsda.lib import *
@@ -135,11 +136,6 @@ class TerminatedError(ConstructError):
 class RawCopyError(ConstructError):
     """
     Only one parsing class can raise this exception: RawCopy. It can mean it cannot build as both data and value keys are missing from build dict object.
-    """
-    pass
-class RotationError(ConstructError):
-    """
-    Only one parsing class can raise this exception: ProcessRotateLeft. It can mean the specified group is less than 1, data is not of valid length.
     """
     pass
 class ChecksumError(ConstructError):
@@ -5123,116 +5119,6 @@ class ProcessXor(Subconstruct):
         if isinstance(pad, bytestringtype):
             if not (len(pad) <= 64 and pad == bytes(len(pad))):
                 data = integers2bytes( (b ^ p) for b,p in zip(data, itertools.cycle(pad)) )
-        stream_write(stream, data, len(data), path)
-        return buildret
-
-    def _sizeof(self, context, path):
-        return self.subcon._sizeof(context, path)
-
-
-class ProcessRotateLeft(Subconstruct):
-    r"""
-    Transforms bytes between the underlying stream and the subcon.
-
-    Used internally by KaitaiStruct compiler, when translating `process: rol/ror` tags.
-
-    Parsing reads till EOF, rotates (shifts) the data *left* by amount in bits, then feeds that data into subcon. Building first builds the subcon into separate BytesIO stream, rotates *right* by negating amount, then writes that data into the main stream. Size is the same as subcon, unless it raises SizeofError.
-
-    :param amount: integer or context lambda, shift by this amount in bits, treated modulo (group x 8)
-    :param group: integer or context lambda, shifting is applied to chunks of this size in bytes
-    :param subcon: Construct instance
-
-    :raises RotationError: group is less than 1
-    :raises RotationError: data length is not a multiple of group size
-
-    Can propagate any exception from the lambda, possibly non-ConstructError.
-
-    Example::
-
-        >>> d = ProcessRotateLeft(4, 1, Int16ub)
-        >>> d.parse(b'\x0f\xf0')
-        0xf00f
-        >>> d = ProcessRotateLeft(4, 2, Int16ub)
-        >>> d.parse(b'\x0f\xf0')
-        0xff00
-        >>> d.sizeof()
-        2
-    """
-
-    # formula taken from: http://stackoverflow.com/a/812039
-    precomputed_single_rotations = {amount: [(i << amount) & 0xff | (i >> (8-amount)) for i in range(256)] for amount in range(1,8)}
-
-    def __init__(self, amount, group, subcon):
-        super().__init__(subcon)
-        self.amount = amount
-        self.group = group
-
-    def _parse(self, stream, context, path):
-        amount = evaluate(self.amount, context)
-        group = evaluate(self.group, context)
-        if group < 1:
-            raise RotationError("group size must be at least 1 to be valid", path=path)
-
-        amount = amount % (group * 8)
-        amount_bytes = amount // 8
-        data = stream_read_entire(stream, path)
-        data_ints = bytes2integers(data)
-
-        if len(data) % group != 0:
-            raise RotationError("data length must be a multiple of group size", path=path)
-
-        if amount == 0:
-            pass
-
-        elif group == 1:
-            translate = ProcessRotateLeft.precomputed_single_rotations[amount]
-            data = integers2bytes( translate[a] for a in data_ints )
-
-        elif amount % 8 == 0:
-            indices = [(i + amount_bytes) % group for i in range(group)]
-            data = integers2bytes( data_ints[i+k] for i in range(0,len(data),group) for k in indices )
-
-        else:
-            amount1 = amount % 8
-            amount2 = 8 - amount1
-            indices_pairs = [ ((i+amount_bytes) % group, (i+1+amount_bytes) % group) for i in range(group)]
-            data = integers2bytes( (data_ints[i+k1] << amount1) & 0xff | (data_ints[i+k2] >> amount2) for i in range(0,len(data),group) for k1,k2 in indices_pairs )
-
-        return self.subcon._parsereport(io.BytesIO(data), context, path)
-
-    def _build(self, obj, stream, context, path):
-        amount = evaluate(self.amount, context)
-        group = evaluate(self.group, context)
-        if group < 1:
-            raise RotationError("group size must be at least 1 to be valid", path=path)
-
-        amount = -amount % (group * 8)
-        amount_bytes = amount // 8
-        stream2 = io.BytesIO()
-        buildret = self.subcon._build(obj, stream2, context, path)
-        data = stream2.getvalue()
-        data_ints = bytes2integers(data)
-
-        if len(data) % group != 0:
-            raise RotationError("data length must be a multiple of group size", path=path)
-
-        if amount == 0:
-            pass
-
-        elif group == 1:
-            translate = ProcessRotateLeft.precomputed_single_rotations[amount]
-            data = integers2bytes( translate[a] for a in data_ints )
-
-        elif amount % 8 == 0:
-            indices = [(i + amount_bytes) % group for i in range(group)]
-            data = integers2bytes( data_ints[i+k] for i in range(0,len(data),group) for k in indices )
-
-        else:
-            amount1 = amount % 8
-            amount2 = 8 - amount1
-            indices_pairs = [ ((i+amount_bytes) % group, (i+1+amount_bytes) % group) for i in range(group)]
-            data = integers2bytes( (data_ints[i+k1] << amount1) & 0xff | (data_ints[i+k2] >> amount2) for i in range(0,len(data),group) for k1,k2 in indices_pairs )
-
         stream_write(stream, data, len(data), path)
         return buildret
 

@@ -1229,16 +1229,6 @@ def test_processxor():
     d = ProcessXor(b"XXXXX", GreedyString("utf-8"))
     common(d, b"\x00", u"X", SizeofError)
 
-def test_processrotateleft():
-    d = ProcessRotateLeft(0, 1, GreedyBytes)
-    common(d, bytes(10), bytes(10))
-    d = ProcessRotateLeft(0, 2, GreedyBytes)
-    common(d, bytes(10), bytes(10))
-    d = ProcessRotateLeft(4, 1, GreedyBytes)
-    common(d, b'\x0f\xf0', b'\xf0\x0f')
-    d = ProcessRotateLeft(4, 2, GreedyBytes)
-    common(d, b'\x0f\xf0', b'\xff\x00')
-
 def test_checksum():
     d = Struct(
         "fields" / RawCopy(Struct(
