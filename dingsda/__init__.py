@@ -145,7 +145,6 @@ __all__ = [
     'Path',
     'Path2',
     'Peek',
-    'Pickled',
     'Pointer',
     'possiblestringencodings',
     'Prefixed',

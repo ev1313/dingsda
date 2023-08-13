@@ -231,44 +231,6 @@ def stream_iseof(stream):
     except Exception:
         raise StreamError("stream. read() seek() tell() failed", path="???")
 
-class CodeGen:
-    def __init__(self):
-        self.blocks = []
-        self.nextid = 0
-        self.parsercache = {}
-        self.buildercache = {}
-        self.linkedinstances = {}
-        self.linkedparsers = {}
-        self.linkedbuilders = {}
-
-    def allocateId(self):
-        self.nextid += 1
-        return self.nextid
-
-    def append(self, block):
-        block = [s for s in block.splitlines() if s.strip()]
-        firstline = block[0]
-        trim = len(firstline) - len(firstline.lstrip())
-        block = "\n".join(s[trim:] for s in block)
-        if block not in self.blocks:
-            self.blocks.append(block)
-
-    def toString(self):
-        return "\n".join(self.blocks + [""])
-
-
-class KsyGen:
-    def __init__(self):
-        self.instances = {}
-        self.enums = {}
-        self.types = {}
-        self.nextid = 0
-
-    def allocateId(self):
-        self.nextid += 1
-        return self.nextid
-
-
 def hyphenatedict(d):
     return {k.replace("_","-").rstrip("-"):v for k,v in d.items()}
 
@@ -3204,34 +3166,6 @@ class FocusedSeq(Construct):
 
     def _is_array(self):
         return self._get_main_sc()._is_array()
-
-
-@singleton
-class Pickled(Construct):
-    r"""
-    Preserves arbitrary Python objects.
-
-    Parses using `pickle.load() <https://docs.python.org/3/library/pickle.html#pickle.load>`_ and builds using `pickle.dump() <https://docs.python.org/3/library/pickle.html#pickle.dump>`_ functions, using default Pickle binary protocol. Size is undefined.
-
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-
-    Can propagate pickle.load() and pickle.dump() exceptions.
-
-    Example::
-
-        >>> x = [1, 2.3, {}]
-        >>> Pickled.build(x)
-        b'\x80\x03]q\x00(K\x01G@\x02ffffff}q\x01e.'
-        >>> Pickled.parse(_)
-        [1, 2.3, {}]
-    """
-
-    def _parse(self, stream, context, path):
-        return pickle.load(stream)
-
-    def _build(self, obj, stream, context, path):
-        pickle.dump(obj, stream)
-        return obj
 
 
 @singleton

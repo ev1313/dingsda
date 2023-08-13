@@ -653,12 +653,6 @@ def test_focusedseq():
     assert raises(d.build, {}) == KeyError
     assert raises(d.sizeof) == 0
 
-def test_pickled():
-    import pickle
-    obj = [(), 1, 2.3, {}, [], bytes(1), ""]
-    data = pickle.dumps(obj)
-    common(Pickled, data, obj)
-
 def test_numpy():
     import numpy
     obj = numpy.array([1,2,3], dtype=numpy.int64)
