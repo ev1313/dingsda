@@ -2601,6 +2601,116 @@ class RepeatUntil(Subconstruct):
         return sc_names
 
 
+class Area(Subconstruct):
+    r"""
+    Area is designed to be used in file formats, that specify an offset and size for an field array.
+    The wrapper takes the offset like a pointer and parses subcons until the size is reached.
+
+    When preprocessing it sets the size variable in the context, the offset is untouched.
+
+    When building it checks for nothing and just builds the subcon.
+
+    _sizeof returns 0, as it is essentially a fancy pointer.
+
+    :param subcon: Construct instance
+    :param offset: int or lambda, offset to start reading from, may be negative
+    :param size: int or lambda, size of the objects, checked vs stream position if check_stream_pos=True
+    :param stream: stream instance to read from, else normal parsing stream is used.
+    :param check_stream_pos: bool, if True, offset+size is checked vs stream position in the end, if False only parsed_size <= size is checked
+
+    Example::
+        Struct(
+            "header1" / Struct(
+                "offset" / Rebuild(Int32ul, lambda ctx: ctx._._header2_endoffset),
+                "size" / Rebuild(Int32ul, lambda ctx: ctx._data1_size),
+                "data1" / Area(Int32ul, this.offset, this.size),
+            ),
+            "header2" / Struct(
+                "offset" / Rebuild(Int32ul, lambda ctx: ctx._.header1.offset + ctx._.header1.size),
+                "size" / Rebuild(Int32ul, lambda ctx: ctx._data2_size),
+                "data2" / Area(Int8ul, this.offset, this.size),
+            )
+        )
+    """
+
+    def __init__(self, subcon, offset, size, stream=None, check_stream_pos=True):
+        super().__init__(subcon)
+        self.size = size
+        self.offset = offset
+        # if check_stream_pos is True, this is always == size or an error is raised when parsing
+        # if check_stream_pos is False, this is the real size of the parsed data
+        self.parsed_size = 0
+        self.check_stream_pos = check_stream_pos
+        self.stream = stream
+
+    def _preprocess(self, obj, context, path, offset=0):
+        retlist = ListContainer()
+        # this is essentially a fancy pointer, so no size (instead we use _ptrsize)
+        extra_info = {"_offset": offset, "_size": 0, "_endoffset": offset}
+        ptrsize = 0
+        for i, e in enumerate(obj):
+            context._index = i
+            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            retlist.append(obj)
+
+            extra = {f"_ptr_{i}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+            ptrsize += child_extra_info["_size"]
+
+            context.update(extra_info)
+
+        extra_info["_ptrsize"] = ptrsize
+
+        return retlist, extra_info
+
+    def _parse(self, stream, context, path):
+        offset = evaluate(self.offset, context)
+        size = evaluate(self.size, context)
+        stream = evaluate(self.stream, context) or stream
+        fallback = stream_tell(stream, path)
+
+        stream_seek(stream, offset, 2 if offset < 0 else 0, path)
+        obj = ListContainer()
+        for i in itertools.count():
+            context._index = i
+            e = self.subcon._parsereport(stream, context, path)
+            obj.append(e)
+            self.parsed_size = stream_tell(stream, path)
+            if self.parsed_size >= offset + size:
+                break
+
+        if self.check_stream_pos:
+            assert(self.parsed_size == offset + size)
+        else:
+            assert(self.parsed_size <= offset + size)
+
+        stream_seek(stream, fallback, 0, path)
+        return obj
+
+    def _build(self, obj, stream, context, path):
+        offset = evaluate(self.offset, context)
+        size = evaluate(self.size, context)
+        stream = evaluate(self.stream, context) or stream
+        fallback = stream_tell(stream, path)
+
+        stream_seek(stream, offset, 2 if offset < 0 else 0, path)
+        retlist = ListContainer()
+        for i,e in enumerate(obj):
+            context._index = i
+            buildret = self.subcon._build(e, stream, context, path)
+            retlist.append(buildret)
+
+        if self.check_stream_pos:
+            assert(stream_tell(stream, path) == offset + size)
+        else:
+            assert(stream_tell(stream, path) <= offset + size)
+
+        stream_seek(stream, fallback, 0, path)
+        return retlist
+
+    def _sizeof(self, context, path):
+        return 0
+
 #===============================================================================
 # specials
 #===============================================================================

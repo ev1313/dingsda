@@ -45,6 +45,7 @@ __all__ = [
     'Aligned',
     'AlignedStruct',
     'Array',
+    'Area',
     'Bit',
     'BitsInteger',
     'BitsSwapped',

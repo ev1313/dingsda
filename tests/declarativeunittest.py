@@ -22,14 +22,33 @@ def raises(func, *args, **kw):
     except Exception as e:
         return e.__class__
 
-def common(format, datasample, objsample, sizesample=SizeofError, **kw):
+
+def common(format: Construct, datasample: bytes, objsample: Container, sizesample=SizeofError, objsample_build: Container = None, preprocess = False, **kw):
+    r"""
+    :param format: the construct to test
+    :param datasample: a sample of the data to parse
+    :param objsample: the object that should be parsed from the data
+    :param sizesample: the size of the data sample (optional). Used to test Sizeof.
+    :param objsample_build: an example object that should produce the same datasample (optional). Used to test Rebuilds.
+    :param preprocess: whether to preprocess the data before parsing (optional). Used to test special cases, where it is needed.
+    :param kw: additional keyword arguments to pass to the context when parsing and building
+    """
     # following are implied (re-parse and re-build)
     # assert format.parse(format.build(obj)) == obj
     # assert format.build(format.parse(data)) == data
     obj = format.parse(datasample, **kw)
     assert obj == objsample
-    data = format.build(objsample, **kw)
+
+    build_object = objsample
+    if preprocess:
+        build_object, extra_info = format.preprocess(objsample, context=kw)
+
+    data = format.build(build_object, **kw)
     assert data == datasample
+
+    if objsample_build is not None:
+        data2 = format.build(obj)
+        assert data2 == datasample
 
     if isinstance(sizesample, int):
         size = format.sizeof(**kw)

@@ -6,7 +6,7 @@ from dingsda.lib import *
 
 def test_bytes():
     d = Bytes(4)
-    common(d, b"1234", b"1234", 4)
+    common(format=d, datasample=b"1234", objsample=b"1234", sizesample=4)
     assert d.parse(b"1234567890") == b"1234"
     assert raises(d.parse, b"") == StreamError
     assert raises(d.build, b"looooooooooooooong") == StreamError
@@ -14,7 +14,7 @@ def test_bytes():
     assert d.build(0x01020304) == b"\x01\x02\x03\x04"
 
     d = Bytes(this.n)
-    common(d, b"1234", b"1234", 4, n=4)
+    common(format=d, datasample=b"1234", objsample=b"1234", sizesample=4, n=4)
     assert d.parse(b"1234567890",n=4) == b"1234"
     assert d.build(1, n=4) == b"\x00\x00\x00\x01"
     assert raises(d.build, b"", n=4) == StreamError
@@ -23,7 +23,7 @@ def test_bytes():
     assert raises(d.sizeof, n=4) == 4
 
 def test_greedybytes():
-    common(GreedyBytes, b"1234", b"1234", SizeofError)
+    common(format=GreedyBytes, datasample=b"1234", objsample=b"1234")
 
 def test_bytes_issue_827():
     d = Bytes(3)
@@ -32,18 +32,18 @@ def test_bytes_issue_827():
     assert d.build(bytearray(b'\x01\x02\x03')) == b'\x01\x02\x03'
 
 def test_bitwise():
-    common(Bitwise(Bytes(8)), b"\xff", b"\x01\x01\x01\x01\x01\x01\x01\x01", 1)
-    common(Bitwise(Array(8,Bit)), b"\xff", [1,1,1,1,1,1,1,1], 1)
-    common(Bitwise(Array(2,Nibble)), b"\xff", [15,15], 1)
-    common(Bitwise(Array(1,Octet)), b"\xff", [255], 1)
+    common(format=Bitwise(Bytes(8)), datasample=b"\xff", objsample=b"\x01\x01\x01\x01\x01\x01\x01\x01", sizesample=1)
+    common(format=Bitwise(Array(8,Bit)), datasample=b"\xff", objsample=[1,1,1,1,1,1,1,1], sizesample=1)
+    common(format=Bitwise(Array(2,Nibble)), datasample=b"\xff", objsample=[15,15], sizesample=1)
+    common(format=Bitwise(Array(1,Octet)), datasample=b"\xff", objsample=[255], sizesample=1)
 
-    common(Bitwise(GreedyBytes), bytes(10), bytes(80), SizeofError)
+    common(format=Bitwise(GreedyBytes), datasample=bytes(10), objsample=bytes(80))
 
 def test_bytewise():
-    common(Bitwise(Bytewise(Bytes(1))), b"\xff", b"\xff", 1)
-    common(BitStruct("p1"/Nibble, "num"/Bytewise(Int24ub), "p2"/Nibble), b"\xf0\x10\x20\x3f", Container(p1=15, num=0x010203, p2=15), 4)
-    common(Bitwise(Sequence(Nibble, Bytewise(Int24ub), Nibble)), b"\xf0\x10\x20\x3f", [0x0f,0x010203,0x0f], 4)
-    common(Bitwise(Bytewise(GreedyBytes)), bytes(10), bytes(10), SizeofError)
+    common(format=Bitwise(Bytewise(Bytes(1))), datasample=b"\xff", objsample=b"\xff", sizesample=1)
+    common(format=BitStruct("p1"/Nibble, "num"/Bytewise(Int24ub), "p2"/Nibble), datasample=b"\xf0\x10\x20\x3f", objsample=Container(p1=15, num=0x010203, p2=15), sizesample=4)
+    common(format=Bitwise(Sequence(Nibble, Bytewise(Int24ub), Nibble)), datasample=b"\xf0\x10\x20\x3f", objsample=[0x0f,0x010203,0x0f], sizesample=4)
+    common(format=Bitwise(Bytewise(GreedyBytes)), datasample=bytes(10), objsample=bytes(10))
 
 def test_ints():
     common(Byte, b"\xff", 255, 1)
@@ -2436,6 +2436,31 @@ def test_lazy_rebuild():
     obj = {"foo": 4, "bar": lambda ctx: ctx.baz, "baz": lambda ctx: ctx.foo}
     res = d.build(obj)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
+
+def test_area_int():
+    fmt = Struct(
+        "header1" / Struct(
+            "offset" / Rebuild(Int8ul, lambda ctx: ctx._._header2_endoffset), # 0x04
+            "size" / Rebuild(Int8ul, lambda ctx: ctx._data1_ptrsize), # 0x04
+            "data1" / Area(Int8ul, this.offset, this.size), # 0x01,0x02,0x03,0x04
+            ),
+        "header2" / Struct(
+            "offset" / Rebuild(Int8ul, lambda ctx: ctx._.header1.offset + ctx._.header1.size), # 0x04 + 0x04 = 0x08
+            "size" / Rebuild(Int8ul, lambda ctx: ctx._data2_ptrsize), # 0x05
+            "data2" / Area(Int8ul, this.offset, this.size), # 0x05,0x06,0x07,0x08,0x09
+            )
+    )
+    data = b"\x04\x04\x08\x05\x01\x02\x03\x04\x05\x06\x07\x08\x09"
+    obj = {
+        "header1": {"offset": 0x04, "size": 0x04, "data1": [0x01, 0x02, 0x03, 0x04]},
+        "header2": {"offset": 0x08, "size": 0x05, "data2": [0x05, 0x06, 0x07, 0x08, 0x09]}
+        }
+    obj_built = {
+        "header1": {"data1": [0x01, 0x02, 0x03, 0x04]},
+        "header2": {"data2": [0x05, 0x06, 0x07, 0x08, 0x09]}
+    }
+    # sizesample is only size of the header!
+    common(format=fmt, datasample=data, objsample=obj, objbuilt=obj_built, preprocess=True, sizesample=4)
 
 
 @xfail(reason="unfixable defect in the design")
