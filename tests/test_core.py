@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
-
+from dingsda.date import Timestamp
+import math, random, itertools, collections, os, io, hashlib
 from tests.declarativeunittest import *
 from dingsda import *
+from dingsda.numbers import *
+from dingsda.string import *
+from dingsda.lazy import *
 from dingsda.lib import *
 
 def test_bytes():
@@ -2460,6 +2464,16 @@ def test_area_int():
         "header2": {"data2": [0x05, 0x06, 0x07, 0x08, 0x09]}
     }
     # sizesample is only size of the header!
+    common(format=fmt, datasample=data, objsample=obj, objbuilt=obj_built, preprocess=True, sizesample=4)
+    data = b"\x04\x00\x04\x01\x01"
+    obj = {
+        "header1": {"offset": 0x04, "size": 0x00, "data1": []},
+        "header2": {"offset": 0x04, "size": 0x01, "data2": [0x01]}
+    }
+    obj_built = {
+        "header1": {"data1": []},
+        "header2": {"data2": [0x01]}
+    }
     common(format=fmt, datasample=data, objsample=obj, objbuilt=obj_built, preprocess=True, sizesample=4)
 
 

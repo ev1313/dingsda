@@ -1,3 +1,4 @@
+from dingsda.numbers import Int8sb
 from tests.declarativeunittest import *
 from dingsda import *
 from dingsda.lib import *

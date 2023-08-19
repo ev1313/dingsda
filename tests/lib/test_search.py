@@ -1,7 +1,4 @@
-from tests.declarativeunittest import *
 from dingsda import *
-from dingsda.lib import *
-
 
 d = Struct(
     "aa" / Int8ub,

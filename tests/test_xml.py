@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
-
+from dingsda.numbers import Int8ul, Int16ul, Int32ul
+from dingsda.lazy import Lazy, LazyBound
+from dingsda.string import PascalString, CString
 from tests.declarativeunittest import *
 from dingsda import *
-from dingsda.lib import *
 from dingsda.core import list_to_string, string_to_list
+
+import xml.etree.ElementTree as ET
 
 def test_list_to_string():
     lst = ["foo","bar","baz"]

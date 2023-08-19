@@ -1,257 +1,15 @@
 # -*- coding: utf-8 -*-
 import pdb
-import struct, io, binascii, itertools, collections, pickle, sys, os
+import io, binascii, itertools, collections, os
 
+from dingsda.errors import *
 from dingsda.lib import *
 from dingsda.expr import *
-from dingsda.version import *
 from dingsda.helpers import *
 
 import xml.etree.ElementTree as ET
 
-#===============================================================================
-# exceptions
-#===============================================================================
-class ConstructError(Exception):
-    """
-    This is the root of all exceptions raised by parsing classes in this library. Note that the helper functions in lib module can raise standard ValueError (but parsing classes are not allowed to).
-    """
-    def __init__(self, message='', path=None):
-        self.path = path
-        if path is None:
-            super().__init__(message)
-        else:
-            message = "Error in path {}\n".format(path) + message
-            super().__init__(message)
-class SizeofError(ConstructError):
-    """
-    Parsing classes sizeof() methods are only allowed to either return an integer or raise SizeofError instead. Note that this exception can mean the parsing class cannot be measured apriori in principle, however it can also mean that it just cannot be measured in these particular circumstances (eg. there is a key missing in the context dictionary at this time).
-    """
-    pass
-class AdaptationError(ConstructError):
-    """
-    Currently not used.
-    """
-    pass
-class ValidationError(ConstructError):
-    """
-    Validator ExprValidator derived parsing classes can raise this exception: OneOf NoneOf. It can mean that the parse or build value is or is not one of specified values.
-    """
-    pass
-class StreamError(ConstructError):
-    """
-    Almost all parsing classes can raise this exception: it can mean a variety of things. Maybe requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, could not write all bytes, stream is not seekable, stream is not tellable, etc. Note that there are a few parsing classes that do not use the stream to compute output and therefore do not raise this exception.
-    """
-    pass
-class FormatFieldError(ConstructError):
-    """
-    Only one parsing class can raise this exception: FormatField. It can either mean the format string is invalid or the value is not valid for provided format string. See standard struct module for what is acceptable.
-    """
-    pass
-class IntegerError(ConstructError):
-    """
-    Only some numeric parsing classes can raise this exception: BytesInteger BitsInteger VarInt ZigZag. It can mean either the length parameter is invalid, the value is not an integer, the value is negative or too low or too high for given parameters, or the selected endianness cannot be applied.
-    """
-    pass
-class StringError(ConstructError):
-    """
-    Almost all parsing classes can raise this exception: It can mean a unicode string was passed instead of bytes, or a bytes was passed instead of a unicode string. Also some classes can raise it explicitly: PascalString CString GreedyString. It can mean no encoding or invalid encoding was selected. Note that currently, if the data cannot be encoded decoded given selected encoding then UnicodeEncodeError UnicodeDecodeError are raised, which are not rooted at ConstructError.
-    """
-    pass
-class MappingError(ConstructError):
-    """
-    Few parsing classes can raise this exception: Enum FlagsEnum Mapping. It can mean the build value is not recognized and therefore cannot be mapped onto bytes.
-    """
-    pass
-class RangeError(ConstructError):
-    """
-    Few parsing classes can raise this exception: Array PrefixedArray LazyArray. It can mean the count parameter is invalid, or the build object has too little or too many elements.
-    """
-    pass
-class RepeatError(ConstructError):
-    """
-    Only one parsing class can raise this exception: RepeatUntil. It can mean none of the elements in build object passed the given predicate.
-    """
-    pass
-class ConstError(ConstructError):
-    """
-    Only one parsing class can raise this exception: Const. It can mean the wrong data was parsed, or wrong object was built from.
-    """
-    pass
-class IndexFieldError(ConstructError):
-    """
-    Only one parsing class can raise this exception: Index. It can mean the class was not nested in an array parsing class properly and therefore cannot access the _index context key.
-    """
-    pass
-class CheckError(ConstructError):
-    """
-    Only one parsing class can raise this exception: Check. It can mean the condition lambda failed during a routine parsing building check.
-    """
-    pass
-class ExplicitError(ConstructError):
-    """
-    Only one parsing class can raise this exception: Error. It can mean the parsing class was merely parsed or built with.
-    """
-    pass
-class NamedTupleError(ConstructError):
-    """
-    Only one parsing class can raise this exception: NamedTuple. It can mean the subcon is not of a valid type.
-    """
-    pass
-class TimestampError(ConstructError):
-    """
-    Only one parsing class can raise this exception: Timestamp. It can mean the subcon unit or epoch are invalid.
-    """
-    pass
-class UnionError(ConstructError):
-    """
-    Only one parsing class can raise this exception: Union. It can mean none of given subcons was properly selected, or trying to build without providing a proper value.
-    """
-    pass
-class SelectError(ConstructError):
-    """
-    Only one parsing class can raise this exception: Select. It can mean neither subcon succeded when parsing or building.
-    """
-    pass
-class SwitchError(ConstructError):
-    """
-    Currently not used.
-    """
-    pass
-class StopFieldError(ConstructError):
-    """
-    Only one parsing class can raise this exception: StopIf. It can mean the given condition was met during parsing or building.
-    """
-    pass
-class PaddingError(ConstructError):
-    """
-    Multiple parsing classes can raise this exception: PaddedString Padding Padded Aligned FixedSized NullTerminated NullStripped. It can mean multiple issues: the encoded string or bytes takes more bytes than padding allows, length parameter was invalid, pattern terminator or pad is not a proper bytes value, modulus was less than 2.
-    """
-    pass
-class TerminatedError(ConstructError):
-    """
-    Only one parsing class can raise this exception: Terminated. It can mean EOF was not found as expected during parsing.
-    """
-    pass
-class RawCopyError(ConstructError):
-    """
-    Only one parsing class can raise this exception: RawCopy. It can mean it cannot build as both data and value keys are missing from build dict object.
-    """
-    pass
-class ChecksumError(ConstructError):
-    """
-    Only one parsing class can raise this exception: Checksum. It can mean expected and actual checksum do not match.
-    """
-    pass
-class CancelParsing(ConstructError):
-    """
-    This exception can only be raise explicitly by the user, and it causes the parsing class to stop what it is doing (interrupts parsing or building).
-    """
-    pass
-class CipherError(ConstructError):
-    """
-    Two parsing classes can raise this exception: EncryptedSym EncryptedSymAead. It can mean none or invalid cipher object was provided.
-    """
-    pass
 
-
-
-#===============================================================================
-# used internally
-#===============================================================================
-def singleton(arg):
-    x = arg()
-    return x
-
-
-def stream_read(stream, length, path):
-    if length < 0:
-        raise StreamError("length must be non-negative, found %s" % length, path=path)
-    try:
-        data = stream.read(length)
-    except Exception:
-        raise StreamError("stream.read() failed, requested %s bytes" % (length,), path=path)
-    if len(data) != length:
-        raise StreamError("stream read less than specified amount, expected %d, found %d" % (length, len(data)), path=path)
-    return data
-
-
-def stream_read_entire(stream, path):
-    try:
-        return stream.read()
-    except Exception:
-        raise StreamError("stream.read() failed when reading until EOF", path=path)
-
-
-def stream_write(stream, data, length, path):
-    if not isinstance(data, bytestringtype):
-        raise StringError("given non-bytes value, perhaps unicode? %r" % (data,), path=path)
-    if length < 0:
-        raise StreamError("length must be non-negative, found %s" % length, path=path)
-    if len(data) != length:
-        raise StreamError("bytes object of wrong length, expected %d, found %d" % (length, len(data)), path=path)
-    try:
-        written = stream.write(data)
-    except Exception:
-        raise StreamError("stream.write() failed, given %r" % (data,), path=path)
-    if written != length:
-        raise StreamError("stream written less than specified, expected %d, written %d" % (length, written), path=path)
-
-
-def stream_seek(stream, offset, whence, path):
-    try:
-        return stream.seek(offset, whence)
-    except Exception:
-        raise StreamError("stream.seek() failed, offset %s, whence %s" % (offset, whence), path=path)
-
-
-def stream_tell(stream, path):
-    try:
-        return stream.tell()
-    except Exception:
-        raise StreamError("stream.tell() failed", path=path)
-
-
-def stream_size(stream):
-    try:
-        fallback = stream.tell()
-        end = stream.seek(0, 2)
-        stream.seek(fallback)
-        return end
-    except Exception:
-        raise StreamError("stream. seek() tell() failed", path="???")
-
-
-def stream_iseof(stream):
-    try:
-        fallback = stream.tell()
-        data = stream.read(1)
-        stream.seek(fallback)
-        return not data
-    except Exception:
-        raise StreamError("stream. read() seek() tell() failed", path="???")
-
-def hyphenatedict(d):
-    return {k.replace("_","-").rstrip("-"):v for k,v in d.items()}
-
-
-def hyphenatelist(l):
-    return [hyphenatedict(d) for d in l]
-
-
-def extractfield(sc):
-    if isinstance(sc, Renamed):
-        return extractfield(sc.subcon)
-    return sc
-
-
-def evaluate(param, context):
-    return param(context) if callable(param) else param
-
-
-#===============================================================================
-# abstract constructs
-#===============================================================================
 class Construct(object):
     r"""
     The mother of all constructs.
@@ -329,7 +87,7 @@ class Construct(object):
 
         Context entries are passed only as keyword parameters \*\*contextkw.
 
-        :param \*\*contextkw: context entries, usually empty
+        :param \*\*contextkw: contcore.pyext entries, usually empty
 
         :returns: some value, usually based on bytes read from the stream but sometimes it is computed from nothing or from the context dictionary, sometimes its non-deterministic
 
@@ -532,7 +290,7 @@ class Construct(object):
     def _actualsize(self, stream, context, path):
         return self._sizeof(context, path)
 
-    def _names(self):
+    def _names(self) -> list:
         """
         determines the name of the XML tag, normal classes just return an empty list,
         however Renamed, FocusedSeq, and Switch override this, because they use these names for
@@ -540,11 +298,11 @@ class Construct(object):
         """
         return []
 
-    def _is_simple_type(self):
+    def _is_simple_type(self) -> bool:
         """ is used by Array to determine, whether the type can be stored in a string array as XML attribute """
         return False;
 
-    def _is_array(self):
+    def _is_array(self) -> bool:
         """ is used by Array to detect nested arrays (is a problem with Array of Array of simple type) """
         return False;
 
@@ -627,6 +385,99 @@ class Subconstruct(Construct):
 
     def _sizeof(self, context, path):
         return self.subcon._sizeof(context, path)
+
+class Arrayconstruct(Subconstruct):
+    def _preprocess(self, obj, context, path, offset=0):
+        # predicates don't need to be checked in preprocessing
+        retlist = ListContainer()
+        extra_info = {"_offset": offset}
+        size = 0
+        for i,e in enumerate(obj):
+            context._index = i
+            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            retlist.append(obj)
+
+            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+            offset += child_extra_info["_size"]
+            size += child_extra_info["_size"]
+
+            context.update(extra_info)
+
+        extra_info["_size"] = size
+        extra_info["_endoffset"] = offset
+
+        return retlist, extra_info
+
+    def _toET(self, parent, name, context, path):
+        data = get_current_field(context, name)
+
+        # Simple fields -> FormatFields and Strings
+        if self.subcon._is_simple_type() and not self.subcon._is_array():
+            arr = []
+            for idx, item in enumerate(data):
+                # create new context including the index
+                ctx = create_parent_context(context)
+                ctx._index = idx
+                ctx[f"{name}_{idx}"] = data[idx]
+
+                obj = self.subcon._toET(None, name, ctx, path)
+                arr += [obj]
+            parent.attrib[name] = "[" + list_to_string(arr) + "]"
+        else:
+            sc_names = self.subcon._names()
+            if len(sc_names) == 0:
+                sc_names = [self.subcon.__class__.__name__]
+            for idx, item in enumerate(data):
+                # create new context including the index
+                ctx = create_parent_context(context)
+                ctx._index = idx
+                ctx[f"{sc_names[0]}_{idx}"] = data[idx]
+
+                elem = self.subcon._toET(parent, sc_names[0], ctx, path)
+                if elem is not None:
+                    parent.append(elem)
+
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        context[name] = []
+
+        # Simple fields -> FormatFields and Strings
+        if self.subcon._is_simple_type() and not self.subcon._is_array():
+            data = parent.attrib[name]
+            assert(data[0] == "[")
+            assert(data[-1] == "]")
+            arr = string_to_list(data[1:-1])
+
+            for x in arr:
+                self.subcon._fromET(x, name, context, path, is_root=True)
+        else:
+            items = []
+            sc_names = self.subcon._names()
+            if len(sc_names) == 0:
+                sc_names = [self.subcon.__class__.__name__]
+
+            for n in sc_names:
+                items += parent.findall(n)
+
+            for item in items:
+                self.subcon._fromET(item, name, context, path, is_root=True)
+
+            for n in sc_names:
+                if context.get(n, 1) == None:
+                    context.pop(n)
+
+        return context
+
+    def _is_simple_type(self) -> bool:
+        return self.subcon._is_simple_type()
+
+    def _is_array(self) -> bool:
+        return True
+
+    def _names(self) -> list[int]:
+        return self.subcon._names()
 
 
 class Adapter(Subconstruct):
@@ -901,712 +752,6 @@ def Bytewise(subcon):
         macro = Transformed(subcon, bits2bytes, size*8, bytes2bits, size*8)
     except SizeofError:
         macro = Restreamed(subcon, bits2bytes, 8, bytes2bits, 1, lambda n: n*8)
-    return macro
-
-
-#===============================================================================
-# integers and floats
-#===============================================================================
-class FormatField(Construct):
-    r"""
-    Field that uses `struct` module to pack and unpack CPU-sized integers and floats and booleans. This is used to implement most Int* Float* fields, but for example cannot pack 24-bit integers, which is left to :class:`~dingsda.core.BytesInteger` class. For booleans I also recommend using Flag class instead.
-
-    See `struct module <https://docs.python.org/3/library/struct.html>`_ documentation for instructions on crafting format strings.
-
-    Parses into an integer or float or boolean. Builds from an integer or float or boolean into specified byte count and endianness. Size is determined by `struct` module according to specified format string.
-
-    :param endianity: string, character like: < > =
-    :param format: string, character like: B H L Q b h l q e f d ?
-
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-    :raises FormatFieldError: wrong format string, or struct.(un)pack complained about the value
-
-    Example::
-
-        >>> d = FormatField(">", "H") or Int16ub
-        >>> d.parse(b"\x01\x00")
-        256
-        >>> d.build(256)
-        b"\x01\x00"
-        >>> d.sizeof()
-        2
-    """
-
-    def __init__(self, endianity, format):
-        if endianity not in list("=<>"):
-            raise FormatFieldError("endianity must be like: = < >", endianity)
-        if format not in list("fdBHLQbhlqe?"):
-            raise FormatFieldError("format must be like: B H L Q b h l q e f d ?", format)
-
-        super().__init__()
-        self.fmtstr = endianity+format
-        self.length = struct.calcsize(endianity+format)
-
-    def _parse(self, stream, context, path):
-        data = stream_read(stream, self.length, path)
-        try:
-            return struct.unpack(self.fmtstr, data)[0]
-        except Exception:
-            raise FormatFieldError("struct %r error during parsing" % self.fmtstr, path=path)
-
-    def _build(self, obj, stream, context, path):
-        try:
-            data = struct.pack(self.fmtstr, obj)
-        except Exception:
-            raise FormatFieldError("struct %r error during building, given value %r" % (self.fmtstr, obj), path=path)
-        stream_write(stream, data, self.length, path)
-        return obj
-
-    def _toET(self, parent, name, context, path):
-        assert (name is not None)
-
-        data = str(get_current_field(context, name))
-        if parent is None:
-            return data
-        else:
-            parent.attrib[name] = data
-        return None
-
-    def _fromET(self, parent, name, context, path, is_root=False):
-        assert(parent is not None)
-        assert(name is not None)
-
-        if isinstance(parent, str):
-            elem = parent
-        else:
-            elem = parent.attrib[name]
-
-        assert (len(self.fmtstr) == 2)
-        if self.fmtstr[1] in ["B", "H", "L", "Q", "b", "h", "l", "q"]:
-            insert_or_append_field(context, name, int(elem))
-            return context
-        elif self.fmtstr[1] in ["e", "f", "d"]:
-            insert_or_append_field(context, name, float(elem))
-            return context
-
-        assert (0)
-
-    def _sizeof(self, context, path):
-        return self.length
-
-    def _is_simple_type(self):
-        return True
-
-
-class BytesInteger(Construct):
-    r"""
-    Field that packs integers of arbitrary size. Int24* fields use this class.
-
-    Parses into an integer. Builds from an integer into specified byte count and endianness. Size is specified in ctor.
-
-    Analog to :class:`~dingsda.core.BitsInteger` which operates on bits. In fact::
-
-        BytesInteger(n) <--> Bitwise(BitsInteger(8*n))
-        BitsInteger(8*n) <--> Bytewise(BytesInteger(n))
-
-    Byte ordering refers to bytes (chunks of 8 bits) so, for example::
-
-        BytesInteger(n, swapped=True) <--> Bitwise(BitsInteger(8*n, swapped=True))
-
-    :param length: integer or context lambda, number of bytes in the field
-    :param signed: bool, whether the value is signed (two's complement), default is False (unsigned)
-    :param swapped: bool or context lambda, whether to swap byte order (little endian), default is False (big endian)
-
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-    :raises IntegerError: length is negative or zero
-    :raises IntegerError: value is not an integer
-    :raises IntegerError: number does not fit given width and signed parameters
-
-    Can propagate any exception from the lambda, possibly non-ConstructError.
-
-    Example::
-
-        >>> d = BytesInteger(4) or Int32ub
-        >>> d.parse(b"abcd")
-        1633837924
-        >>> d.build(1)
-        b'\x00\x00\x00\x01'
-        >>> d.sizeof()
-        4
-    """
-
-    def __init__(self, length, signed=False, swapped=False):
-        super().__init__()
-        self.length = length
-        self.signed = signed
-        self.swapped = swapped
-
-    def _parse(self, stream, context, path):
-        length = evaluate(self.length, context)
-        if length <= 0:
-            raise IntegerError(f"length {length} must be positive", path=path)
-        data = stream_read(stream, length, path)
-        if evaluate(self.swapped, context):
-            data = swapbytes(data)
-        try:
-            return bytes2integer(data, self.signed)
-        except ValueError as e:
-            raise IntegerError(str(e), path=path)
-
-    def _build(self, obj, stream, context, path):
-        if not isinstance(obj, integertypes):
-            raise IntegerError(f"value {obj} is not an integer", path=path)
-        length = evaluate(self.length, context)
-        if length <= 0:
-            raise IntegerError(f"length {length} must be positive", path=path)
-        try:
-            data = integer2bytes(obj, length, self.signed)
-        except ValueError as e:
-            raise IntegerError(str(e), path=path)
-        if evaluate(self.swapped, context):
-            data = swapbytes(data)
-        stream_write(stream, data, length, path)
-        return obj
-
-    def _sizeof(self, context, path):
-        try:
-            return evaluate(self.length, context)
-        except (KeyError, AttributeError):
-            raise SizeofError("cannot calculate size, key not found in context", path=path)
-
-
-class BitsInteger(Construct):
-    r"""
-    Field that packs arbitrarily large (or small) integers. Some fields (Bit Nibble Octet) use this class. Must be enclosed in :class:`~dingsda.core.Bitwise` context.
-
-    Parses into an integer. Builds from an integer into specified bit count and endianness. Size (in bits) is specified in ctor.
-
-    Analog to :class:`~dingsda.core.BytesInteger` which operates on bytes. In fact::
-
-        BytesInteger(n) <--> Bitwise(BitsInteger(8*n))
-        BitsInteger(8*n) <--> Bytewise(BytesInteger(n))
-
-    Note that little-endianness is only defined for multiples of 8 bits.
-
-    Byte ordering (i.e. `swapped` parameter) refers to bytes (chunks of 8 bits) so, for example::
-
-        BytesInteger(n, swapped=True) <--> Bitwise(BitsInteger(8*n, swapped=True))
-
-    Swapped argument was recently fixed. To obtain previous (faulty) behavior, you can use `ByteSwapped`, `BitsSwapped` and `Bitwise` in whatever particular order (see examples).
-
-    :param length: integer or context lambda, number of bits in the field
-    :param signed: bool, whether the value is signed (two's complement), default is False (unsigned)
-    :param swapped: bool or context lambda, whether to swap byte order (little endian), default is False (big endian)
-
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-    :raises IntegerError: length is negative or zero
-    :raises IntegerError: value is not an integer
-    :raises IntegerError: number does not fit given width and signed parameters
-    :raises IntegerError: little-endianness selected but length is not multiple of 8 bits
-
-    Can propagate any exception from the lambda, possibly non-ConstructError.
-
-    Examples::
-
-        >>> d = Bitwise(BitsInteger(8)) or Bitwise(Octet)
-        >>> d.parse(b"\x10")
-        16
-        >>> d.build(255)
-        b'\xff'
-        >>> d.sizeof()
-        1
-
-    Obtaining other byte or bit orderings::
-
-        >>> d = BitsInteger(2)
-        >>> d.parse(b'\x01\x00') # Bit-Level Big-Endian
-        2
-        >>> d = ByteSwapped(BitsInteger(2))
-        >>> d.parse(b'\x01\x00') # Bit-Level Little-Endian
-        1
-        >>> d = BitsInteger(16) # Byte-Level Big-Endian, Bit-Level Big-Endian
-        >>> d.build(5 + 19*256)
-        b'\x00\x00\x00\x01\x00\x00\x01\x01\x00\x00\x00\x00\x00\x01\x00\x01'
-        >>> d = BitsInteger(16, swapped=True) # Byte-Level Little-Endian, Bit-Level Big-Endian
-        >>> d.build(5 + 19*256)
-        b'\x00\x00\x00\x00\x00\x01\x00\x01\x00\x00\x00\x01\x00\x00\x01\x01'
-        >>> d = ByteSwapped(BitsInteger(16)) # Byte-Level Little-Endian, Bit-Level Little-Endian
-        >>> d.build(5 + 19*256)
-        b'\x01\x00\x01\x00\x00\x00\x00\x00\x01\x01\x00\x00\x01\x00\x00\x00'
-        >>> d = ByteSwapped(BitsInteger(16, swapped=True)) # Byte-Level Big-Endian, Bit-Level Little-Endian
-        >>> d.build(5 + 19*256)
-        b'\x01\x01\x00\x00\x01\x00\x00\x00\x01\x00\x01\x00\x00\x00\x00\x00'
-    """
-
-    def __init__(self, length, signed=False, swapped=False):
-        super().__init__()
-        self.length = length
-        self.signed = signed
-        self.swapped = swapped
-
-    def _parse(self, stream, context, path):
-        length = evaluate(self.length, context)
-        if length <= 0:
-            raise IntegerError(f"length {length} must be positive", path=path)
-        data = stream_read(stream, length, path)
-        try:
-            if evaluate(self.swapped, context):
-                data = swapbytesinbits(data)
-            return bits2integer(data, self.signed)
-        except ValueError as e:
-            raise IntegerError(str(e), path=path)
-
-    def _build(self, obj, stream, context, path):
-        if not isinstance(obj, integertypes):
-            raise IntegerError(f"value {obj} is not an integer", path=path)
-        length = evaluate(self.length, context)
-        if length <= 0:
-            raise IntegerError(f"length {length} must be positive", path=path)
-        try:
-            data = integer2bits(obj, length, self.signed)
-            if evaluate(self.swapped, context):
-                data = swapbytesinbits(data)
-        except ValueError as e:
-            raise IntegerError(str(e), path=path)
-        stream_write(stream, data, length, path)
-        return obj
-
-    def _sizeof(self, context, path):
-        try:
-            return evaluate(self.length, context)
-        except (KeyError, AttributeError):
-            raise SizeofError("cannot calculate size, key not found in context", path=path)
-
-
-@singleton
-def Bit():
-    """A 1-bit integer, must be enclosed in a Bitwise (eg. BitStruct)"""
-    return BitsInteger(1)
-@singleton
-def Nibble():
-    """A 4-bit integer, must be enclosed in a Bitwise (eg. BitStruct)"""
-    return BitsInteger(4)
-@singleton
-def Octet():
-    """A 8-bit integer, must be enclosed in a Bitwise (eg. BitStruct)"""
-    return BitsInteger(8)
-
-@singleton
-def Int8ub():
-    """Unsigned, big endian 8-bit integer"""
-    return FormatField(">", "B")
-@singleton
-def Int16ub():
-    """Unsigned, big endian 16-bit integer"""
-    return FormatField(">", "H")
-@singleton
-def Int32ub():
-    """Unsigned, big endian 32-bit integer"""
-    return FormatField(">", "L")
-@singleton
-def Int64ub():
-    """Unsigned, big endian 64-bit integer"""
-    return FormatField(">", "Q")
-
-@singleton
-def Int8sb():
-    """Signed, big endian 8-bit integer"""
-    return FormatField(">", "b")
-@singleton
-def Int16sb():
-    """Signed, big endian 16-bit integer"""
-    return FormatField(">", "h")
-@singleton
-def Int32sb():
-    """Signed, big endian 32-bit integer"""
-    return FormatField(">", "l")
-@singleton
-def Int64sb():
-    """Signed, big endian 64-bit integer"""
-    return FormatField(">", "q")
-
-@singleton
-def Int8ul():
-    """Unsigned, little endian 8-bit integer"""
-    return FormatField("<", "B")
-@singleton
-def Int16ul():
-    """Unsigned, little endian 16-bit integer"""
-    return FormatField("<", "H")
-@singleton
-def Int32ul():
-    """Unsigned, little endian 32-bit integer"""
-    return FormatField("<", "L")
-@singleton
-def Int64ul():
-    """Unsigned, little endian 64-bit integer"""
-    return FormatField("<", "Q")
-
-@singleton
-def Int8sl():
-    """Signed, little endian 8-bit integer"""
-    return FormatField("<", "b")
-@singleton
-def Int16sl():
-    """Signed, little endian 16-bit integer"""
-    return FormatField("<", "h")
-@singleton
-def Int32sl():
-    """Signed, little endian 32-bit integer"""
-    return FormatField("<", "l")
-@singleton
-def Int64sl():
-    """Signed, little endian 64-bit integer"""
-    return FormatField("<", "q")
-
-@singleton
-def Int8un():
-    """Unsigned, native endianity 8-bit integer"""
-    return FormatField("=", "B")
-@singleton
-def Int16un():
-    """Unsigned, native endianity 16-bit integer"""
-    return FormatField("=", "H")
-@singleton
-def Int32un():
-    """Unsigned, native endianity 32-bit integer"""
-    return FormatField("=", "L")
-@singleton
-def Int64un():
-    """Unsigned, native endianity 64-bit integer"""
-    return FormatField("=", "Q")
-
-@singleton
-def Int8sn():
-    """Signed, native endianity 8-bit integer"""
-    return FormatField("=", "b")
-@singleton
-def Int16sn():
-    """Signed, native endianity 16-bit integer"""
-    return FormatField("=", "h")
-@singleton
-def Int32sn():
-    """Signed, native endianity 32-bit integer"""
-    return FormatField("=", "l")
-@singleton
-def Int64sn():
-    """Signed, native endianity 64-bit integer"""
-    return FormatField("=", "q")
-
-Byte  = Int8ub
-Short = Int16ub
-Int   = Int32ub
-Long  = Int64ub
-
-@singleton
-def Float16b():
-    """Big endian, 16-bit IEEE 754 floating point number"""
-    return FormatField(">", "e")
-@singleton
-def Float16l():
-    """Little endian, 16-bit IEEE 754 floating point number"""
-    return FormatField("<", "e")
-@singleton
-def Float16n():
-    """Native endianity, 16-bit IEEE 754 floating point number"""
-    return FormatField("=", "e")
-
-@singleton
-def Float32b():
-    """Big endian, 32-bit IEEE floating point number"""
-    return FormatField(">", "f")
-@singleton
-def Float32l():
-    """Little endian, 32-bit IEEE floating point number"""
-    return FormatField("<", "f")
-@singleton
-def Float32n():
-    """Native endianity, 32-bit IEEE floating point number"""
-    return FormatField("=", "f")
-
-@singleton
-def Float64b():
-    """Big endian, 64-bit IEEE floating point number"""
-    return FormatField(">", "d")
-@singleton
-def Float64l():
-    """Little endian, 64-bit IEEE floating point number"""
-    return FormatField("<", "d")
-@singleton
-def Float64n():
-    """Native endianity, 64-bit IEEE floating point number"""
-    return FormatField("=", "d")
-
-Half = Float16b
-Single = Float32b
-Double = Float64b
-
-native = (sys.byteorder == "little")
-
-@singleton
-def Int24ub():
-    """A 3-byte big-endian unsigned integer, as used in ancient file formats."""
-    return BytesInteger(3, signed=False, swapped=False)
-@singleton
-def Int24ul():
-    """A 3-byte little-endian unsigned integer, as used in ancient file formats."""
-    return BytesInteger(3, signed=False, swapped=True)
-@singleton
-def Int24un():
-    """A 3-byte native-endian unsigned integer, as used in ancient file formats."""
-    return BytesInteger(3, signed=False, swapped=native)
-@singleton
-def Int24sb():
-    """A 3-byte big-endian signed integer, as used in ancient file formats."""
-    return BytesInteger(3, signed=True, swapped=False)
-@singleton
-def Int24sl():
-    """A 3-byte little-endian signed integer, as used in ancient file formats."""
-    return BytesInteger(3, signed=True, swapped=True)
-@singleton
-def Int24sn():
-    """A 3-byte native-endian signed integer, as used in ancient file formats."""
-    return BytesInteger(3, signed=True, swapped=native)
-
-
-@singleton
-class VarInt(Construct):
-    r"""
-    VarInt encoded unsigned integer. Each 7 bits of the number are encoded in one byte of the stream, where leftmost bit (MSB) is unset when byte is terminal. Scheme is defined at Google site related to `Protocol Buffers <https://developers.google.com/protocol-buffers/docs/encoding>`_.
-
-    Can only encode non-negative numbers.
-
-    Parses into an integer. Builds from an integer. Size is undefined.
-
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-    :raises IntegerError: given a negative value, or not an integer
-
-    Example::
-
-        >>> VarInt.build(1)
-        b'\x01'
-        >>> VarInt.build(2**100)
-        b'\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x04'
-    """
-
-    def _parse(self, stream, context, path):
-        acc = []
-        while True:
-            b = byte2int(stream_read(stream, 1, path))
-            acc.append(b & 0b01111111)
-            if b & 0b10000000 == 0:
-                break
-        num = 0
-        for b in reversed(acc):
-            num = (num << 7) | b
-        return num
-
-    def _build(self, obj, stream, context, path):
-        if not isinstance(obj, integertypes):
-            raise IntegerError(f"value {obj} is not an integer", path=path)
-        if obj < 0:
-            raise IntegerError(f"VarInt cannot build from negative number {obj}", path=path)
-        x = obj
-        B = bytearray()
-        while x > 0b01111111:
-            B.append(0b10000000 | (x & 0b01111111))
-            x >>= 7
-        B.append(x)
-        stream_write(stream, bytes(B), len(B), path)
-        return obj
-
-
-@singleton
-class ZigZag(Construct):
-    r"""
-    ZigZag encoded signed integer. This is a variant of VarInt encoding that also can encode negative numbers. Scheme is defined at Google site related to `Protocol Buffers <https://developers.google.com/protocol-buffers/docs/encoding>`_.
-
-    Can also encode negative numbers.
-
-    Parses into an integer. Builds from an integer. Size is undefined.
-
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-    :raises IntegerError: given not an integer
-
-    Example::
-
-        >>> ZigZag.build(-3)
-        b'\x05'
-        >>> ZigZag.build(3)
-        b'\x06'
-    """
-
-    def _parse(self, stream, context, path):
-        x = VarInt._parse(stream, context, path)
-        if x & 1 == 0:
-            x = x//2
-        else:
-            x = -(x//2+1)
-        return x
-
-    def _build(self, obj, stream, context, path):
-        if not isinstance(obj, integertypes):
-            raise IntegerError(f"value {obj} is not an integer", path=path)
-        if obj >= 0:
-            x = 2*obj
-        else:
-            x = 2*abs(obj)-1
-        VarInt._build(x, stream, context, path)
-        return obj
-
-
-#===============================================================================
-# strings
-#===============================================================================
-
-#: Explicitly supported encodings (by PaddedString and CString classes).
-#:
-possiblestringencodings = dict(
-    ascii=1,
-    utf8=1, utf_8=1, u8=1,
-    utf16=2, utf_16=2, u16=2, utf_16_be=2, utf_16_le=2,
-    utf32=4, utf_32=4, u32=4, utf_32_be=4, utf_32_le=4,
-)
-
-
-def encodingunit(encoding):
-    """Used internally."""
-    encoding = encoding.replace("-","_").lower()
-    if encoding not in possiblestringencodings:
-        raise StringError("encoding %r not found among %r" % (encoding, possiblestringencodings,))
-    return bytes(possiblestringencodings[encoding])
-
-
-class StringEncoded(Adapter):
-    """Used internally."""
-
-    def __init__(self, subcon, encoding):
-        super().__init__(subcon)
-        if not encoding:
-            raise StringError("String* classes require explicit encoding")
-        self.encoding = encoding
-
-    def _decode(self, obj, context, path):
-        return obj.decode(self.encoding)
-
-    def _encode(self, obj, context, path):
-        if not isinstance(obj, unicodestringtype):
-            raise StringError("string encoding failed, expected unicode string", path=path)
-        if obj == u"":
-            return b""
-        return obj.encode(self.encoding)
-
-    def _toET(self, parent, name, context, path):
-        assert (name is not None)
-
-        data = str(get_current_field(context, name))
-        if parent is None:
-            return data
-        else:
-            parent.attrib[name] = data
-        return None
-
-    def _fromET(self, parent, name, context, path, is_root=False):
-        assert(parent is not None)
-        assert(name is not None)
-
-        if isinstance(parent, str):
-            elem = parent
-        else:
-            elem = parent.attrib[name]
-
-        insert_or_append_field(context, name, elem)
-        return context
-
-    def _is_simple_type(self):
-        return True
-
-def PaddedString(length, encoding):
-    r"""
-    Configurable, fixed-length or variable-length string field.
-
-    When parsing, the byte string is stripped of null bytes (per encoding unit), then decoded. Length is an integer or context lambda. When building, the string is encoded and then padded to specified length. If encoded string is larger than the specified length, it fails with PaddingError. Size is same as length parameter.
-
-    .. warning:: PaddedString and CString only support encodings explicitly listed in :class:`~dingsda.core.possiblestringencodings` .
-
-    :param length: integer or context lambda, length in bytes (not unicode characters)
-    :param encoding: string like: utf8 utf16 utf32 ascii
-
-    :raises StringError: building a non-unicode string
-    :raises StringError: selected encoding is not on supported list
-
-    Can propagate any exception from the lambda, possibly non-ConstructError.
-
-    Example::
-
-        >>> d = PaddedString(10, "utf8")
-        >>> d.build(u"Афон")
-        b'\xd0\x90\xd1\x84\xd0\xbe\xd0\xbd\x00\x00'
-        >>> d.parse(_)
-        u'Афон'
-    """
-    macro = StringEncoded(FixedSized(length, NullStripped(GreedyBytes, pad=encodingunit(encoding))), encoding)
-    return macro
-
-
-def PascalString(lengthfield, encoding):
-    r"""
-    Length-prefixed string. The length field can be variable length (such as VarInt) or fixed length (such as Int64ub). :class:`~dingsda.core.VarInt` is recommended when designing new protocols. Stored length is in bytes, not characters. Size is not defined.
-
-    :param lengthfield: Construct instance, field used to parse and build the length (like VarInt Int64ub)
-    :param encoding: string like: utf8 utf16 utf32 ascii
-
-    :raises StringError: building a non-unicode string
-
-    Example::
-
-        >>> d = PascalString(VarInt, "utf8")
-        >>> d.build(u"Афон")
-        b'\x08\xd0\x90\xd1\x84\xd0\xbe\xd0\xbd'
-        >>> d.parse(_)
-        u'Афон'
-    """
-    macro = StringEncoded(Prefixed(lengthfield, GreedyBytes), encoding)
-
-    return macro
-
-
-def CString(encoding):
-    r"""
-    String ending in a terminating null byte (or null bytes in case of UTF16 UTF32).
-
-    .. warning:: String and CString only support encodings explicitly listed in :class:`~dingsda.core.possiblestringencodings` .
-
-    :param encoding: string like: utf8 utf16 utf32 ascii
-
-    :raises StringError: building a non-unicode string
-    :raises StringError: selected encoding is not on supported list
-
-    Example::
-
-        >>> d = CString("utf8")
-        >>> d.build(u"Афон")
-        b'\xd0\x90\xd1\x84\xd0\xbe\xd0\xbd\x00'
-        >>> d.parse(_)
-        u'Афон'
-    """
-    macro = StringEncoded(NullTerminated(GreedyBytes, term=encodingunit(encoding)), encoding)
-    return macro
-
-
-def GreedyString(encoding):
-    r"""
-    String that reads entire stream until EOF, and writes a given string as-is. Analog to :class:`~dingsda.core.GreedyBytes` but also applies unicode-to-bytes encoding.
-
-    :param encoding: string like: utf8 utf16 utf32 ascii
-
-    :raises StringError: building a non-unicode string
-    :raises StreamError: stream failed when reading until EOF
-
-    Example::
-
-        >>> d = GreedyString("utf8")
-        >>> d.build(u"Афон")
-        b'\xd0\x90\xd1\x84\xd0\xbe\xd0\xbd'
-        >>> d.parse(_)
-        u'Афон'
-    """
-    macro = StringEncoded(GreedyBytes, encoding)
     return macro
 
 
@@ -2075,10 +1220,12 @@ class Struct(Construct):
         return ret_ctx
 
     def _sizeof(self, context, path):
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = None, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
+        # we go down one layer
+        ctx = create_parent_context(context)
+        #context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = None, _index = context.get("_index", None))
+        #context._root = context._.get("_root", context)
         try:
-            return sum(sc._sizeof(context, path) for sc in self.subcons)
+            return sum(sc._sizeof(ctx, path) for sc in self.subcons)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
@@ -2188,7 +1335,7 @@ class Sequence(Construct):
 #===============================================================================
 # arrays ranges and repeaters
 #===============================================================================
-class Array(Subconstruct):
+class Array(Arrayconstruct):
     r"""
     Homogenous array of elements, similar to C# generic T[].
 
@@ -2219,28 +1366,6 @@ class Array(Subconstruct):
         super().__init__(subcon)
         self.count = count
         self.discard = discard
-
-    def _preprocess(self, obj, context, path, offset=0):
-        # count isn't checked here, this is done in the build phase
-        retlist = ListContainer()
-        extra_info = {"_offset": offset}
-        size = 0
-        for i,e in enumerate(obj):
-            context._index = i
-            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
-            retlist.append(obj)
-
-            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
-            extra_info.update(extra)
-            offset += child_extra_info["_size"]
-            size += child_extra_info["_size"]
-
-            context.update(extra_info)
-
-        extra_info["_size"] = size
-        extra_info["_endoffset"] = offset
-
-        return retlist, extra_info
 
     def _parse(self, stream, context, path):
         count = evaluate(self.count, context)
@@ -2277,76 +1402,6 @@ class Array(Subconstruct):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
         return count * self.subcon._sizeof(context, path)
 
-    def _toET(self, parent, name, context, path):
-        data = get_current_field(context, name)
-
-        # Simple fields -> FormatFields and Strings
-        if self.subcon._is_simple_type() and not self.subcon._is_array():
-            arr = []
-            for idx, item in enumerate(data):
-                # create new context including the index
-                ctx = create_parent_context(context)
-                ctx._index = idx
-                ctx[f"{name}_{idx}"] = data[idx]
-
-                obj = self.subcon._toET(None, name, ctx, path)
-                arr += [obj]
-            parent.attrib[name] = "[" + list_to_string(arr) + "]"
-        else:
-            sc_names = self.subcon._names()
-            if len(sc_names) == 0:
-                sc_names = [self.subcon.__class__.__name__]
-            for idx, item in enumerate(data):
-                # create new context including the index
-                ctx = create_parent_context(context)
-                ctx._index = idx
-                ctx[f"{sc_names[0]}_{idx}"] = data[idx]
-
-                elem = self.subcon._toET(parent, sc_names[0], ctx, path)
-                if elem is not None:
-                    parent.append(elem)
-
-        return None
-
-
-    def _fromET(self, parent, name, context, path, is_root=False):
-        context[name] = []
-
-        # Simple fields -> FormatFields and Strings
-        if self.subcon._is_simple_type() and not self.subcon._is_array():
-            data = parent.attrib[name]
-            assert(data[0] == "[")
-            assert(data[-1] == "]")
-            arr = string_to_list(data[1:-1])
-
-            for x in arr:
-                self.subcon._fromET(x, name, context, path, is_root=True)
-        else:
-            items = []
-            sc_names = self.subcon._names()
-            if len(sc_names) == 0:
-                sc_names = [self.subcon.__class__.__name__]
-
-            for n in sc_names:
-                items += parent.findall(n)
-
-            for item in items:
-                self.subcon._fromET(item, name, context, path, is_root=True)
-
-            for n in sc_names:
-                if context.get(n, 1) == None:
-                    context.pop(n)
-
-        return context
-
-    def _is_simple_type(self):
-        return self.subcon._is_simple_type()
-
-    def _is_array(self):
-        return True
-
-    def _names(self):
-        return self.subcon._names()
 
 class GreedyRange(Subconstruct):
     r"""
@@ -2436,7 +1491,7 @@ class GreedyRange(Subconstruct):
         raise SizeofError(path=path)
 
 
-class RepeatUntil(Subconstruct):
+class RepeatUntil(Arrayconstruct):
     r"""
     Homogenous array of elements, similar to C# generic IEnumerable<T>, that repeats until the predicate indicates it to stop. Note that the last element (that predicate indicated as True) is included in the return list.
 
@@ -2471,29 +1526,6 @@ class RepeatUntil(Subconstruct):
         self.discard = discard
         self.check_predicate = check_predicate
 
-
-    def _preprocess(self, obj, context, path, offset=0):
-        # predicates don't need to be checked in preprocessing
-        retlist = ListContainer()
-        extra_info = {"_offset": offset}
-        size = 0
-        for i,e in enumerate(obj):
-            context._index = i
-            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
-            retlist.append(obj)
-
-            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
-            extra_info.update(extra)
-            offset += child_extra_info["_size"]
-            size += child_extra_info["_size"]
-
-            context.update(extra_info)
-
-        extra_info["_size"] = size
-        extra_info["_endoffset"] = offset
-
-        return retlist, extra_info
-
     def _parse(self, stream, context, path):
         predicate = self.predicate
         discard = self.discard
@@ -2527,73 +1559,8 @@ class RepeatUntil(Subconstruct):
             raise RepeatError("expected any item to match predicate, when building", path=path)
         return retlist
 
-
-    def _toET(self, parent, name, context, path):
-        data = get_current_field(context, name)
-
-        # Simple fields -> FormatFields and Strings
-        if self.subcon._is_simple_type():
-            arr = []
-            for idx, item in enumerate(data):
-                # create new context including the index
-                ctx = create_parent_context(context)
-                ctx._index = idx
-                ctx[f"{name}_{idx}"] = data[idx]
-
-                obj = self.subcon._toET(None, name, ctx, path)
-                arr += [obj]
-            parent.attrib[name] = "[" + list_to_string(arr) + "]"
-        else:
-            sc_names = self.subcon._names()
-            if len(sc_names) == 0:
-                sc_names = [self.subcon.__class__.__name__]
-            for idx, item in enumerate(data):
-                # create new context including the index
-                ctx = create_parent_context(context)
-                ctx._index = idx
-                ctx[f"{sc_names[0]}_{idx}"] = data[idx]
-
-                elem = self.subcon._toET(parent, sc_names[0], ctx, path)
-                if elem is not None:
-                    parent.append(elem)
-
-        return None
-
-
-    def _fromET(self, parent, name, context, path, is_root=False):
-        context[name] = []
-
-        # Simple fields -> FormatFields and Strings
-        if self.subcon._is_simple_type():
-            data = parent.attrib[name]
-            assert(data[0] == "[")
-            assert(data[-1] == "]")
-            arr = string_to_list(data[1:-1])
-
-            for x in arr:
-                self.subcon._fromET(x, name, context, path, is_root=True)
-        else:
-            items = []
-            sc_names = self.subcon._names()
-            if len(sc_names) == 0:
-                sc_names = [self.subcon.__class__.__name__]
-
-            for n in sc_names:
-                items += parent.findall(n)
-
-            for item in items:
-                self.subcon._fromET(item, name, context, path, is_root=True)
-
-            for n in sc_names:
-                if context.get(n, 1) == None:
-                    context.pop(n)
-
-        return context
-
-
     def _sizeof(self, context, path):
         raise SizeofError("cannot calculate size, amount depends on actual data", path=path)
-
 
     def _names(self):
         sc_names = [self.name]
@@ -2601,7 +1568,7 @@ class RepeatUntil(Subconstruct):
         return sc_names
 
 
-class Area(Subconstruct):
+class Area(Arrayconstruct):
     r"""
     Area is designed to be used in file formats, that specify an offset and size for an field array.
     The wrapper takes the offset like a pointer and parses subcons until the size is reached.
@@ -2668,6 +1635,10 @@ class Area(Subconstruct):
         size = evaluate(self.size, context)
         stream = evaluate(self.stream, context) or stream
         fallback = stream_tell(stream, path)
+
+        assert(size >= 0)
+        if size == 0:
+            return []
 
         stream_seek(stream, offset, 2 if offset < 0 else 0, path)
         obj = ListContainer()
@@ -3358,74 +2329,6 @@ class NamedTuple(Adapter):
         raise NamedTupleError("subcon is neither Struct Sequence Array GreedyRange", path=path)
 
 
-class TimestampAdapter(Adapter):
-    """Used internally."""
-
-
-def Timestamp(subcon, unit, epoch):
-    r"""
-    Datetime, represented as `Arrow <https://pypi.org/project/arrow/>`_ object.
-
-    Note that accuracy is not guaranteed, because building rounds the value to integer (even when Float subcon is used), due to floating-point errors in general, and because MSDOS scheme has only 5-bit (32 values) seconds field (seconds are rounded to multiple of 2).
-
-    Unit is a fraction of a second. 1 is second resolution, 10**-3 is milliseconds resolution, 10**-6 is microseconds resolution, etc. Usually its 1 on Unix and MacOSX, 10**-7 on Windows. Epoch is a year (if integer) or a specific day (if Arrow object). Usually its 1970 on Unix, 1904 on MacOSX, 1600 on Windows. MSDOS format doesnt support custom unit or epoch, it uses 2-seconds resolution and 1980 epoch.
-
-    :param subcon: Construct instance like Int* Float*, or Int32ub with msdos format
-    :param unit: integer or float, or msdos string
-    :param epoch: integer, or Arrow instance, or msdos string
-
-    :raises ImportError: arrow could not be imported during ctor
-    :raises TimestampError: subcon is not a Construct instance
-    :raises TimestampError: unit or epoch is a wrong type
-
-    Example::
-
-        >>> d = Timestamp(Int64ub, 1., 1970)
-        >>> d.parse(b'\x00\x00\x00\x00ZIz\x00')
-        <Arrow [2018-01-01T00:00:00+00:00]>
-        >>> d = Timestamp(Int32ub, "msdos", "msdos")
-        >>> d.parse(b'H9\x8c"')
-        <Arrow [2016-01-25T17:33:04+00:00]>
-    """
-    import arrow
-
-    if not isinstance(subcon, Construct):
-        raise TimestampError("subcon should be Int*, experimentally Float*, or Int32ub when using msdos format")
-    if not isinstance(unit, (integertypes, float, stringtypes)):
-        raise TimestampError("unit must be one of: int float string")
-    if not isinstance(epoch, (integertypes, arrow.Arrow, stringtypes)):
-        raise TimestampError("epoch must be one of: int Arrow string")
-
-    if unit == "msdos" or epoch == "msdos":
-        st = BitStruct(
-            "year" / BitsInteger(7),
-            "month" / BitsInteger(4),
-            "day" / BitsInteger(5),
-            "hour" / BitsInteger(5),
-            "minute" / BitsInteger(6),
-            "second" / BitsInteger(5),
-        )
-        class MsdosTimestampAdapter(TimestampAdapter):
-            def _decode(self, obj, context, path):
-                return arrow.Arrow(1980,1,1).shift(years=obj.year, months=obj.month-1, days=obj.day-1, hours=obj.hour, minutes=obj.minute, seconds=obj.second*2)
-            def _encode(self, obj, context, path):
-                t = obj.timetuple()
-                return Container(year=t.tm_year-1980, month=t.tm_mon, day=t.tm_mday, hour=t.tm_hour, minute=t.tm_min, second=t.tm_sec//2)
-        macro = MsdosTimestampAdapter(st)
-
-    else:
-        if isinstance(epoch, integertypes):
-            epoch = arrow.Arrow(epoch, 1, 1)
-        class EpochTimestampAdapter(TimestampAdapter):
-            def _decode(self, obj, context, path):
-                return epoch.shift(seconds=obj*unit)
-            def _encode(self, obj, context, path):
-                return int((obj-epoch).total_seconds()/unit)
-        macro = EpochTimestampAdapter(subcon)
-
-    return macro
-
-
 class Hex(Adapter):
     r"""
     Adapter for displaying hexadecimal/hexlified representation of integers/bytes/RawCopy dictionaries.
@@ -3628,7 +2531,7 @@ class Union(Construct):
                 context[sc.name] = buildret
             return Container({sc.name:buildret})
         else:
-            raise UnionError("cannot build, none of subcons were found in the dictionary %r" % (obj, ), path=path)
+            raise UnionError("cannot build, none of subcons were found in the dictionary %r" % (obj,), path=path)
 
     def _sizeof(self, context, path):
         raise SizeofError("Union builds depending on actual object dict, size is unknown", path=path)
@@ -4079,7 +2982,7 @@ class Padded(Subconstruct):
         position2 = stream_tell(stream, path)
         pad = length - (position2 - position1)
         if pad < 0:
-            raise PaddingError("subcon parsed %d bytes but was allowed only %d" % (position2-position1, length), path=path)
+            raise PaddingError("subcon parsed %d bytes but was allowed only %d" % (position2 - position1, length), path=path)
         stream_read(stream, pad, path)
         return obj
 
@@ -4092,7 +2995,7 @@ class Padded(Subconstruct):
         position2 = stream_tell(stream, path)
         pad = length - (position2 - position1)
         if pad < 0:
-            raise PaddingError("subcon build %d bytes but was allowed only %d" % (position2-position1, length), path=path)
+            raise PaddingError("subcon build %d bytes but was allowed only %d" % (position2 - position1, length), path=path)
         stream_write(stream, self.pattern * pad, pad, path)
         return buildret
 
@@ -4588,7 +3491,7 @@ class RawCopy(Subconstruct):
         obj = self.subcon._parsereport(stream, context, path)
         offset2 = stream_tell(stream, path)
         stream_seek(stream, offset1, 0, path)
-        data = stream_read(stream, offset2-offset1, path)
+        data = stream_read(stream, offset2 - offset1, path)
         return Container(data=data, value=obj, offset1=offset1, offset2=offset2, length=(offset2-offset1))
 
     def _build(self, obj, stream, context, path):
@@ -4607,7 +3510,7 @@ class RawCopy(Subconstruct):
             value = value if buildret is None else buildret
             offset2 = stream_tell(stream, path)
             stream_seek(stream, offset1, 0, path)
-            data = stream_read(stream, offset2-offset1, path)
+            data = stream_read(stream, offset2 - offset1, path)
             return Container(obj, data=data, value=value, offset1=offset1, offset2=offset2, length=(offset2-offset1))
         raise RawCopyError('RawCopy cannot build, both data and value keys are missing', path=path)
 
@@ -5040,7 +3943,7 @@ class Transformed(Subconstruct):
         data = self.encodefunc(data)
         if isinstance(self.encodeamount, integertypes):
             if len(data) != self.encodeamount:
-                raise StreamError("encoding transformation produced wrong amount of bytes, %s instead of expected %s" % (len(data), self.encodeamount, ), path=path)
+                raise StreamError("encoding transformation produced wrong amount of bytes, %s instead of expected %s" % (len(data), self.encodeamount,), path=path)
         stream_write(stream, data, len(data), path)
         return buildret
 
@@ -5402,7 +4305,6 @@ class EncryptedSym(Tunnel):
    """
 
     def __init__(self, subcon, cipher):
-        import cryptography
         super().__init__(subcon)
         self.cipher = cipher
 
@@ -5526,389 +4428,6 @@ class Rebuffered(Subconstruct):
     def _build(self, obj, stream, context, path):
         self.stream2.substream = stream
         return self.subcon._build(obj, self.stream2, context, path)
-
-
-#===============================================================================
-# lazy equivalents
-#===============================================================================
-class Lazy(Subconstruct):
-    r"""
-    Lazyfies a field.
-
-    This wrapper allows you to do lazy parsing of individual fields inside a normal Struct (without using LazyStruct which may not work in every scenario). It is also used by KaitaiStruct compiler to emit `instances` because those are not processed greedily, and they may refer to other not yet parsed fields. Those are 2 entirely different applications but semantics are the same.
-
-    Parsing saves the current stream offset and returns a lambda. If and when that lambda gets evaluated, it seeks the stream to then-current position, parses the subcon, and seeks the stream back to previous position. Building evaluates that lambda into an object (if needed), then defers to subcon. Size also defers to subcon.
-
-    :param subcon: Construct instance
-
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-    :raises StreamError: stream is not seekable and tellable
-
-    Example::
-
-        >>> d = Lazy(Byte)
-        >>> x = d.parse(b'\x00')
-        >>> x
-        <function dingsda.core.Lazy._parse.<locals>.execute>
-        >>> x()
-        0
-        >>> d.build(0)
-        b'\x00'
-        >>> d.build(x)
-        b'\x00'
-        >>> d.sizeof()
-        1
-    """
-
-    def __init__(self, subcon):
-        super().__init__(subcon)
-
-    def _parse(self, stream, context, path):
-        offset = stream_tell(stream, path)
-        def execute():
-            fallback = stream_tell(stream, path)
-            stream_seek(stream, offset, 0, path)
-            obj = self.subcon._parsereport(stream, context, path)
-            stream_seek(stream, fallback, 0, path)
-            return obj
-        len = self.subcon._actualsize(stream, context, path)
-        stream_seek(stream, len, 1, path)
-        return execute
-
-    def _build(self, obj, stream, context, path):
-        if callable(obj):
-            obj = obj()
-        return self.subcon._build(obj, stream, context, path)
-
-    def _toET(self, parent, name, context, path):
-        return self.subcon._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
-
-
-    def _fromET(self, parent, name, context, path, is_root=False):
-        return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
-
-
-
-class LazyContainer(dict):
-    """Used internally."""
-
-    def __init__(self, struct, stream, offsets, values, context, path):
-        self._struct = struct
-        self._stream = stream
-        self._offsets = offsets
-        self._values = values
-        self._context = context
-        self._path = path
-
-    def __getattr__(self, name):
-        if name in self._struct._subconsindexes:
-            return self[name]
-        raise AttributeError
-
-    def __getitem__(self, index):
-        if isinstance(index, stringtypes):
-            index = self._struct._subconsindexes[index] # KeyError
-        if index in self._values:
-            return self._values[index]
-        stream_seek(self._stream, self._offsets[index], 0, self._path) # KeyError
-        parseret = self._struct.subcons[index]._parsereport(self._stream, self._context, self._path)
-        self._values[index] = parseret
-        return parseret
-
-    def __len__(self):
-        return len(self._struct.subcons)
-
-    def keys(self):
-        return iter(self._struct._subcons)
-
-    def values(self):
-        return (self[k] for k in self._struct._subcons)
-
-    def items(self):
-        return ((k, self[k]) for k in self._struct._subcons)
-
-    __iter__ = keys
-
-    def __eq__(self, other):
-        return Container.__eq__(self, other)
-
-    def __repr__(self):
-        return "<LazyContainer: %s items cached, %s subcons>" % (len(self._values), len(self._struct.subcons), )
-
-
-class LazyStruct(Construct):
-    r"""
-    Equivalent to :class:`~dingsda.core.Struct`, but when this class is parsed, most fields are not parsed (they are skipped if their size can be measured by _actualsize or _sizeof method). See its docstring for details.
-
-    Fields are parsed depending on some factors:
-
-    * Some fields like Int* Float* Bytes(5) Array(5,Byte) Pointer are fixed-size and are therefore skipped. Stream is not read.
-    * Some fields like Bytes(this.field) are variable-size but their size is known during parsing when there is a corresponding context entry. Those fields are also skipped. Stream is not read.
-    * Some fields like Prefixed PrefixedArray PascalString are variable-size but their size can be computed by partially reading the stream. Only first few bytes are read (the lengthfield).
-    * Other fields like VarInt need to be parsed. Stream position that is left after the field was parsed is used.
-    * Some fields may not work properly, due to the fact that this class attempts to skip fields, and parses them only out of necessity. Miscellaneous fields often have size defined as 0, and fixed sized fields are skippable.
-
-    Note there are restrictions:
-
-    * If a field like Bytes(this.field) references another field in the same struct, you need to access the referenced field first (to trigger its parsing) and then you can access the Bytes field. Otherwise it would fail due to missing context entry.
-    * If a field references another field within inner (nested) or outer (super) struct, things may break. Context is nested, but this class was not rigorously tested in that manner.
-
-    Building and sizeof are greedy, like in Struct.
-
-    :param \*subcons: Construct instances, list of members, some can be anonymous
-    :param \*\*subconskw: Construct instances, list of members (requires Python 3.6)
-    """
-
-    def __init__(self, *subcons, **subconskw):
-        super().__init__()
-        self.subcons = list(subcons) + list(k/v for k,v in subconskw.items())
-        self._subcons = Container((sc.name,sc) for sc in self.subcons if sc.name)
-        self._subconsindexes = Container((sc.name,i) for i,sc in enumerate(self.subcons) if sc.name)
-        self.flagbuildnone = all(sc.flagbuildnone for sc in self.subcons)
-
-    def __getattr__(self, name):
-        if name in self._subcons:
-            return self._subcons[name]
-        raise AttributeError
-
-    def _parse(self, stream, context, path):
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = stream, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
-        offset = stream_tell(stream, path)
-        offsets = {0: offset}
-        values = {}
-        for i,sc in enumerate(self.subcons):
-            try:
-                offset += sc._actualsize(stream, context, path)
-                stream_seek(stream, offset, 0, path)
-            except SizeofError:
-                parseret = sc._parsereport(stream, context, path)
-                values[i] = parseret
-                if sc.name:
-                    context[sc.name] = parseret
-                offset = stream_tell(stream, path)
-            offsets[i+1] = offset
-        return LazyContainer(self, stream, offsets, values, context, path)
-
-    def _build(self, obj, stream, context, path):
-        # exact copy from Struct class
-        if obj is None:
-            obj = Container()
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = stream, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
-        context.update(obj)
-        for sc in self.subcons:
-            try:
-                if sc.flagbuildnone:
-                    subobj = obj.get(sc.name, None)
-                else:
-                    subobj = obj[sc.name] # raises KeyError
-
-                if sc.name:
-                    context[sc.name] = subobj
-
-                buildret = sc._build(subobj, stream, context, path)
-                if sc.name:
-                    context[sc.name] = buildret
-            except StopFieldError:
-                break
-        return context
-
-    def _sizeof(self, context, path):
-        # exact copy from Struct class
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = None, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
-        try:
-            return sum(sc._sizeof(context, path) for sc in self.subcons)
-        except (KeyError, AttributeError):
-            raise SizeofError("cannot calculate size, key not found in context", path=path)
-
-
-class LazyListContainer(list):
-    """Used internally."""
-
-    def __init__(self, subcon, stream, count, offsets, values, context, path):
-        self._subcon = subcon
-        self._stream = stream
-        self._count = count
-        self._offsets = offsets
-        self._values = values
-        self._context = context
-        self._path = path
-
-    def __getitem__(self, index):
-        if isinstance(index, slice):
-            return [self[i] for i in range(*index.indices(self._count))]
-        if index in self._values:
-            return self._values[index]
-        stream_seek(self._stream, self._offsets[index], 0, self._path) # KeyError
-        parseret = self._subcon._parsereport(self._stream, self._context, self._path)
-        self._values[index] = parseret
-        return parseret
-
-    def __getslice__(self, start, stop):
-        if stop == sys.maxsize:
-            stop = self._count
-        return self.__getitem__(slice(start, stop))
-
-    def __len__(self):
-        return self._count
-
-    def __iter__(self):
-        return (self[i] for i in range(self._count))
-
-    def __eq__(self, other):
-        return len(self) == len(other) and all(self[i] == other[i] for i in range(self._count))
-
-    def __repr__(self):
-        return "<LazyListContainer: %s of %s items cached>" % (len(self._values), self._count, )
-
-
-class LazyArray(Subconstruct):
-    r"""
-    Equivalent to :class:`~dingsda.core.Array`, but the subcon is not parsed when possible (it gets skipped if the size can be measured by _actualsize or _sizeof method). See its docstring for details.
-
-    Fields are parsed depending on some factors:
-
-    * Some fields like Int* Float* Bytes(5) Array(5,Byte) Pointer are fixed-size and are therefore skipped. Stream is not read.
-    * Some fields like Bytes(this.field) are variable-size but their size is known during parsing when there is a corresponding context entry. Those fields are also skipped. Stream is not read.
-    * Some fields like Prefixed PrefixedArray PascalString are variable-size but their size can be computed by partially reading the stream. Only first few bytes are read (the lengthfield).
-    * Other fields like VarInt need to be parsed. Stream position that is left after the field was parsed is used.
-    * Some fields may not work properly, due to the fact that this class attempts to skip fields, and parses them only out of necessity. Miscellaneous fields often have size defined as 0, and fixed sized fields are skippable.
-
-    Note there are restrictions:
-
-    * If a field references another field within inner (nested) or outer (super) struct, things may break. Context is nested, but this class was not rigorously tested in that manner.
-
-    Building and sizeof are greedy, like in Array.
-
-    :param count: integer or context lambda, strict amount of elements
-    :param subcon: Construct instance, subcon to process individual elements
-    """
-
-    def __init__(self, count, subcon):
-        super().__init__(subcon)
-        self.count = count
-
-    def _parse(self, stream, context, path):
-        sc = self.subcon
-        count = self.count
-        if callable(count):
-            count = count(context)
-        if not 0 <= count:
-            raise RangeError("invalid count %s" % (count,), path=path)
-        offset = stream_tell(stream, path)
-        offsets = {0: offset}
-        values = {}
-        for i in range(count):
-            try:
-                offset += sc._actualsize(stream, context, path)
-                stream_seek(stream, offset, 0, path)
-            except SizeofError:
-                parseret = sc._parsereport(stream, context, path)
-                values[i] = parseret
-                offset = stream_tell(stream, path)
-            offsets[i+1] = offset
-        return LazyListContainer(sc, stream, count, offsets, values, context, path)
-
-    def _build(self, obj, stream, context, path):
-        # exact copy from Array class
-        count = self.count
-        if callable(count):
-            count = count(context)
-        if not 0 <= count:
-            raise RangeError("invalid count %s" % (count,), path=path)
-        if not len(obj) == count:
-            raise RangeError("expected %d elements, found %d" % (count, len(obj)), path=path)
-        retlist = ListContainer()
-        for i,e in enumerate(obj):
-            context._index = i
-            buildret = self.subcon._build(e, stream, context, path)
-            retlist.append(buildret)
-        return retlist
-
-    def _sizeof(self, context, path):
-        # exact copy from Array class
-        try:
-            count = self.count
-            if callable(count):
-                count = count(context)
-        except (KeyError, AttributeError):
-            raise SizeofError("cannot calculate size, key not found in context", path=path)
-        return count * self.subcon._sizeof(context, path)
-
-
-class LazyBound(Construct):
-    r"""
-    Field that binds to the subcon only at runtime (during parsing and building, not ctor). Useful for recursive data structures, like linked-lists and trees, where a dingsda needs to refer to itself (while it does not exist yet in the namespace).
-
-    Note that it is possible to obtain same effect without using this class, using a loop. However there are usecases where that is not possible (if remaining nodes cannot be sized-up, and there is data following the recursive structure). There is also a significant difference, namely that LazyBound actually does greedy parsing while the loop does lazy parsing. See examples.
-
-    To break recursion, use `If` field. See examples.
-
-    :param subconfunc: parameter-less lambda returning Construct instance, can also return itself
-
-    Example::
-
-        d = Struct(
-            "value" / Byte,
-            "next" / If(this.value > 0, LazyBound(lambda: d)),
-        )
-        >>> print(d.parse(b"\x05\x09\x00"))
-        Container:
-            value = 5
-            next = Container:
-                value = 9
-                next = Container:
-                    value = 0
-                    next = None
-
-    ::
-
-        d = Struct(
-            "value" / Byte,
-            "next" / GreedyBytes,
-        )
-        data = b"\x05\x09\x00"
-        while data:
-            x = d.parse(data)
-            data = x.next
-            print(x)
-        # print outputs
-        Container:
-            value = 5
-            next = \t\x00 (total 2)
-        # print outputs
-        Container:
-            value = 9
-            next = \x00 (total 1)
-        # print outputs
-        Container:
-            value = 0
-            next =  (total 0)
-    """
-
-    def __init__(self, subconfunc):
-        super().__init__()
-        self.subconfunc = subconfunc
-
-    def _parse(self, stream, context, path):
-        sc = self.subconfunc()
-        return sc._parsereport(stream, context, path)
-
-    def _build(self, obj, stream, context, path):
-        sc = self.subconfunc()
-        return sc._build(obj, stream, context, path)
-
-    def _toET(self, parent, name, context, path):
-        sc = self.subconfunc()
-        return sc._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
-
-
-    def _fromET(self, parent, name, context, path, is_root=False):
-        sc = self.subconfunc()
-        return sc._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
-
 
 #===============================================================================
 # adapters and validators
@@ -6099,7 +4618,3 @@ class Indexing(Adapter):
         output[self.index] = obj
         return output
 
-
-#===============================================================================
-# end of file
-#===============================================================================

@@ -1,3 +1,4 @@
+from dingsda.numbers import Int8ul
 from tests.declarativeunittest import *
 from dingsda import *
 from dingsda.lib import *
@@ -131,7 +132,7 @@ def test_copy_method():
     assert c is not d
 
 def test_copy():
-    from copy import copy, deepcopy
+    from copy import copy
 
     c = Container(a=1)
     d = copy(c)
@@ -139,7 +140,7 @@ def test_copy():
     assert c is not d
 
 def test_deepcopy():
-    from copy import copy, deepcopy
+    from copy import deepcopy
 
     c = Container(a=1)
     d = deepcopy(c)

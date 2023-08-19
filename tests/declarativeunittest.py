@@ -1,14 +1,12 @@
 import pytest
+import xml.etree.ElementTree as ET
 
 xfail = pytest.mark.xfail
 skip = pytest.mark.skip
 skipif = pytest.mark.skipif
 
-import os, math, random, collections, itertools, io, hashlib, binascii
-
-from xml.etree import ElementTree as ET
-
 from dingsda import *
+from dingsda.errors import *
 from dingsda.lib import *
 
 if not ONWINDOWS:

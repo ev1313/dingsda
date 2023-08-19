@@ -72,6 +72,18710 @@ b'AE\x85\x1f'
 
 Some examples of parsing:
 
+>>> from dingsda import Int16ub, Int16ulfrom dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ulfrom dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ubInt16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ubInt16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import  Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import  Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import   Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import   Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import  Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import  Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ulfrom dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ulfrom dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ubInt16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ubInt16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import  Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import  Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import   Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import   Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import  Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import  Int16ul
+from dingsda.FormatField import Int16ub
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sbfrom dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sbfrom dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ubInt16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ubInt16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import  Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import  Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import   Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import   Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import  Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import  Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sbfrom dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sbfrom dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ubInt16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ubInt16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import  Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import  Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import   Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import   Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import  Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import  Int16sb
+from dingsda.FormatField import Int16ub
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sbfrom dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sbfrom dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ubInt16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ubInt16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sbfrom dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sbfrom dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ubInt16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ubInt16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub Int16sb
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ulfrom dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ulfrom dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ubInt16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ubInt16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ulfrom dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ulfrom dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ubInt16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ubInt16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub Int16ul
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub
+from dingsda.FormatField import Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from dingsda import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from construct import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
+>>> from construct import Int16ub, Int16ul
+>>> Int16ub.parse(b"\x01\x02")
+258
+>>> Int16ul.parse(b"\x01\x02")
+513
+
+Some examples of building:
+
+>>> from dingsda import Int16ub, Int16sb
+>>> Int16ub.build(31337)
+'zi'
+>>> Int16sb.build(-31337)
+'\x86\x97'
+
+Other fields like:
+
+>>> Flag.parse(b"\x01")
+True
+
+>>> Enum(Byte, g=8, h=11).parse(b"\x08")
+'g'
+>>> Enum(Byte, g=8, h=11).build(11)
+b'\x0b'
+
+>>> Float32b.build(12.345)
+b'AE\x85\x1f'
+>>> Single.parse(_)
+12.345000267028809
+
+Some examples of parsing:
+
 >>> from dingsda import Int16ub, Int16ul
 >>> Int16ub.parse(b"\x01\x02")
 258

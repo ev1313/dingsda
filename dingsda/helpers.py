@@ -1,4 +1,7 @@
+from dingsda.errors import StreamError, StringError
+from dingsda.lib import bytestringtype
 from dingsda.lib.containers import Container, ListContainer
+
 def get_current_field(context, name):
     idx = context.get("_index", None)
     if idx is not None:
@@ -90,3 +93,88 @@ def list_to_string(string_list):
 def string_to_list(string):
     reader = csv.reader([string])
     return next(reader)
+
+
+def singleton(arg):
+    x = arg()
+    return x
+
+
+def hyphenatedict(d):
+    return {k.replace("_","-").rstrip("-"):v for k,v in d.items()}
+
+
+def hyphenatelist(l) -> list:
+    return [hyphenatedict(d) for d in l]
+
+
+def evaluate(param, context):
+    return param(context) if callable(param) else param
+
+
+def stream_read(stream, length, path):
+    if length < 0:
+        raise StreamError("length must be non-negative, found %s" % length, path=path)
+    try:
+        data = stream.read(length)
+    except Exception:
+        raise StreamError("stream.read() failed, requested %s bytes" % (length,), path=path)
+    if len(data) != length:
+        raise StreamError("stream read less than specified amount, expected %d, found %d" % (length, len(data)), path=path)
+    return data
+
+
+def stream_read_entire(stream, path):
+    try:
+        return stream.read()
+    except Exception:
+        raise StreamError("stream.read() failed when reading until EOF", path=path)
+
+
+def stream_write(stream, data, length, path):
+    if not isinstance(data, bytestringtype):
+        raise StringError("given non-bytes value, perhaps unicode? %r" % (data,), path=path)
+    if length < 0:
+        raise StreamError("length must be non-negative, found %s" % length, path=path)
+    if len(data) != length:
+        raise StreamError("bytes object of wrong length, expected %d, found %d" % (length, len(data)), path=path)
+    try:
+        written = stream.write(data)
+    except Exception:
+        raise StreamError("stream.write() failed, given %r" % (data,), path=path)
+    if written != length:
+        raise StreamError("stream written less than specified, expected %d, written %d" % (length, written), path=path)
+
+
+def stream_seek(stream, offset, whence, path):
+    try:
+        return stream.seek(offset, whence)
+    except Exception:
+        raise StreamError("stream.seek() failed, offset %s, whence %s" % (offset, whence), path=path)
+
+
+def stream_tell(stream, path):
+    try:
+        return stream.tell()
+    except Exception:
+        raise StreamError("stream.tell() failed", path=path)
+
+
+def stream_size(stream):
+    try:
+        fallback = stream.tell()
+        end = stream.seek(0, 2)
+        stream.seek(fallback)
+        return end
+    except Exception:
+        raise StreamError("stream. seek() tell() failed", path="???")
+
+
+def stream_iseof(stream):
+    try:
+        fallback = stream.tell()
+        data = stream.read(1)
+        stream.seek(fallback)
+        return not data
+    except Exception:
+        raise StreamError("stream. read() seek() tell() failed", path="???")

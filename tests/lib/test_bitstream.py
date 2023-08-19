@@ -1,3 +1,4 @@
+import io, os, random
 from tests.declarativeunittest import *
 from dingsda.lib.bitstream import *
 
