@@ -1,4 +1,4 @@
-from dingsda import *
+from dingsda.core import Construct, Subconstruct
 from dingsda.lib import *
 import sys, traceback, pdb, inspect
 

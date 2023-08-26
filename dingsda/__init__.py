@@ -119,7 +119,7 @@ __all__ = [
     'Octet',
     'OffsettedEnd',
     'OneOf',
-    'Optional',
+    'TryParse',
     'Padded',
     'Padding',
     'Pass',

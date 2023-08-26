@@ -1,6 +1,8 @@
 import pytest
 import xml.etree.ElementTree as ET
 
+from typing import Optional
+
 xfail = pytest.mark.xfail
 skip = pytest.mark.skip
 skipif = pytest.mark.skipif
@@ -21,12 +23,11 @@ def raises(func, *args, **kw):
         return e.__class__
 
 
-def common(format: Construct, datasample: bytes, objsample: Container, sizesample=SizeofError, objsample_build: Container = None, preprocess = False, **kw):
+def common(format: Construct, datasample: bytes, objsample: Container, objsample_build: Optional[Container] = None, preprocess: bool = False, **kw):
     r"""
     :param format: the construct to test
     :param datasample: a sample of the data to parse
     :param objsample: the object that should be parsed from the data
-    :param sizesample: the size of the data sample (optional). Used to test Sizeof.
     :param objsample_build: an example object that should produce the same datasample (optional). Used to test Rebuilds.
     :param preprocess: whether to preprocess the data before parsing (optional). Used to test special cases, where it is needed.
     :param kw: additional keyword arguments to pass to the context when parsing and building
@@ -48,15 +49,10 @@ def common(format: Construct, datasample: bytes, objsample: Container, sizesampl
         data2 = format.build(obj)
         assert data2 == datasample
 
-    if isinstance(sizesample, int):
-        size = format.sizeof(**kw)
-        assert size == sizesample
-    else:
-        size = raises(format.sizeof, **kw)
-        assert size == sizesample
 
 def commonhex(format, hexdata):
     commonbytes(format, binascii.unhexlify(hexdata))
+
 
 def commondumpdeprecated(format, filename):
     filename = "tests/deprecated_gallery/blobs/" + filename
@@ -64,15 +60,18 @@ def commondumpdeprecated(format, filename):
         data = f.read()
     commonbytes(format, data)
 
+
 def commondump(format, filename):
     filename = "tests/gallery/blobs/" + filename
     with open(filename,'rb') as f:
         data = f.read()
     commonbytes(format, data)
 
+
 def commonbytes(format, data):
     obj = format.parse(data)
     data2 = format.build(obj)
+
 
 def common_xml_test(s, xml, obj, obj_from = None):
     if obj_from is None:
@@ -84,6 +83,7 @@ def common_xml_test(s, xml, obj, obj_from = None):
     test_xml_str = ET.tostring(test_xml)
     assert(test_xml_str == xml)
 
+
 def common_endtoend_xml_test(s, byte_data, obj=None, xml=None):
     data = s.parse(byte_data)
     if obj is not None:
@@ -94,3 +94,13 @@ def common_endtoend_xml_test(s, byte_data, obj=None, xml=None):
     xml_data = s.fromET(xml=test_xml)
     assert(byte_data == s.build(xml_data))
 
+
+def size_test(format: Construct, obj: Container, static_size: Optional[int] = None, size: Optional[int] = None, full_size: Optional[int] = None):
+    if static_size is not None:
+        assert(format.static_sizeof() == static_size)
+    if size is not None:
+        assert(format.sizeof(obj) == size)
+    if full_size is not None:
+        assert(format.full_sizeof(obj) == full_size)
+
+    assert(static_size is not None or size is not None or full_size is not None)

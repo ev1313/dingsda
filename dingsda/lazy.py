@@ -1,8 +1,9 @@
 import sys
 
-from dingsda import Subconstruct, stream_tell, stream_seek, Container, Construct, SizeofError, StopFieldError, \
-    RangeError, ListContainer
-from dingsda.lib import stringtypes
+from dingsda.helpers import stream_seek, stream_tell, evaluate, create_child_context
+from dingsda.core import Construct, Subconstruct
+from dingsda.errors import *
+from dingsda.lib import stringtypes, Container, ListContainer
 
 
 class Lazy(Subconstruct):
@@ -45,7 +46,7 @@ class Lazy(Subconstruct):
             obj = self.subcon._parsereport(stream, context, path)
             stream_seek(stream, fallback, 0, path)
             return obj
-        len = self.subcon._actualsize(stream, context, path)
+        len = self.subcon._expected_size(stream, context, path)
         stream_seek(stream, len, 1, path)
         return execute
 
@@ -111,7 +112,7 @@ class LazyContainer(dict):
 
 class LazyStruct(Construct):
     r"""
-    Equivalent to :class:`~dingsda.core.Struct`, but when this class is parsed, most fields are not parsed (they are skipped if their size can be measured by _actualsize or _sizeof method). See its docstring for details.
+    Equivalent to :class:`~dingsda.core.Struct`, but when this class is parsed, most fields are not parsed (they are skipped if their size can be measured by _expected_size or _sizeof method). See its docstring for details.
 
     Fields are parsed depending on some factors:
 
@@ -152,7 +153,7 @@ class LazyStruct(Construct):
         values = {}
         for i,sc in enumerate(self.subcons):
             try:
-                offset += sc._actualsize(stream, context, path)
+                offset += sc._expected_size(stream, context, path)
                 stream_seek(stream, offset, 0, path)
             except SizeofError:
                 parseret = sc._parsereport(stream, context, path)
@@ -187,14 +188,19 @@ class LazyStruct(Construct):
                 break
         return context
 
-    def _sizeof(self, context, path):
-        # exact copy from Struct class
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = None, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        return sum(sc._static_sizeof(context, path) for sc in self.subcons)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
         try:
-            return sum(sc._sizeof(context, path) for sc in self.subcons)
-        except (KeyError, AttributeError):
-            raise SizeofError("cannot calculate size, key not found in context", path=path)
+            return self._static_sizeof(context, path)
+        except SizeofError:
+            ctx = create_child_context(context, name)
+            try:
+                return sum(sc._sizeof(sc.name, ctx, path, is_root=is_root) for sc in self.subcons)
+            except (KeyError, AttributeError):
+                raise SizeofError("cannot calculate size, key not found in context", path=path)
+        assert(0)
 
 
 class LazyListContainer(list):
@@ -239,7 +245,7 @@ class LazyListContainer(list):
 
 class LazyArray(Subconstruct):
     r"""
-    Equivalent to :class:`~dingsda.core.Array`, but the subcon is not parsed when possible (it gets skipped if the size can be measured by _actualsize or _sizeof method). See its docstring for details.
+    Equivalent to :class:`~dingsda.core.Array`, but the subcon is not parsed when possible (it gets skipped if the size can be measured by _expected_size or _sizeof method). See its docstring for details.
 
     Fields are parsed depending on some factors:
 
@@ -275,7 +281,7 @@ class LazyArray(Subconstruct):
         values = {}
         for i in range(count):
             try:
-                offset += sc._actualsize(stream, context, path)
+                offset += sc._expected_size(stream, context, path)
                 stream_seek(stream, offset, 0, path)
             except SizeofError:
                 parseret = sc._parsereport(stream, context, path)
@@ -300,15 +306,21 @@ class LazyArray(Subconstruct):
             retlist.append(buildret)
         return retlist
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
         # exact copy from Array class
         try:
-            count = self.count
-            if callable(count):
-                count = count(context)
+            count = evaluate(self.count, context)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
-        return count * self.subcon._sizeof(context, path)
+        return count * self.subcon._static_sizeof(context, path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        # exact copy from Array class
+        try:
+            count = evaluate(self.count, context, name, is_root)
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+        return count * self.subcon._sizeof(name=name, context=context, path=path, is_root=is_root)
 
 
 class LazyBound(Construct):

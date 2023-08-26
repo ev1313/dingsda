@@ -1,5 +1,6 @@
-from dingsda import StringError, FixedSized, NullStripped, GreedyBytes, Prefixed, NullTerminated, Adapter, \
-    get_current_field, insert_or_append_field
+from dingsda.core import Adapter, Prefixed, GreedyBytes, FixedSized, NullStripped, NullTerminated
+from dingsda.helpers import *
+from dingsda.errors import *
 from dingsda.lib import unicodestringtype
 
 #: Explicitly supported encodings (by PaddedString and CString classes).

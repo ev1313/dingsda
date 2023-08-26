@@ -1,15 +1,18 @@
+from typing import Any, Optional
 from dingsda.errors import StreamError, StringError
 from dingsda.lib import bytestringtype
 from dingsda.lib.containers import Container, ListContainer
 
-def get_current_field(context, name):
+
+def get_current_field(context: Container, name: str) -> Any:
     idx = context.get("_index", None)
     if idx is not None:
         return context[f"{name}_{idx}"]
     else:
         return context[name]
 
-def create_child_context(context, name, list_index=None):
+
+def create_child_context_2(context: Container, name: str, list_index: Optional[int]=None) -> Container:
     assert (context is not None)
     assert (name is not None)
 
@@ -36,14 +39,8 @@ def create_child_context(context, name, list_index=None):
     return ctx
 
 
-def get_current_field(context, name):
-    idx = context.get("_index", None)
-    if idx is not None:
-        return context[f"{name}_{idx}"]
-    else:
-        return context[name]
-
 def create_parent_context(context):
+    """ Creates a new context for the parent node. Used e.g. in Struct when parsing. """
     # we go down one layer
     ctx = Container()
     ctx["_"] = context
@@ -55,7 +52,22 @@ def create_parent_context(context):
         ctx["_root"] = _root
     return ctx
 
-def insert_or_append_field(context, name, value):
+
+def create_child_context(context: Container, name: str) -> Container:
+    """ Creates a new context for the child node. Used e.g. in Struct when building,
+    will fail, if child is not a Container. """
+    ctx = context[name]
+    assert(isinstance(ctx, Container))
+    ctx["_"] = context
+    _root = context.get("_root", None)
+    if _root is None:
+        ctx["_root"] = context
+    else:
+        ctx["_root"] = _root
+    return ctx
+
+
+def insert_or_append_field(context: Container, name: str, value: Any) -> Container:
     current = context.get(name, None)
     if current is None:
         context[name] = value
@@ -70,7 +82,7 @@ def insert_or_append_field(context, name, value):
     return context
 
 
-def rename_in_context(context, name, new_name):
+def rename_in_context(context: Container, name: str, new_name: str) -> Container:
     ctx = context
     idx = context.get("_index", None)
     if idx is not None:
@@ -82,15 +94,19 @@ def rename_in_context(context, name, new_name):
 
     return ctx
 
+
 import csv
 from io import StringIO
-def list_to_string(string_list):
+
+
+def list_to_string(string_list: list) -> str:
     output = StringIO()
     writer = csv.writer(output, quoting=csv.QUOTE_MINIMAL)
     writer.writerow(string_list)
     return output.getvalue().removesuffix("\r\n")
 
-def string_to_list(string):
+
+def string_to_list(string: str) -> list:
     reader = csv.reader([string])
     return next(reader)
 
@@ -108,8 +124,11 @@ def hyphenatelist(l) -> list:
     return [hyphenatedict(d) for d in l]
 
 
-def evaluate(param, context):
-    return param(context) if callable(param) else param
+def evaluate(param, context, name: Optional[str]=None, is_root: bool = False):
+    ctx = context
+    if is_root:
+        ctx = context[name]
+    return param(ctx) if callable(param) else param
 
 
 def stream_read(stream, length, path):

@@ -90,24 +90,6 @@ def test_xml_struct_unnamed_struct_array():
     xml = b'<test b="[1,2,2]"><Struct value="1" /></test>'
     common_xml_test(s, xml, obj)
 
-def test_xml_struct_unnamed_struct_array():
-    s = "test" / Struct(
-        "a" / Array(4, Struct("value" / Int32ul)),
-        "b" / Array(3, Int32ul),
-        )
-    xml = b'<test b="[1,2,2]"><Struct value="1" /></test>'
-    obj = {"a": [{"value": 1}], "b": [1,2,2]}
-    common_xml_test(s, xml, obj)
-
-def test_xml_struct_named_struct_array():
-    s = "test" / Struct(
-        "a" / Array(4, "Foo" / Struct("value" / Int32ul)),
-        "b" / Array(3, Int32ul),
-        )
-    xml = b'<test b="[1,2,2]"><Foo value="1" /></test>'
-    obj = {"a": [{"value": 1}], "b": [1,2,2]}
-    common_xml_test(s, xml, obj)
-
 @xfail(raises=AssertionError, reason="design decision: nested arrays are not supported")
 def test_fromET_struct_nested_array():
     s = "test" / Struct(
@@ -175,37 +157,9 @@ def test_xml_switch():
         }),
         )
     data = {"type": 1, "data": {"value": 32}}
+    data_from = {"data": {"value": 32}}
     xml = b'<test><b32bit value="32" /></test>'
-    common_xml_test(s, xml, data)
-
-def test_xml_switch_array():
-    s = "test" / Struct(
-        "a" / Array(2, "foo" / Struct(
-            "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
-            "data" / Switch(this.type, {
-                1: "b32bit" / Struct("value" / Int32ul),
-                2: "b16bit" / Struct("value" / Int16ul),
-                3: "test2" / Struct("a" / Int32ul, "b" / Int32ul)
-            }),
-            )),
-        "b" / Array(3, Int32ul),
-        )
-    obj = {"a": [{"type": 1, "data": {"value": 32}}, {"type": 2, "data": {"value": 16}}], "b": [1,2,2]}
-    xml = b'<test b="[1,2,2]"><foo><b32bit value="32" /></foo><foo><b16bit value="16" /></foo></test>'
-    common_xml_test(s, xml, obj)
-
-
-def test_xml_switch():
-    s = "test" / Struct(
-        "type" / Rebuild(Int8ul, lambda ctx: ctx._switchid_data),
-        "data" / Switch(this.type, {
-            1: "b32bit" / Struct("value" / Int32ul),
-            2: "b16bit" / Struct("value" / Int16ul),
-            3: "test2" / Struct("a" / Int32ul, "b" / Int32ul),
-            }),
-    )
-    xml = ET.fromstring(b'<test><b32bit value="32" /></test>')
-    obj = s.fromET(xml=xml)
+    common_xml_test(s, xml, data, data_from)
 
 def test_xml_switch_2():
     s = "test" / Struct(
@@ -524,7 +478,7 @@ def test_xml_ifthenelse_struct():
     common_xml_test(s, xml, data)
 
 
-def test_xml_ifthenelse_struct():
+def test_xml_ifthenelse_rebuildhack_struct():
     s = "test" / Struct(
         "b" / IfThenElse(lambda obj: obj.a == 1, "foo" / Struct("bar" / Int32ul), "bar" / Struct("bar" / Int16ul), rebuild_hack=True),
         "a" / Int32ul,

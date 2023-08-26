@@ -1,4 +1,5 @@
-from dingsda import *
+from dingsda.core import *
+from dingsda.numbers import *
 
 d = Struct(
     "aa" / Int8ub,

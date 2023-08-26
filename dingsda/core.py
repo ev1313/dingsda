@@ -9,7 +9,6 @@ from dingsda.helpers import *
 
 import xml.etree.ElementTree as ET
 
-
 class Construct(object):
     r"""
     The mother of all constructs.
@@ -27,17 +26,21 @@ class Construct(object):
     * `build_file`
     * `toET`
     * `fromET`
+    * `static_sizeof`
     * `sizeof`
+    * `full_sizeof`
 
     Subclass authors should not override the external methods. Instead, another API is available:
 
     * `_parse`
     * `_preprocess`
     * `_build`
-    * `_sizeof`
     * `_toET`
     * `_fromET`
-    * `_actualsize`
+    * `_static_sizeof`
+    * `_sizeof`
+    * `_full_sizeof`
+    * `_expected_sizeof`
     * `__getstate__`
     * `__setstate__`
 
@@ -45,7 +48,6 @@ class Construct(object):
 
     All constructs have a name and flags. The name is used for naming struct members and context dictionaries. Note that the name can be a string, or None by default. A single underscore "_" is a reserved name, used as up-level in nested containers. The name should be descriptive, short, and valid as a Python identifier, although these rules are not enforced. The flags specify additional behavioral information about this construct. Flags are used by enclosing constructs to determine a proper course of action. Flags are often inherited from inner subconstructs but that depends on each class.
     """
-
     def __init__(self):
         self.name = None
         self.docs = ""
@@ -79,7 +81,7 @@ class Construct(object):
         self2.__setstate__(self.__getstate__())
         return self2
 
-    def parse(self, data, **contextkw):
+    def parse(self, data: bytes, **contextkw):
         r"""
         Parse an in-memory buffer (often bytes object). Strings, buffers, memoryviews, and other complete buffers can be parsed with this method.
 
@@ -148,7 +150,9 @@ class Construct(object):
             :return obj: the preprocessed object
             :return extra_info: a dictionary containing extra information regarding offset, size, etc.
         """
-        size = self._sizeof(context, path)
+        ctx = Container(**context)
+        ctx["root"] = obj
+        size = self._sizeof("root", ctx, path, is_root=True)
         return obj, {"_offset": offset, "_size": size, "_endoffset": offset + size}
 
     def build(self, obj, **contextkw):
@@ -259,21 +263,18 @@ class Construct(object):
         context._params = context
         return self._preprocess(obj=obj, context=context, path="(preprocess)", offset=0)
 
-    def sizeof(self, **contextkw):
+    def static_sizeof(self, **contextkw):
         r"""
-        Calculate the size of this object, optionally using a context.
+        Calculate the size of this object without the use of an already parsed object.
 
-        Some constructs have fixed size (like FormatField), some have variable-size and can determine their size given a context entry (like Bytes(this.otherfield1)), and some cannot determine their size (like VarInt).
+        This always works for Constructs with static sizes like FormatFields, but doesn't for Constructs
+        with dynamic length like Strings or RepeatUntil.
 
-        Whenever size cannot be determined, SizeofError is raised. This method is NOT ALLOWED to raise any other exception, even if eg. context dictionary is missing a key, or subcon propagates ConstructError-derivative exception.
+        Whenever size cannot be determined, a SizeofError is raised.
 
-        Context entries are passed only as keyword parameters \*\*contextkw.
+        :returns: integer if computable, raises SizeofError otherwise
 
-        :param \*\*contextkw: context entries, usually empty
-
-        :returns: integer if computable, SizeofError otherwise
-
-        :raises SizeofError: size could not be determined in actual context, or is impossible to be determined
+        :raises SizeofError: size could not be determined in current context, or is impossible to be determined
         """
         context = Container(**contextkw)
         context._preprocessing = False
@@ -281,14 +282,99 @@ class Construct(object):
         context._building = False
         context._sizing = True
         context._params = context
-        return self._sizeof(context, "(sizeof)")
+        return self._static_sizeof(context, "(static_sizeof)")
 
-    def _sizeof(self, context, path):
+    def sizeof(self, obj: Container, **contextkw) -> int:
+        r"""
+        Calculate the size of this object using a parsed object as context.
+
+        This always works for Constructs with static sizes, but as the actual data is given with obj,
+        it also works for Constructs with variable lengths like Strings.
+
+        If _sizeof is not implemented, _static_sizeof is returned instead by default.
+
+        Whenever size cannot be determined, a SizeofError is raised.
+
+        :param: obj the parsed object for that the sizes of the fields shall be determined
+        :returns: integer if computable, raises SizeofError otherwise
+
+        :raises SizeofError: size could not be determined in current context, or is impossible to be determined
+        """
+        context = Container(**contextkw)
+        context._preprocessing = False
+        context._parsing = False
+        context._building = False
+        context._sizing = True
+        context._params = context
+        context = context
+        context["root"] = obj
+
+        return self._sizeof("root", context, "(sizeof)", is_root=True)
+
+    def full_sizeof(self, obj: Container, **contextkw) -> int:
+        r"""
+        Calculate the full size of this object using a parsed object as context.
+
+        The full size is only relevant for Pointer types - these return for sizeof usually 0, because they only
+        point to other data. However sometimes it can be useful to know the actual size of the Pointer.
+
+        The full size of Structs will include the sum of the sizes of all fields, and the sizes of the referenced
+        Pointer data.
+
+        Note this can not be used to determine the end of a buffer / the full size of a buffer, as empty places
+        between mapped Constructs and the Pointer data will not be accounted for. Usually just use this on
+        Pointertypes, so you don't have to search for the _ptrsize attribute.
+
+        This function is experimental!
+
+        If _full_sizeof is not implemented, _sizeof is returned instead by default.
+
+        Whenever size cannot be determined, a SizeofError is raised.
+
+        :param: obj the parsed object for that the sizes of the fields shall be determined
+        :returns: integer if computable, raises SizeofError otherwise
+
+        :raises SizeofError: size could not be determined in current context, or is impossible to be determined
+        """
+        context = Container(**contextkw)
+        context._preprocessing = False
+        context._parsing = False
+        context._building = False
+        context._sizing = True
+        context._params = context
+        context = context
+        context["root"] = obj
+        return self._full_sizeof("root", context, "(full_sizeof)", is_root=True)
+
+    def _static_sizeof(self, context: Container, path: str) -> int:
         """Override in your subclass."""
         raise SizeofError(path=path)
 
-    def _actualsize(self, stream, context, path):
-        return self._sizeof(context, path)
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        """Override in your subclass."""
+        return self._static_sizeof(context, path)
+
+    def _full_sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        """Override in your subclass."""
+        return self._sizeof(name, context, path, is_root=is_root)
+
+    def _expected_size(self, stream, context: Container, path: str) -> int:
+        r"""
+        This is a special function for length prefixed objects. LazyStruct and LazyArray use this, to
+        skip parsing wherever possible.
+
+        Default is just returning the static size of the object.
+
+        Whenever size cannot be determined, a SizeofError is raised.
+
+        :param: stream the stream the length is read from. It needs to be advanced to the end of the data after reading the length.
+        :param: context the current context
+        :param: path the current path
+        :returns: integer if computable, raises SizeofError otherwise
+
+        :raises SizeofError: size could not be determined in current context, or is impossible to be determined
+        """
+        return self._static_sizeof(context, path)
 
     def _names(self) -> list:
         """
@@ -383,8 +469,15 @@ class Subconstruct(Construct):
     def _build(self, obj, stream, context, path):
         return self.subcon._build(obj, stream, context, path)
 
-    def _sizeof(self, context, path):
-        return self.subcon._sizeof(context, path)
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        return self.subcon._static_sizeof(context, path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        return self.subcon._sizeof(name, context, path, is_root=is_root)
+
+    def _full_sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        return self.subcon._full_sizeof(name, context, path, is_root=is_root)
+
 
 class Arrayconstruct(Subconstruct):
     def _preprocess(self, obj, context, path, offset=0):
@@ -392,7 +485,7 @@ class Arrayconstruct(Subconstruct):
         retlist = ListContainer()
         extra_info = {"_offset": offset}
         size = 0
-        for i,e in enumerate(obj):
+        for i, e in enumerate(obj):
             context._index = i
             obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
             retlist.append(obj)
@@ -553,7 +646,13 @@ class Tunnel(Subconstruct):
         stream_write(stream, data, len(data), path)
         return obj
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
+        raise SizeofError(path=path)
+
+    def _sizeof(self, obj, context, path, is_root: bool = False):
+        raise SizeofError(path=path)
+
+    def _full_sizeof(self, obj, context, path, is_root: bool = False):
         raise SizeofError(path=path)
 
     def _decode(self, data, context, path):
@@ -618,9 +717,17 @@ class Bytes(Construct):
         stream_write(stream, data, length, path)
         return data
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         try:
-            return self.length(context) if callable(self.length) else self.length
+            return evaluate(self.length, context)
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        # FIXME: this should use not the length field but the actual data
+        # FIXME: add preprocess so the length field can be rebuild from the length of the actual data
+        try:
+            return evaluate(self.length, context, name, is_root)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
@@ -681,6 +788,12 @@ class GreedyBytes(Construct):
         stream_write(stream, data, len(data), path)
         return data
 
+    def _sizeof(self, name: str, context: Container, path: str) -> int:
+        try:
+            return len(get_current_field(context, path))
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+
 
 def Bitwise(subcon):
     r"""
@@ -717,7 +830,7 @@ def Bitwise(subcon):
     """
 
     try:
-        size = subcon.sizeof()
+        size = subcon.static_sizeof()
         macro = Transformed(subcon, bytes2bits, size//8, bits2bytes, size//8)
     except SizeofError:
         macro = Restreamed(subcon, bytes2bits, 1, bits2bytes, 8, lambda n: n//8)
@@ -748,7 +861,7 @@ def Bytewise(subcon):
     """
 
     try:
-        size = subcon.sizeof()
+        size = subcon.static_sizeof()
         macro = Transformed(subcon, bits2bytes, size*8, bytes2bits, size*8)
     except SizeofError:
         macro = Restreamed(subcon, bits2bytes, 8, bytes2bits, 1, lambda n: n*8)
@@ -780,7 +893,7 @@ class Flag(Construct):
         stream_write(stream, b"\x01" if obj else b"\x00", 1, path)
         return obj
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         return 1
 
 class EnumInteger(int):
@@ -853,8 +966,8 @@ class Enum(Adapter):
         for enum in merge:
             for enumentry in enum:
                 mapping[enumentry.name] = enumentry.value
-        self.encmapping = {EnumIntegerString.new(v,k):v for k,v in mapping.items()}
-        self.decmapping = {v:EnumIntegerString.new(v,k) for k,v in mapping.items()}
+        self.encmapping = {EnumIntegerString.new(v, k): v for k, v in mapping.items()}
+        self.decmapping = {v: EnumIntegerString.new(v, k) for k, v in mapping.items()}
 
     def __getattr__(self, name):
         if name in self.encmapping:
@@ -1179,7 +1292,8 @@ class Struct(Construct):
         assert(name is not None)
         assert(parent is not None)
 
-        ctx = create_child_context(context, name)
+        # FIXME: replace this with create_child_context if possible
+        ctx = create_child_context_2(context, name)
 
         elem = ET.Element(name)
         for sc in self.subcons:
@@ -1219,15 +1333,22 @@ class Struct(Construct):
 
         return ret_ctx
 
-    def _sizeof(self, context, path):
-        # we go down one layer
-        ctx = create_parent_context(context)
-        #context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = None, _index = context.get("_index", None))
-        #context._root = context._.get("_root", context)
+    def _static_sizeof(self, context: Container, path: str) -> int:
         try:
-            return sum(sc._sizeof(ctx, path) for sc in self.subcons)
+            return sum(sc._static_sizeof(context, path) for sc in self.subcons)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        try:
+            return self._static_sizeof(context, path)
+        except SizeofError:
+            ctx = create_child_context(context, name)
+            try:
+                return sum(sc._sizeof(sc.name, ctx, path, is_root=is_root) for sc in self.subcons)
+            except (KeyError, AttributeError):
+                raise SizeofError("cannot calculate size, key not found in context", path=path)
+        assert(0)
 
 
 class Sequence(Construct):
@@ -1323,11 +1444,14 @@ class Sequence(Construct):
                 break
         return retlist
 
-    def _sizeof(self, context, path):
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = None, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        return sum(sc._static_sizeof(context, path) for sc in self.subcons)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        # we go down one layer
+        ctx = create_child_context(context, name)
         try:
-            return sum(sc._sizeof(context, path) for sc in self.subcons)
+            return sum(sc._sizeof(sc.name, ctx, path, is_root=is_root) for sc in self.subcons)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
@@ -1395,14 +1519,22 @@ class Array(Arrayconstruct):
                 retlist.append(buildret)
         return retlist
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         try:
             count = evaluate(self.count, context)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
-        return count * self.subcon._sizeof(context, path)
+        return count * self.subcon._static_sizeof(context, path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        try:
+            count = evaluate(self.count, context, name=name, is_root=is_root)
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+        return count * self.subcon._sizeof(name, context, path, is_root=is_root)
 
 
+# FIXME: GreedyRange/RepeatUntil etc should also be able to calculate their size with sizeof
 class GreedyRange(Subconstruct):
     r"""
     Homogenous array of elements, similar to C# generic IEnumerable<T>, but works with unknown count of elements by parsing until end of stream.
@@ -1487,9 +1619,6 @@ class GreedyRange(Subconstruct):
         except StopFieldError:
             pass
 
-    def _sizeof(self, context, path):
-        raise SizeofError(path=path)
-
 
 class RepeatUntil(Arrayconstruct):
     r"""
@@ -1558,9 +1687,6 @@ class RepeatUntil(Arrayconstruct):
         else:
             raise RepeatError("expected any item to match predicate, when building", path=path)
         return retlist
-
-    def _sizeof(self, context, path):
-        raise SizeofError("cannot calculate size, amount depends on actual data", path=path)
 
     def _names(self):
         sc_names = [self.name]
@@ -1679,7 +1805,7 @@ class Area(Arrayconstruct):
         stream_seek(stream, fallback, 0, path)
         return retlist
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
 
 #===============================================================================
@@ -1754,10 +1880,6 @@ class Renamed(Subconstruct):
 
         return ctx
 
-    def _sizeof(self, context, path):
-        path += " -> %s" % (self.name,)
-        return self.subcon._sizeof(context, path)
-
     def _is_simple_type(self):
         return self.subcon._is_simple_type()
 
@@ -1821,16 +1943,15 @@ class Const(Subconstruct):
             raise ConstError(f"building expected None or {repr(self.value)} but got {repr(obj)}", path=path)
         return self.subcon._build(self.value, stream, context, path)
 
-    def _sizeof(self, context, path):
-        return self.subcon._sizeof(context, path)
-
     def _toET(self, parent, name, context, path):
         return None
 
     def _fromET(self, parent, name, context, path, is_root=False):
         return context
 
+
 Magic = Const
+
 
 class Computed(Construct):
     r"""
@@ -1877,7 +1998,7 @@ class Computed(Construct):
     def _build(self, obj, stream, context, path):
         return self.func(context) if callable(self.func) else self.func
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
 
     def _toET(self, parent, name, context, path):
@@ -1925,7 +2046,7 @@ class Index(Construct):
     def _build(self, obj, stream, context, path):
         return context.get("_index", None)
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
 
     def _toET(self, parent, name, context, path):
@@ -1970,8 +2091,10 @@ class Rebuild(Subconstruct):
         return self.subcon._build(obj, stream, context, path)
 
     def _preprocess(self, obj, context, path, offset=0):
-        size = self.subcon._sizeof(context, path)
-        return self.func, {"_offset_": offset, "_size": size, "_endoffset": offset + size}
+        ctx = Container(**context)
+        ctx["root"] = obj
+        size = self._sizeof("root", ctx, path)
+        return self.func, {"_offset": offset, "_size": size, "_endoffset": offset + size}
 
     def _toET(self, parent, name, context, path):
         return None
@@ -1982,16 +2105,20 @@ class Rebuild(Subconstruct):
 
 class Default(Subconstruct):
     r"""
-    Field where building does not require a value, because the value gets taken from default. Comes handy when building a Struct from a dict with missing keys.
+    Field where building does not require a value, because the value gets taken from default.
+    Comes handy when building a Struct from a dict with missing keys.
 
-    Parsing defers to subcon. Building is defered to subcon, but it builds from a default (if given object is None) or from given object. Building does not require a value, but can accept one. Size is the same as subcon, unless it raises SizeofError.
+    Parsing defers to subcon. Building is deferred to subcon, but it builds from a default (if given object is None) or
+    from given object. Building does not require a value, but can accept one. Size is the same as subcon.
 
-    Difference between Default and Rebuild, is that in first the build value is optional and in second the build value is ignored.
+    Difference between Default and Rebuild, is that in first the build value is optional and in second the build value
+    is ignored.
 
     :param subcon: Construct instance
     :param value: context lambda or constant value
 
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
+    :raises StreamError: requested reading negative amount, could not read enough bytes,
+    requested writing different amount than actual data, or could not write all bytes
 
     Can propagate any exception from the lambda, possibly non-ConstructError.
 
@@ -2055,7 +2182,7 @@ class Check(Construct):
         if not passed:
             raise CheckError("check failed during building", path=path)
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
 
     def _toET(self, parent, name, context, path):
@@ -2091,7 +2218,10 @@ class Error(Construct):
     def _build(self, obj, stream, context, path):
         raise ExplicitError("Error field was activated during building", path=path)
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        raise SizeofError("Error does not have size, because it interrupts parsing and building", path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str) -> int:
         raise SizeofError("Error does not have size, because it interrupts parsing and building", path=path)
 
 
@@ -2180,11 +2310,14 @@ class FocusedSeq(Construct):
                 finalret = buildret
         return finalret
 
-    def _sizeof(self, context, path):
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = None, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        return sum(sc._static_sizeof(context, path) for sc in self.subcons)
+
+    def _sizeof(self, name: str, context: Container, path: str) -> int:
+        # we go down one layer
+        ctx = create_child_context(context, name)
         try:
-            return sum(sc._sizeof(context, path) for sc in self.subcons)
+            return sum(sc._sizeof(sc.name, ctx, path) for sc in self.subcons)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
@@ -2366,7 +2499,7 @@ class Hex(Adapter):
     """
     def _decode(self, obj, context, path):
         if isinstance(obj, integertypes):
-            return HexDisplayedInteger.new(obj, "0%sX" % (2 * self.subcon._sizeof(context, path)))
+            return HexDisplayedInteger.new(obj, "0%sX" % (2 * self.subcon._static_sizeof(context, path)))
         if isinstance(obj, bytestringtype):
             return HexDisplayedBytes(obj)
         if isinstance(obj, dict):
@@ -2533,8 +2666,11 @@ class Union(Construct):
         else:
             raise UnionError("cannot build, none of subcons were found in the dictionary %r" % (obj,), path=path)
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
         raise SizeofError("Union builds depending on actual object dict, size is unknown", path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        raise SizeofError(path=path)
 
 
 class Select(Construct):
@@ -2594,7 +2730,7 @@ class Select(Construct):
         raise SelectError("no subconstruct matched: %s" % (obj,), path=path)
 
 
-def Optional(subcon):
+def TryParse(subcon):
     r"""
     Makes an optional field.
 
@@ -2604,9 +2740,9 @@ def Optional(subcon):
 
     Example::
 
-        Optional  <-->  Select(subcon, Pass)
+        TryParse  <-->  Select(subcon, Pass)
 
-        >>> d = Optional(Int64ul)
+        >>> d = TryParse(Int64ul)
         >>> d.parse(b"12345678")
         4050765991979987505
         >>> d.parse(b"")
@@ -2696,10 +2832,15 @@ class IfThenElse(Construct):
         sc = self.thensubcon if condfunc else self.elsesubcon
         return sc._build(obj, stream, context, path)
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         condfunc = evaluate(self.condfunc, context)
         sc = self.thensubcon if condfunc else self.elsesubcon
-        return sc._sizeof(context, path)
+        return sc._static_sizeof(context, path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        condfunc = evaluate(self.condfunc, context, name, is_root)
+        sc = self.thensubcon if condfunc else self.elsesubcon
+        return sc._sizeof(name, context, path, is_root)
 
     def _toET(self, parent, name, context, path):
         condfunc = evaluate(self.condfunc, context)
@@ -2813,11 +2954,11 @@ class Switch(Construct):
         sc = self.cases.get(keyfunc, self.default)
         return sc._build(obj, stream, context, path)
 
-    def _sizeof(self, context, path):
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
         try:
-            keyfunc = evaluate(self.keyfunc, context)
+            keyfunc = evaluate(self.keyfunc, context, name, is_root)
             sc = self.cases.get(keyfunc, self.default)
-            return sc._sizeof(context, path)
+            return sc._sizeof(name, context, path, is_root)
 
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
@@ -2999,9 +3140,18 @@ class Padded(Subconstruct):
         stream_write(stream, self.pattern * pad, pad, path)
         return buildret
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
         try:
             length = evaluate(self.length, context)
+            if length < 0:
+                raise PaddingError("length cannot be negative", path=path)
+            return length
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False):
+        try:
+            length = evaluate(self.length, context, name, is_root)
             if length < 0:
                 raise PaddingError("length cannot be negative", path=path)
             return length
@@ -3072,12 +3222,22 @@ class Aligned(Subconstruct):
         stream_write(stream, self.pattern * pad, pad, path)
         return buildret
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
         try:
             modulus = evaluate(self.modulus, context)
             if modulus < 2:
                 raise PaddingError("expected modulo 2 or greater", path=path)
-            subconlen = self.subcon._sizeof(context, path)
+            subconlen = self.subcon._static_sizeof(context, path)
+            return subconlen + (-subconlen % modulus)
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        try:
+            modulus = evaluate(self.modulus, context, name, is_root)
+            if modulus < 2:
+                raise PaddingError("expected modulo 2 or greater", path=path)
+            subconlen = self.subcon._sizeof(name, context, path, is_root)
             return subconlen + (-subconlen % modulus)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
@@ -3254,7 +3414,7 @@ class Peek(Subconstruct):
     def _build(self, obj, stream, context, path):
         return obj
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
         return 0
 
 
@@ -3264,7 +3424,8 @@ class OffsettedEnd(Subconstruct):
 
     This is useful when GreedyBytes (or any other greedy construct) is followed by a fixed-size footer.
 
-    Parsing determines the length of the stream and reads all bytes till EOF plus `endoffset` is reached, then defers to subcon using new BytesIO with said bytes. Building defers to subcon as-is. Size is undefined.
+    Parsing determines the length of the stream and reads all bytes till EOF plus `endoffset` is reached,
+    then defers to subcon using new BytesIO with said bytes. Building defers to subcon as-is. Size is undefined.
 
     :param endoffset: integer or context lambda, only negative offsets or zero are allowed
     :param subcon: Construct instance
@@ -3300,7 +3461,7 @@ class OffsettedEnd(Subconstruct):
     def _build(self, obj, stream, context, path):
         return self.subcon._build(obj, stream, context, path)
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
         raise SizeofError(path=path)
 
 
@@ -3346,7 +3507,7 @@ class Seek(Construct):
         whence = evaluate(self.whence, context)
         return stream_seek(stream, at, whence, path)
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         raise SizeofError("Seek only moves the stream, size is not meaningful", path=path)
 
 @singleton
@@ -3379,7 +3540,7 @@ class Tell(Construct):
     def _build(self, obj, stream, context, path):
         return stream_tell(stream, path)
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
         return 0
 
 @singleton
@@ -3409,7 +3570,7 @@ class Pass(Construct):
     def _build(self, obj, stream, context, path):
         return obj
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
         return 0
 
     def _toET(self, parent, name, context, path):
@@ -3445,9 +3606,6 @@ class Terminated(Construct):
 
     def _build(self, obj, stream, context, path):
         return obj
-
-    def _sizeof(self, context, path):
-        raise SizeofError(path=path)
 
     def _toET(self, parent, name, context, path):
         return None
@@ -3530,7 +3688,7 @@ def ByteSwapped(subcon):
         Int24ul <--> ByteSwapped(Int24ub) <--> BytesInteger(3, swapped=True) <--> ByteSwapped(BytesInteger(3))
     """
 
-    size = subcon.sizeof()
+    size = subcon.static_sizeof()
     return Transformed(subcon, swapbytes, size, swapbytes, size)
 
 
@@ -3554,7 +3712,7 @@ def BitsSwapped(subcon):
     """
 
     try:
-        size = subcon.sizeof()
+        size = subcon.static_sizeof()
         return Transformed(subcon, swapbitsinbytes, size, swapbitsinbytes, size)
     except SizeofError:
         return Restreamed(subcon, swapbitsinbytes, 1, swapbitsinbytes, 1, lambda n: n)
@@ -3595,7 +3753,7 @@ class Prefixed(Subconstruct):
     def _parse(self, stream, context, path):
         length = self.lengthfield._parsereport(stream, context, path)
         if self.includelength:
-            length -= self.lengthfield._sizeof(context, path)
+            length -= self.lengthfield._static_sizeof(context, path)
         data = stream_read(stream, length, path)
         return self.subcon._parsereport(io.BytesIO(data), context, path)
 
@@ -3605,19 +3763,19 @@ class Prefixed(Subconstruct):
         data = stream2.getvalue()
         length = len(data)
         if self.includelength:
-            length += self.lengthfield._sizeof(context, path)
+            length += self.lengthfield._static_sizeof(context, path)
         self.lengthfield._build(length, stream, context, path)
         stream_write(stream, data, len(data), path)
         return buildret
 
-    def _sizeof(self, context, path):
-        return self.lengthfield._sizeof(context, path) + self.subcon._sizeof(context, path)
+    def _static_sizeof(self, context, path):
+        return self.lengthfield._static_sizeof(context, path) + self.subcon._static_sizeof(context, path)
 
-    def _actualsize(self, stream, context, path):
+    def _expected_size(self, stream, context, path):
         position1 = stream_tell(stream, path)
         length = self.lengthfield._parse(stream, context, path)
         if self.includelength:
-            length -= self.lengthfield._sizeof(context, path)
+            length -= self.lengthfield._static_sizeof(context, path)
         position2 = stream_tell(stream, path)
         return (position2-position1) + length
 
@@ -3650,12 +3808,12 @@ def PrefixedArray(countfield, subcon):
     )
 
 
-    def _actualsize(self, stream, context, path):
+    def _expected_size(self, stream, context, path):
         position1 = stream_tell(stream, path)
         count = countfield._parse(stream, context, path)
         position2 = stream_tell(stream, path)
         return (position2-position1) + count * subcon._sizeof(context, path)
-    macro._actualsize = _actualsize
+    macro._expected_size = _expected_size
 
     return macro
 
@@ -3711,8 +3869,14 @@ class FixedSized(Subconstruct):
         stream_write(stream, bytes(pad), pad, path)
         return buildret
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         length = evaluate(self.length, context)
+        if length < 0:
+            raise PaddingError("length cannot be negative", path=path)
+        return length
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        length = evaluate(self.length, context, name, is_root)
         if length < 0:
             raise PaddingError("length cannot be negative", path=path)
         return length
@@ -3780,7 +3944,10 @@ class NullTerminated(Subconstruct):
         stream_write(stream, self.term, len(self.term), path)
         return buildret
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
+        raise SizeofError(path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
         raise SizeofError(path=path)
 
 
@@ -3831,7 +3998,10 @@ class NullStripped(Subconstruct):
     def _build(self, obj, stream, context, path):
         return self.subcon._build(obj, stream, context, path)
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
+        raise SizeofError(path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
         raise SizeofError(path=path)
 
 
@@ -3839,7 +4009,10 @@ class RestreamData(Subconstruct):
     r"""
     Parses a field on external data (but does not build).
 
-    Parsing defers to subcon, but provides it a separate BytesIO stream based on data provided by datafunc (a bytes literal or another BytesIO stream or Construct instances that returns bytes or context lambda). Building does nothing. Size is 0 because as far as other fields see it, this field does not produce or consume any bytes from the stream.
+    Parsing defers to subcon, but provides it a separate BytesIO stream based on data provided by datafunc
+    (a bytes literal or another BytesIO stream or Construct instances that returns bytes or context lambda).
+    Building does nothing. Size is 0 because as far as other fields see it, this field does not produce or consume
+    any bytes from the stream.
 
     :param datafunc: bytes or BytesIO or Construct instance (that parses into bytes) or context lambda, provides data for subcon to parse from
     :param subcon: Construct instance
@@ -3880,7 +4053,10 @@ class RestreamData(Subconstruct):
     def _build(self, obj, stream, context, path):
         return obj
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context, path):
+        return 0
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
         return 0
 
 
@@ -3947,12 +4123,15 @@ class Transformed(Subconstruct):
         stream_write(stream, data, len(data), path)
         return buildret
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str):
         if self.decodeamount is None or self.encodeamount is None:
             raise SizeofError(path=path)
         if self.decodeamount == self.encodeamount:
             return self.encodeamount
         raise SizeofError(path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        return self._static_sizeof(context, path)
 
 
 class Restreamed(Subconstruct):
@@ -4001,11 +4180,11 @@ class Restreamed(Subconstruct):
         stream2.close()
         return obj
 
-    def _sizeof(self, context, path):
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
         if self.sizecomputer is None:
             raise SizeofError("Restreamed cannot calculate size without a sizecomputer", path=path)
         else:
-            return self.sizecomputer(self.subcon._sizeof(context, path))
+            return self.sizecomputer(self.subcon._sizeof(name, context, path, is_root=is_root))
 
 
 class ProcessXor(Subconstruct):

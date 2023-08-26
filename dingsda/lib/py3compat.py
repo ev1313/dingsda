@@ -6,8 +6,8 @@ PY3 = sys.version_info[0] == 3
 PYPY = '__pypy__' in sys.builtin_module_names
 ONWINDOWS = platform.system() == "Windows"
 
-stringtypes = (bytes, str, )
-integertypes = (int, )
+stringtypes: tuple = (bytes, str, )
+integertypes: tuple = (int, )
 unicodestringtype = str
 bytestringtype = bytes
 

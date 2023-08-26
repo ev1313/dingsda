@@ -2,7 +2,7 @@ from dingsda.lib.py3compat import *
 import binascii
 
 
-class HexDisplayedInteger(integertypes[0]):
+class HexDisplayedInteger(int):
     """Used internally."""
     def __str__(self):
         return "0x" + format(self, self.fmtstr).upper()
@@ -13,7 +13,7 @@ class HexDisplayedInteger(integertypes[0]):
         obj.fmtstr = fmtstr
         return obj
 
-class HexDisplayedBytes(bytestringtype):
+class HexDisplayedBytes(bytes):
     """Used internally."""
     def __str__(self):
         if not hasattr(self, "render"):
@@ -27,7 +27,7 @@ class HexDisplayedDict(dict):
             self.render = "unhexlify(%s)" % (trimstring(binascii.hexlify(self["data"])), )
         return self.render
 
-class HexDumpDisplayedBytes(bytestringtype):
+class HexDumpDisplayedBytes(bytes):
     """Used internally."""
     def __str__(self):
         if not hasattr(self, "render"):

@@ -21,7 +21,7 @@ setup(
     },
     author = "Tim Blume",
     author_email = "dingsda@3nd.io",
-    python_requires = ">=3.6",
+    python_requires = ">=3.11",
     install_requires = [],
     extras_require = {
         "extras": [
@@ -29,7 +29,6 @@ setup(
             "numpy",
             "arrow",
             "ruamel.yaml",
-            "cloudpickle",
             "lz4",
             "cryptography"
         ],
@@ -37,7 +36,6 @@ setup(
     keywords = [
         "dingsda",
         "construct",
-        "kaitai",
         "declarative",
         "data structure",
         "struct",
@@ -51,6 +49,7 @@ setup(
         "unpack",
         "packer",
         "unpacker",
+        "xml"
     ],
     classifiers = [
         "Development Status :: 5 - Production/Stable",
@@ -58,13 +57,8 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Software Development :: Libraries :: Python Modules",
         "Topic :: Software Development :: Build Tools",
-        "Topic :: Software Development :: Code Generators",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: Implementation :: CPython",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],

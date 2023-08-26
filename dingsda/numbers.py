@@ -2,13 +2,13 @@ import struct
 
 import sys
 
-from dingsda import Construct
+from .core import Construct
 from dingsda.helpers import *
 from dingsda.errors import *
 from dingsda.lib import *
 
-
 native = (sys.byteorder == "little")
+
 
 class FormatField(Construct):
     r"""
@@ -89,10 +89,10 @@ class FormatField(Construct):
 
         assert (0)
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         return self.length
 
-    def _is_simple_type(self):
+    def _is_simple_type(self) -> bool:
         return True
 
 class BytesInteger(Construct):
@@ -165,9 +165,15 @@ class BytesInteger(Construct):
         stream_write(stream, data, length, path)
         return obj
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         try:
             return evaluate(self.length, context)
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        try:
+            return evaluate(self.length, context, name, is_root)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
@@ -268,9 +274,15 @@ class BitsInteger(Construct):
         stream_write(stream, data, length, path)
         return obj
 
-    def _sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         try:
             return evaluate(self.length, context)
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+        try:
+            return evaluate(self.length, context, name, is_root)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 

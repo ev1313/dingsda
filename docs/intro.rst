@@ -75,7 +75,6 @@ Following modules are needed only if you want to use certain features:
 * Numpy is optional, if you want to serialize arrays using Numpy protocol. Otherwise arrays can still be serialized using PrefixedArray.
 * Arrow is optional, if you want to use Timestamp class.
 * Different Python versions support different compression modules (like gzip lzma), if you want to use Compressed class.
-* Cloudpickle is optional, if you want to serialize the classes.
 * LZ4 is optional, if you want to use CompressedLZ4 class.
 
 

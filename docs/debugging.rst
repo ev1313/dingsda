@@ -1,9 +1,9 @@
 ===================
-Debugging Construct
+Debugging DingsDa
 ===================
 
 
-Programming data structures in Construct is much easier than writing the equivalent procedural code, both in terms of ease-of-use and correctness. However, sometimes things don't behave the way you expect them to. Yep, a bug.
+Programming data structures in DingsDa is much easier than writing the equivalent procedural code, both in terms of ease-of-use and correctness. However, sometimes things don't behave the way you expect them to.
 
 Most end-user bugs originate from handling the context wrong. Sometimes you forget what nesting level you are at, or you move things around without taking into account the nesting, thus breaking context-based expressions. The two utilities described below should help you out.
 
