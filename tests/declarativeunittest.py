@@ -50,11 +50,11 @@ def common(format: Construct, datasample: bytes, objsample: Container, objsample
         assert data2 == datasample
 
 
-def commonhex(format, hexdata):
+def commonhex(format: Construct, hexdata):
     commonbytes(format, binascii.unhexlify(hexdata))
 
 
-def commondumpdeprecated(format, filename):
+def commondumpdeprecated(format: Construct, filename: str):
     filename = "tests/deprecated_gallery/blobs/" + filename
     with open(filename,'rb') as f:
         data = f.read()

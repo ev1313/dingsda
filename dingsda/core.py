@@ -2,6 +2,8 @@
 import pdb
 import io, binascii, itertools, collections, os
 
+from typing import Tuple, Dict, Any
+
 from dingsda.errors import *
 from dingsda.lib import *
 from dingsda.expr import *
@@ -135,7 +137,7 @@ class Construct(object):
     def _fromET(self, parent, name, context, path, is_root=False):
         raise NotImplementedError
 
-    def _preprocess(self, obj, context, path, offset=0):
+    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         r"""
            Preprocess an object before building or sizing, called by the preprocess function.
 
@@ -480,7 +482,7 @@ class Subconstruct(Construct):
 
 
 class Arrayconstruct(Subconstruct):
-    def _preprocess(self, obj, context, path, offset=0):
+    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         # predicates don't need to be checked in preprocessing
         retlist = ListContainer()
         extra_info = {"_offset": offset}
@@ -1229,7 +1231,7 @@ class Struct(Construct):
                 break
         return obj
     
-    def _preprocess(self, obj, context, path, offset=0):
+    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         size = 0
         extra_info = {}
         if obj is None:
@@ -1565,7 +1567,7 @@ class GreedyRange(Subconstruct):
         self.discard = discard
 
 
-    def _preprocess(self, obj, context, path, offset=0):
+    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         # predicates don't need to be checked in preprocessing
         retlist = ListContainer()
         extra_info = {"_offset": offset}
@@ -1736,7 +1738,7 @@ class Area(Arrayconstruct):
         self.check_stream_pos = check_stream_pos
         self.stream = stream
 
-    def _preprocess(self, obj, context, path, offset=0):
+    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         retlist = ListContainer()
         # this is essentially a fancy pointer, so no size (instead we use _ptrsize)
         extra_info = {"_offset": offset, "_size": 0, "_endoffset": offset}
@@ -1843,7 +1845,7 @@ class Renamed(Subconstruct):
         path += " -> %s" % (self.name,)
         return self.subcon._parsereport(stream, context, path)
     
-    def _preprocess(self, obj, context, path, offset=0):
+    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         path += " -> %s" % (self.name,)
         return self.subcon._preprocess(obj, context, path, offset)
 
@@ -2090,7 +2092,7 @@ class Rebuild(Subconstruct):
         obj = evaluate(self.func, context)
         return self.subcon._build(obj, stream, context, path)
 
-    def _preprocess(self, obj, context, path, offset=0):
+    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         ctx = Container(**context)
         ctx["root"] = obj
         size = self._sizeof("root", ctx, path)
@@ -2954,6 +2956,27 @@ class Switch(Construct):
         sc = self.cases.get(keyfunc, self.default)
         return sc._build(obj, stream, context, path)
 
+    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+        keyfunc = evaluate(self.keyfunc, context)
+        # FIXME: hack because of the indirection, lambda -> rebuild (generates lambda) -> final id
+        keyfunc = evaluate(keyfunc, context)
+        sc = self.cases[keyfunc]
+
+        extra_info = {"_offset": offset}
+
+        obj, child_extra_info = sc._preprocess(obj, context, path, offset)
+
+        extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
+        extra_info.update(extra)
+
+        extra_info["_size"] = child_extra_info["_size"]
+        extra_info["_endoffset"] = offset + child_extra_info["_size"]
+
+        return obj, extra_info
+
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        raise SizeofError("Switches cannot calculate static size", path=path)
+
     def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
         try:
             keyfunc = evaluate(self.keyfunc, context, name, is_root)
@@ -2978,7 +3001,7 @@ class Switch(Construct):
         return sc._toET(parent, name, ctx, path)
 
     def _fromET(self, parent, name, context, path, is_root=False):
-        for case in self.cases.values():
+        for i, case in self.cases.items():
             assert(isinstance(case, Renamed))
             if not is_root:
                 elems = parent.findall(case.name)
@@ -2993,7 +3016,9 @@ class Switch(Construct):
             else:
                 elems = [parent]
             elem = elems[0]
-            context[f"_switchid_{name}"] = case.name
+            context[f"_switch_id_{name}"] = i
+            context[f"_switch_name_{name}"] = case.name
+
             return case._fromET(elem, name, context, path, is_root=True)
 
     def _names(self):
