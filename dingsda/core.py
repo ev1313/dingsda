@@ -153,8 +153,10 @@ class Construct(object):
             :return extra_info: a dictionary containing extra information regarding offset, size, etc.
         """
         ctx = Container(**context)
-        ctx["root"] = obj
-        size = self._sizeof("root", ctx, path, is_root=True)
+        # FIXME: i do not know a better solution for this yet
+        if isinstance(obj, dict) or isinstance(obj, Container):
+            ctx.update(obj)
+        size = self._sizeof(obj, ctx, path)
         return obj, {"_offset": offset, "_size": size, "_endoffset": offset + size}
 
     def build(self, obj, **contextkw):
@@ -308,10 +310,9 @@ class Construct(object):
         context._building = False
         context._sizing = True
         context._params = context
-        context = context
-        context["root"] = obj
+        context.update(obj)
 
-        return self._sizeof("root", context, "(sizeof)", is_root=True)
+        return self._sizeof(obj, context, "(sizeof)")
 
     def full_sizeof(self, obj: Container, **contextkw) -> int:
         r"""
@@ -344,21 +345,20 @@ class Construct(object):
         context._building = False
         context._sizing = True
         context._params = context
-        context = context
-        context["root"] = obj
-        return self._full_sizeof("root", context, "(full_sizeof)", is_root=True)
+        context.update(obj)
+        return self._full_sizeof(obj, context, "(full_sizeof)")
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         """Override in your subclass."""
         raise SizeofError(path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         """Override in your subclass."""
         return self._static_sizeof(context, path)
 
-    def _full_sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _full_sizeof(self, obj: Any, context: Container, path: str) -> int:
         """Override in your subclass."""
-        return self._sizeof(name, context, path, is_root=is_root)
+        return self._sizeof(obj, context, path)
 
     def _expected_size(self, stream, context: Container, path: str) -> int:
         r"""
@@ -474,11 +474,11 @@ class Subconstruct(Construct):
     def _static_sizeof(self, context: Container, path: str) -> int:
         return self.subcon._static_sizeof(context, path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
-        return self.subcon._sizeof(name, context, path, is_root=is_root)
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        return self.subcon._sizeof(obj, context, path)
 
-    def _full_sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
-        return self.subcon._full_sizeof(name, context, path, is_root=is_root)
+    def _full_sizeof(self, obj: Any, context: Container, path: str) -> int:
+        return self.subcon._full_sizeof(obj, context, path)
 
 
 class Arrayconstruct(Subconstruct):
@@ -651,10 +651,10 @@ class Tunnel(Subconstruct):
     def _static_sizeof(self, context, path):
         raise SizeofError(path=path)
 
-    def _sizeof(self, obj, context, path, is_root: bool = False):
+    def _sizeof(self, obj, context, path):
         raise SizeofError(path=path)
 
-    def _full_sizeof(self, obj, context, path, is_root: bool = False):
+    def _full_sizeof(self, obj, context, path):
         raise SizeofError(path=path)
 
     def _decode(self, data, context, path):
@@ -725,11 +725,11 @@ class Bytes(Construct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         # FIXME: this should use not the length field but the actual data
         # FIXME: add preprocess so the length field can be rebuild from the length of the actual data
         try:
-            return evaluate(self.length, context, name, is_root)
+            return evaluate(self.length, context)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
@@ -790,7 +790,7 @@ class GreedyBytes(Construct):
         stream_write(stream, data, len(data), path)
         return data
 
-    def _sizeof(self, name: str, context: Container, path: str) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
             return len(get_current_field(context, path))
         except (KeyError, AttributeError):
@@ -1341,13 +1341,17 @@ class Struct(Construct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
             return self._static_sizeof(context, path)
         except SizeofError:
-            ctx = create_child_context(context, name)
             try:
-                return sum(sc._sizeof(sc.name, ctx, path, is_root=is_root) for sc in self.subcons)
+                size_sum = 0
+                for sc in self.subcons:
+                    ctx = create_child_context(context, sc.name)
+                    child_obj = context[sc.name]
+                    size_sum += sc._sizeof(child_obj, ctx, path)
+                return size_sum
             except (KeyError, AttributeError):
                 raise SizeofError("cannot calculate size, key not found in context", path=path)
         assert(0)
@@ -1449,11 +1453,14 @@ class Sequence(Construct):
     def _static_sizeof(self, context: Container, path: str) -> int:
         return sum(sc._static_sizeof(context, path) for sc in self.subcons)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
-        # we go down one layer
-        ctx = create_child_context(context, name)
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
-            return sum(sc._sizeof(sc.name, ctx, path, is_root=is_root) for sc in self.subcons)
+            size_sum = 0
+            for sc in self.subcons:
+                ctx = create_child_context(context, sc.name)
+                child_obj = context[sc.name]
+                size_sum += sc._sizeof(child_obj, ctx, path)
+            return size_sum
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
@@ -1528,12 +1535,12 @@ class Array(Arrayconstruct):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
         return count * self.subcon._static_sizeof(context, path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
-            count = evaluate(self.count, context, name=name, is_root=is_root)
+            count = evaluate(self.count, context)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
-        return count * self.subcon._sizeof(name, context, path, is_root=is_root)
+        return count * self.subcon._sizeof(obj, context, path)
 
 
 # FIXME: GreedyRange/RepeatUntil etc should also be able to calculate their size with sizeof
@@ -2223,7 +2230,7 @@ class Error(Construct):
     def _static_sizeof(self, context: Container, path: str) -> int:
         raise SizeofError("Error does not have size, because it interrupts parsing and building", path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         raise SizeofError("Error does not have size, because it interrupts parsing and building", path=path)
 
 
@@ -2315,11 +2322,14 @@ class FocusedSeq(Construct):
     def _static_sizeof(self, context: Container, path: str) -> int:
         return sum(sc._static_sizeof(context, path) for sc in self.subcons)
 
-    def _sizeof(self, name: str, context: Container, path: str) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         # we go down one layer
-        ctx = create_child_context(context, name)
         try:
-            return sum(sc._sizeof(sc.name, ctx, path) for sc in self.subcons)
+            sum_size: int = 0
+            for sc in self.subcons:
+                ctx = create_child_context(context, sc.name)
+                child_obj = ctx[sc.name]
+                sum_size += sc._sizeof(child_obj, ctx, path)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
@@ -2671,7 +2681,7 @@ class Union(Construct):
     def _static_sizeof(self, context, path):
         raise SizeofError("Union builds depending on actual object dict, size is unknown", path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         raise SizeofError(path=path)
 
 
@@ -2839,10 +2849,10 @@ class IfThenElse(Construct):
         sc = self.thensubcon if condfunc else self.elsesubcon
         return sc._static_sizeof(context, path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
-        condfunc = evaluate(self.condfunc, context, name, is_root)
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        condfunc = evaluate(self.condfunc, context)
         sc = self.thensubcon if condfunc else self.elsesubcon
-        return sc._sizeof(name, context, path, is_root)
+        return sc._sizeof(obj, context, path)
 
     def _toET(self, parent, name, context, path):
         condfunc = evaluate(self.condfunc, context)
@@ -2977,11 +2987,11 @@ class Switch(Construct):
     def _static_sizeof(self, context: Container, path: str) -> int:
         raise SizeofError("Switches cannot calculate static size", path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
-            keyfunc = evaluate(self.keyfunc, context, name, is_root)
+            keyfunc = evaluate(self.keyfunc, context)
             sc = self.cases.get(keyfunc, self.default)
-            return sc._sizeof(name, context, path, is_root)
+            return sc._sizeof(obj, context, path)
 
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
@@ -3062,7 +3072,7 @@ class StopIf(Construct):
         if condfunc:
             raise StopFieldError(path=path)
 
-    def _sizeof(self, context, path):
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         raise SizeofError("StopIf cannot determine size because it depends on actual context which then depends on actual data and outer constructs", path=path)
 
 
@@ -3174,9 +3184,9 @@ class Padded(Subconstruct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False):
+    def _sizeof(self, obj: Any, context: Container, path: str):
         try:
-            length = evaluate(self.length, context, name, is_root)
+            length = evaluate(self.length, context)
             if length < 0:
                 raise PaddingError("length cannot be negative", path=path)
             return length
@@ -3257,12 +3267,12 @@ class Aligned(Subconstruct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
-            modulus = evaluate(self.modulus, context, name, is_root)
+            modulus = evaluate(self.modulus, context)
             if modulus < 2:
                 raise PaddingError("expected modulo 2 or greater", path=path)
-            subconlen = self.subcon._sizeof(name, context, path, is_root)
+            subconlen = self.subcon._sizeof(obj, context, path)
             return subconlen + (-subconlen % modulus)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
@@ -3395,7 +3405,7 @@ class Pointer(Subconstruct):
         return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
 
 
-    def _sizeof(self, context, path):
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         return 0
 
 
@@ -3900,8 +3910,8 @@ class FixedSized(Subconstruct):
             raise PaddingError("length cannot be negative", path=path)
         return length
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
-        length = evaluate(self.length, context, name, is_root)
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        length = evaluate(self.length, context)
         if length < 0:
             raise PaddingError("length cannot be negative", path=path)
         return length
@@ -3972,7 +3982,7 @@ class NullTerminated(Subconstruct):
     def _static_sizeof(self, context, path):
         raise SizeofError(path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         raise SizeofError(path=path)
 
 
@@ -4026,7 +4036,7 @@ class NullStripped(Subconstruct):
     def _static_sizeof(self, context, path):
         raise SizeofError(path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         raise SizeofError(path=path)
 
 
@@ -4081,7 +4091,7 @@ class RestreamData(Subconstruct):
     def _static_sizeof(self, context, path):
         return 0
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         return 0
 
 
@@ -4155,7 +4165,7 @@ class Transformed(Subconstruct):
             return self.encodeamount
         raise SizeofError(path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         return self._static_sizeof(context, path)
 
 
@@ -4205,11 +4215,11 @@ class Restreamed(Subconstruct):
         stream2.close()
         return obj
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         if self.sizecomputer is None:
             raise SizeofError("Restreamed cannot calculate size without a sizecomputer", path=path)
         else:
-            return self.sizecomputer(self.subcon._sizeof(name, context, path, is_root=is_root))
+            return self.sizecomputer(self.subcon._sizeof(obj, context, path))
 
 
 class ProcessXor(Subconstruct):
@@ -4273,8 +4283,8 @@ class ProcessXor(Subconstruct):
         stream_write(stream, data, len(data), path)
         return buildret
 
-    def _sizeof(self, context, path):
-        return self.subcon._sizeof(context, path)
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        return self.subcon._sizeof(obj, context, path)
 
 
 class Checksum(Construct):
@@ -4344,8 +4354,8 @@ class Checksum(Construct):
         self.checksumfield._build(hash2, stream, context, path)
         return hash2
 
-    def _sizeof(self, context, path):
-        return self.checksumfield._sizeof(context, path)
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        return self.checksumfield._sizeof(obj, context, path)
 
 
 class Compressed(Tunnel):

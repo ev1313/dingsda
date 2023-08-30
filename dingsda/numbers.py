@@ -171,9 +171,9 @@ class BytesInteger(Construct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
-            return evaluate(self.length, context, name, is_root)
+            return evaluate(self.length, context)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
@@ -280,9 +280,9 @@ class BitsInteger(Construct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
-            return evaluate(self.length, context, name, is_root)
+            return evaluate(self.length, context)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 

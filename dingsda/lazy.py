@@ -5,6 +5,7 @@ from dingsda.core import Construct, Subconstruct
 from dingsda.errors import *
 from dingsda.lib import stringtypes, Container, ListContainer
 
+from typing import Any
 
 class Lazy(Subconstruct):
     r"""
@@ -191,13 +192,16 @@ class LazyStruct(Construct):
     def _static_sizeof(self, context: Container, path: str) -> int:
         return sum(sc._static_sizeof(context, path) for sc in self.subcons)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
             return self._static_sizeof(context, path)
         except SizeofError:
-            ctx = create_child_context(context, name)
             try:
-                return sum(sc._sizeof(sc.name, ctx, path, is_root=is_root) for sc in self.subcons)
+                size_sum = 0
+                for sc in self.subcons:
+                    ctx = create_child_context(context, sc.name)
+                    child_obj = context[sc.name]
+                    size_sum += sc._sizeof(child_obj, ctx, path)
             except (KeyError, AttributeError):
                 raise SizeofError("cannot calculate size, key not found in context", path=path)
         assert(0)
@@ -314,13 +318,13 @@ class LazyArray(Subconstruct):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
         return count * self.subcon._static_sizeof(context, path)
 
-    def _sizeof(self, name: str, context: Container, path: str, is_root: bool = False) -> int:
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         # exact copy from Array class
         try:
-            count = evaluate(self.count, context, name, is_root)
+            count = evaluate(self.count, context)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
-        return count * self.subcon._sizeof(name=name, context=context, path=path, is_root=is_root)
+        return count * self.subcon._sizeof(obj=obj, context=context, path=path)
 
 
 class LazyBound(Construct):

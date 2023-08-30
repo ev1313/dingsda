@@ -2,6 +2,7 @@ from dingsda.core import Construct, Subconstruct
 from dingsda.lib import *
 import sys, traceback, pdb, inspect
 
+from typing import Any
 
 class Probe(Construct):
     r"""
@@ -60,7 +61,7 @@ class Probe(Construct):
     def _build(self, obj, stream, context, path):
         self.printout(stream, context, path)
 
-    def _sizeof(self, context, path):
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         self.printout(None, context, path)
         return 0
 
@@ -131,9 +132,9 @@ class Debugger(Subconstruct):
         except Exception:
             self.handle_exc(path)
 
-    def _sizeof(self, context, path):
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
-            return self.subcon._sizeof(context, path)
+            return self.subcon._sizeof(obj, context, path)
         except Exception:
             self.handle_exc(path)
 
