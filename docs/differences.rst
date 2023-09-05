@@ -9,7 +9,31 @@ in reverse engineering of file formats. Many features aim directly
 for simple describing of whole file formats written in and for
 other languages, especially in terms of offset/size handling (see Area).
 
-Sizing
+Preprocessing
+===========
+
+Previously when using Rebuilds it was not possible to nest them like this:
+
+```
+f = "F" / Struct(
+        "a" / Rebuild(Int32ul, this.b),
+        "b" / Rebuild(Int32ul, this.c),
+        "c" / Int32ul,
+    )
+```
+
+Now before building it is possible to call the preprocess function:
+
+```
+    obj = f.parse(data)
+    preprocessed_obj = f.preprocess(obj)
+    data = f.build(preprocessed_obj)
+```
+
+This works, because preprocess adds for a and b lambdas, which get
+resolved after the preprocessing, which adds all of them.
+
+SizeOf
 ======
 
 Construct provided two different sizeof methods, _sizeof and _actualsize.
@@ -46,38 +70,17 @@ for some special types with prefixed lengths by using the current parsing stream
 the expected size of the Construct and moves the stream along by this size.
 The fallback of this function is static_sizeof.
 
-Preprocessing
-===========
+Sizing
+======
 
-Previously when using Rebuilds it was not possible to nest them like this:
-
-```
-f = "F" / Struct(
-        "a" / Rebuild(Int32ul, this.b),
-        "b" / Rebuild(Int32ul, this.c),
-        "c" / Int32ul,
-    )
-```
-
-Now before building it is possible to call the preprocess function:
-
-```
-    obj = f.parse(data)
-    preprocessed_obj = f.preprocess(obj)
-    data = f.build(preprocessed_obj)
-```
-
-This works, because preprocess adds for a and b lambdas, which get
-resolved only AFTER the build already succeeded.
-
-Furthermore preprocessing adds the following attributes to every
+After the first part of preprocessing, the optional sizing step adds the following attributes to every
 parsed item:
 
  - _offset
  - _size
  - _endoffset
 
-Furthermore Pointers set the size of their contents when preprocessing to:
+Furthermore Pointers set the size of their contents when sizing to:
  - _ptrsize
 
 All these items exist in the object dictionary itself and Struct
@@ -89,7 +92,24 @@ The Struct names all child objects like this:
  - _{childname}_endoffset
  - _{childname}_ptrsize
 
-All of these can be used in Rebuilds in the build step later.
+All of these can be used in Rebuilds in the build step later. As
+the sizing step is done after the preprocessing step, it can also
+utilize the Rebuilds, for example when calculating the size of a Switch
+like this:
+
+```
+    s = "test" / Struct(
+        "type" / Rebuild(Int8ul, lambda ctx: ctx._switch_id_data),
+        "data" / Switch(this.type, {
+            1: "b32bit" / Struct("value" / Int32ul),
+            2: "b16bit" / Struct("value" / Int16ul),
+            3: "test" / Struct("a" / Int32ul, "b" / Int32ul),
+        }),
+        )
+```
+
+Here when sizing, the Rebuild of type will be called, which will get the
+switch id from the _switch_id_data attribute, previously added in an fromET step.
 
 Area
 ====

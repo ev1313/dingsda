@@ -181,3 +181,16 @@ def test_preprocess_ifthenelse():
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
     assert(size["_size"] == len(res))
+
+def test_preprocess_ifthenelse_nested():
+    # sizeof has two different paths for static and non static values
+    d = Struct(
+        "foo" / Int32ul,
+        "asd" / If(lambda ctx: ctx.foo == 4, Struct("bar" / Int32ul, "test" / If(lambda ctx: ctx.bar == 4, Struct("baz" / Int32ul)))),
+        )
+    obj = {"foo": 4, "asd": {"bar": 4, "test": {"baz": 4}}}
+    # the preprocessing adds the lambdas to the dictionary, so building is possible without the values
+    preprocessed_ctx, size = d.preprocess(obj=obj)
+    res = d.build(preprocessed_ctx)
+    assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
+    assert(size["_size"] == len(res))

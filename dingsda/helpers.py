@@ -3,7 +3,7 @@ from typing import Any, Optional
 from dingsda.errors import StreamError, StringError
 from dingsda.lib import bytestringtype
 from dingsda.lib.containers import Container, ListContainer
-
+from copy import deepcopy
 
 def get_current_field(context: Container, name: str) -> Any:
     idx = context.get("_index", None)
@@ -54,18 +54,24 @@ def create_parent_context(context):
     return ctx
 
 
-def create_child_context(context: Container, name: str) -> Container:
+def create_child_context(context: Container, obj: Optional[Container]) -> Container:
     """ Creates a new context for the child node. Used e.g. in Struct when building,
     will fail, if child is not a Container. """
-    ctx = context[name]
-    assert(isinstance(ctx, Container))
-    ctx["_"] = context
-    _root = context.get("_root", None)
-    if _root is None:
-        ctx["_root"] = context
-    else:
-        ctx["_root"] = _root
-    return ctx
+    if obj is None:
+        obj = Container()
+
+    ret = Container(obj)
+    ctx = Container(_params = context.get("_params", None),
+                    _root = context.get("_root", context),
+                    _ = context,
+                    _parsing = context.get("_parsing", False),
+                    _building = context.get("_building", False),
+                    _sizing = context.get("_sizing", False),
+                    _subcons = context.get("_subcons", None),
+                    _preprocessing = context.get('_preprocessing', False),
+                    _index = context.get("_index", None))
+    ret.update(ctx)
+    return ret
 
 
 def insert_or_append_field(context: Container, name: str, value: Any) -> Container:
@@ -125,11 +131,15 @@ def hyphenatelist(l) -> list:
     return [hyphenatedict(d) for d in l]
 
 
-def evaluate(param, context, name: Optional[str]=None, is_root: bool = False):
+def evaluate(param: Any, context: Container, recurse: bool = False):
     ctx = context
-    if is_root:
-        ctx = context[name]
-    return param(ctx) if callable(param) else param
+    ret = param(ctx) if callable(param) else param
+
+    if recurse:
+        while callable(ret):
+            ret = ret(ctx)
+
+    return ret
 
 
 def stream_read(stream, length, path):

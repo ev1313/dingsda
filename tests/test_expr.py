@@ -2,7 +2,7 @@ from dingsda.numbers import Int8sb
 from tests.declarativeunittest import *
 from dingsda import *
 from dingsda.lib import *
-
+from dingsda.helpers import create_child_context
 
 def test_path():
     path = Path("path")
@@ -137,3 +137,54 @@ def test_this_shift_operator():
        "rs" / Computed(this.a >> 1),
     )
     assert d.parse(b"\x02") == Container(a=2, ls=4, rs=1)
+
+def test_create_parent_context():
+    obj = {"a": 1}
+    ctx = {"_foo": 2}
+    child = create_child_context(ctx, obj)
+    assert child == {"a": 1,
+                     "_": {"_foo": 2},
+                     '_building': False,
+                     '_index': None,
+                     '_params': None,
+                     '_parsing': False,
+                     '_preprocessing': False,
+                     '_root': {'_foo': 2},
+                     '_sizing': False,
+                     '_subcons': None
+                     }
+
+    obj = {"x": 3}
+    ctx = {"a": 1,
+           "_": {"_foo": 2},
+           '_building': False,
+           '_index': None,
+           '_params': None,
+           '_parsing': False,
+           '_preprocessing': False,
+           '_root': {'_foo': 2},
+           '_sizing': False,
+           '_subcons': None
+           }
+    child = create_child_context(ctx, obj)
+    assert child == {"x": 3,
+                     "_": {"a":1,
+                           "_": {"_foo": 2},
+                           '_building': False,
+                           '_index': None,
+                           '_params': None,
+                           '_parsing': False,
+                           '_preprocessing': False,
+                           '_root': {'_foo': 2},
+                           '_sizing': False,
+                           '_subcons': None
+                           },
+                     '_building': False,
+                     '_index': None,
+                     '_params': None,
+                     '_parsing': False,
+                     '_preprocessing': False,
+                     '_root': {'_foo': 2},
+                     '_sizing': False,
+                     '_subcons': None
+                     }

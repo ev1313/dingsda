@@ -1,7 +1,7 @@
 import sys
 
 from dingsda.helpers import stream_seek, stream_tell, evaluate, create_child_context
-from dingsda.core import Construct, Subconstruct
+from dingsda.core import Construct, Subconstruct, Structconstruct
 from dingsda.errors import *
 from dingsda.lib import stringtypes, Container, ListContainer
 
@@ -111,7 +111,7 @@ class LazyContainer(dict):
         return "<LazyContainer: %s items cached, %s subcons>" % (len(self._values), len(self._struct.subcons), )
 
 
-class LazyStruct(Construct):
+class LazyStruct(Structconstruct):
     r"""
     Equivalent to :class:`~dingsda.core.Struct`, but when this class is parsed, most fields are not parsed (they are skipped if their size can be measured by _expected_size or _sizeof method). See its docstring for details.
 
@@ -188,23 +188,6 @@ class LazyStruct(Construct):
             except StopFieldError:
                 break
         return context
-
-    def _static_sizeof(self, context: Container, path: str) -> int:
-        return sum(sc._static_sizeof(context, path) for sc in self.subcons)
-
-    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        try:
-            return self._static_sizeof(context, path)
-        except SizeofError:
-            try:
-                size_sum = 0
-                for sc in self.subcons:
-                    ctx = create_child_context(context, sc.name)
-                    child_obj = context[sc.name]
-                    size_sum += sc._sizeof(child_obj, ctx, path)
-            except (KeyError, AttributeError):
-                raise SizeofError("cannot calculate size, key not found in context", path=path)
-        assert(0)
 
 
 class LazyListContainer(list):

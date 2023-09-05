@@ -90,7 +90,7 @@ class Container(collections.OrderedDict):
         try:
             if name in self.__slots__:
                 ret = object.__getattribute__(self, name)
-                # the dirty inspect hack is because we do not want to resolve Lazy lambdas for backwards compatibility
+                # FIXME: the dirty inspect hack is because we do not want to resolve Lazy lambdas for backwards compatibility
                 # if we want break backwards compatibility, we can remove this hack and just add a context parameter
                 # to the Lazy execute() inline function
                 if callable(ret) and len(inspect.signature(ret).parameters) == 1:

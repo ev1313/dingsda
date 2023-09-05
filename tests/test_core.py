@@ -1766,8 +1766,6 @@ def test_struct_root_topmost():
         ),
         Probe(),
     )
-    # setGlobalPrintPrivateEntries(True)
-    # d.parse(b'', z=2)
     assert d.parse(b"", z=2) == Container(x=1, inner=Container(inner2=Container(x=1,z=2,zz=2)))
 
 def test_parsedhook_repeatersdiscard():

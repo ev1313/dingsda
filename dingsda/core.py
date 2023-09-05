@@ -137,13 +137,32 @@ class Construct(object):
     def _fromET(self, parent, name, context, path, is_root=False):
         raise NotImplementedError
 
-    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
         r"""
            Preprocess an object before building or sizing, called by the preprocess function.
 
-            The basic preprocess function just returns the object and calls the
+            The basic preprocess function just returns the object and an empty dictionary.
+
+            :param obj: the object to preprocess
+            :param context: the context dictionary
+            :param path: the path to the construct
+
+            :return obj: the preprocessed object
+            :return extra_info: a dictionary containing extra information regarding offset, size, etc.
+        """
+        return obj, {}
+
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+        r"""
+           Preprocess an object before building or sizing, called by the preprocess function.
+
+            The extended preprocess function just returns the object and calls the
             standard _sizeof function. This doesn't work for all constructs, so
-            these need to implement their own _preprocess function for correct _sizeof.
+            these need to implement their own _preprocess_size function for correct _sizeof.
+
+            This function is called after the basic _preprocess function was evaluated for the whole context, so
+            it may access all Rebuilds for sizing.
 
             :param obj: the object to preprocess
             :param context: the context dictionary
@@ -248,15 +267,19 @@ class Construct(object):
 
         return result.get(xml.tag)
 
-    def preprocess(self, obj, **contextkw):
+    def preprocess(self, obj: Any, sizing: bool = True, **contextkw) -> Tuple[Any, Dict[str, Any]]:
         r"""
             Preprocess an object before building.
 
-            This generates some special attributes in the returned Container, like _size and _ptrsize.
-            Furthermore the second returned value is the size of the object in bytes.
+            The basic preprocessing step adds for some special Constructs like Rebuilds lambdas or other
+            values to the construct, so especially Rebuilds can use them in the build step afterwards.
+
+            After the basic preprocessing, if the sizing parameter is set, the size of the construct and
+            all subconstructs is added to the context. This adds attributes like _size and _ptrsize.
 
             :param obj: the object to preprocess
-            :return obj: the preprocessed Container
+            :param sizing: whether to size the object after the first preprocessing step.
+            :return obj: the preprocessed object
             :return extra_info: the dictionary containing extra information for the *current* object, like offset, size, etc.
         """
         context = Container(**contextkw)
@@ -265,7 +288,13 @@ class Construct(object):
         context._building = False
         context._sizing = False
         context._params = context
-        return self._preprocess(obj=obj, context=context, path="(preprocess)", offset=0)
+
+        obj, extra_info = self._preprocess(obj=obj, context=context, path="(preprocess)")
+
+        if sizing:
+            return self._preprocess_size(obj=obj, context=context, path="(preprocess_size)", offset=0)
+
+        return obj, extra_info
 
     def static_sizeof(self, **contextkw):
         r"""
@@ -468,6 +497,9 @@ class Subconstruct(Construct):
     def _parse(self, stream, context, path):
         return self.subcon._parsereport(stream, context, path)
 
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+        return self.subcon._preprocess(obj, context, path)
+
     def _build(self, obj, stream, context, path):
         return self.subcon._build(obj, stream, context, path)
 
@@ -481,15 +513,61 @@ class Subconstruct(Construct):
         return self.subcon._full_sizeof(obj, context, path)
 
 
+class Structconstruct(Construct):
+    def _is_simple_type(self) -> bool:
+        return False
+
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        try:
+            return sum(sc._static_sizeof(context, path) for sc in self.subcons)
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        try:
+            return self._static_sizeof(context, path)
+        except SizeofError:
+            pass
+        try:
+            size_sum = 0
+            for sc in self.subcons:
+                try:
+                    size_sum += sc._static_sizeof(context, path)
+                except SizeofError:
+                    ctx = create_child_context(context, obj)
+                    child_obj = context[sc.name]
+                    size_sum += sc._sizeof(child_obj, ctx, path)
+            return size_sum
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+        assert(0)
+
+
 class Arrayconstruct(Subconstruct):
-    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+        # predicates don't need to be checked in preprocessing
+        retlist = ListContainer()
+        extra_info = {}
+        for i, e in enumerate(obj):
+            context._index = i
+            obj, child_extra_info = self.subcon._preprocess(e, context, path)
+            retlist.append(obj)
+
+            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+
+            context.update(extra_info)
+
+        return retlist, extra_info
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         # predicates don't need to be checked in preprocessing
         retlist = ListContainer()
         extra_info = {"_offset": offset}
         size = 0
         for i, e in enumerate(obj):
             context._index = i
-            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            obj, child_extra_info = self.subcon._preprocess_size(e, context, path, offset)
             retlist.append(obj)
 
             extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
@@ -1146,7 +1224,7 @@ class Mapping(Adapter):
 #===============================================================================
 # structures and sequences
 #===============================================================================
-class Struct(Construct):
+class Struct(Structconstruct):
     r"""
     Sequence of usually named constructs, similar to structs in C. The members are parsed and build in the order they are defined. If a member is anonymous (its name is None) then it gets parsed and the value discarded, or it gets build from nothing (from None).
 
@@ -1219,26 +1297,57 @@ class Struct(Construct):
     def _parse(self, stream, context, path):
         obj = Container()
         obj._io = stream
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = stream, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
+        ctx = create_child_context(context, obj)
+        ctx["_subcons"] = self._subcons
         for sc in self.subcons:
             try:
-                subobj = sc._parsereport(stream, context, path)
+                subobj = sc._parsereport(stream, ctx, path)
                 if sc.name:
                     obj[sc.name] = subobj
-                    context[sc.name] = subobj
+                    ctx[sc.name] = subobj
+
+                # this adds the objects to the root of the context, if this struct is the root
+                if context.get("_root", None) is None:
+                    ctx["_root"].update(obj)
+                    ctx["_root"].update(ctx)
+
             except StopFieldError:
                 break
+
         return obj
-    
-    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+        extra_info = {}
+
+        if obj is None:
+            obj = Container()
+        ctx = create_child_context(context, obj)
+
+        for sc in self.subcons:
+            subobj = obj.get(sc.name, None)
+
+            if sc.name:
+                context[sc.name] = subobj
+
+            preprocessret, child_extra_info = sc._preprocess(subobj, ctx, path)
+            # put named extra info to the context
+            extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+
+            if sc.name:
+                ctx[sc.name] = preprocessret
+
+            # add current extra_info to context, so e.g. lambdas can use them already
+            ctx.update(extra_info)
+
+        return ctx, extra_info
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         size = 0
         extra_info = {}
         if obj is None:
             obj = Container()
-        ctx = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _index = context.get("_index", None))
-        ctx._root = ctx._.get("_root", context)
-        ctx.update(obj)
+        ctx = create_child_context(context, obj)
         extra_info["_offset"] = offset
         for sc in self.subcons:
             subobj = obj.get(sc.name, None)
@@ -1246,7 +1355,7 @@ class Struct(Construct):
             if sc.name:
                 context[sc.name] = subobj
 
-            preprocessret, child_extra_info = sc._preprocess(subobj, ctx, path, offset=offset)
+            preprocessret, child_extra_info = sc._preprocess_size(subobj, ctx, path, offset=offset)
             # put named extra info to the context
             extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
             extra_info.update(extra)
@@ -1267,12 +1376,12 @@ class Struct(Construct):
 
         return ctx, extra_info
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream, context: Container, path: str) -> Container:
         if obj is None:
             obj = Container()
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = stream, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
-        context.update(obj)
+
+        ctx = create_child_context(context, obj)
+        ctx["_subcons"] = self._subcons
         for sc in self.subcons:
             try:
                 if sc.flagbuildnone:
@@ -1281,14 +1390,14 @@ class Struct(Construct):
                     subobj = obj[sc.name] # raises KeyError
 
                 if sc.name:
-                    context[sc.name] = subobj
+                    ctx[sc.name] = subobj
 
-                buildret = sc._build(subobj, stream, context, path)
+                buildret = sc._build(subobj, stream, ctx, path)
                 if sc.name:
-                    context[sc.name] = buildret
+                    ctx[sc.name] = buildret
             except StopFieldError:
                 break
-        return context
+        return ctx
 
     def _toET(self, parent, name, context, path):
         assert(name is not None)
@@ -1335,29 +1444,8 @@ class Struct(Construct):
 
         return ret_ctx
 
-    def _static_sizeof(self, context: Container, path: str) -> int:
-        try:
-            return sum(sc._static_sizeof(context, path) for sc in self.subcons)
-        except (KeyError, AttributeError):
-            raise SizeofError("cannot calculate size, key not found in context", path=path)
 
-    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        try:
-            return self._static_sizeof(context, path)
-        except SizeofError:
-            try:
-                size_sum = 0
-                for sc in self.subcons:
-                    ctx = create_child_context(context, sc.name)
-                    child_obj = context[sc.name]
-                    size_sum += sc._sizeof(child_obj, ctx, path)
-                return size_sum
-            except (KeyError, AttributeError):
-                raise SizeofError("cannot calculate size, key not found in context", path=path)
-        assert(0)
-
-
-class Sequence(Construct):
+class Sequence(Structconstruct):
     r"""
     Sequence of usually un-named constructs. The members are parsed and build in the order they are defined. If a member is named, its parsed value gets inserted into the context. This allows using members that refer to previous members.
 
@@ -1450,19 +1538,25 @@ class Sequence(Construct):
                 break
         return retlist
 
-    def _static_sizeof(self, context: Container, path: str) -> int:
-        return sum(sc._static_sizeof(context, path) for sc in self.subcons)
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+        raise NotImplementedError
 
-    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        try:
-            size_sum = 0
-            for sc in self.subcons:
-                ctx = create_child_context(context, sc.name)
-                child_obj = context[sc.name]
-                size_sum += sc._sizeof(child_obj, ctx, path)
-            return size_sum
-        except (KeyError, AttributeError):
-            raise SizeofError("cannot calculate size, key not found in context", path=path)
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+        raise NotImplementedError
+
+#    def _static_sizeof(self, context: Container, path: str) -> int:
+#        return sum(sc._static_sizeof(context, path) for sc in self.subcons)
+#
+#    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+#        try:
+#            size_sum = 0
+#            for sc in self.subcons:
+#                ctx = create_child_context(context, sc.name)
+#                child_obj = context[sc.name]
+#                size_sum += sc._sizeof(child_obj, ctx, path)
+#            return size_sum
+#        except (KeyError, AttributeError):
+#            raise SizeofError("cannot calculate size, key not found in context", path=path)
 
 
 #===============================================================================
@@ -1573,15 +1667,29 @@ class GreedyRange(Subconstruct):
         super().__init__(subcon)
         self.discard = discard
 
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+        # predicates don't need to be checked in preprocessing
+        retlist = ListContainer()
+        extra_info = {}
+        for i,e in enumerate(obj):
+            context._index = i
+            obj, child_extra_info = self.subcon._preprocess(e, context, path)
+            retlist.append(obj)
 
-    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
+            extra_info.update(extra)
+            context.update(extra_info)
+
+        return retlist, extra_info
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         # predicates don't need to be checked in preprocessing
         retlist = ListContainer()
         extra_info = {"_offset": offset}
         size = 0
         for i,e in enumerate(obj):
             context._index = i
-            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            obj, child_extra_info = self.subcon._preprocess_size(e, context, path, offset)
             retlist.append(obj)
 
             extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
@@ -1595,7 +1703,6 @@ class GreedyRange(Subconstruct):
         extra_info["_endoffset"] = offset
 
         return retlist, extra_info
-
 
     def _parse(self, stream, context, path):
         discard = self.discard
@@ -1745,14 +1852,14 @@ class Area(Arrayconstruct):
         self.check_stream_pos = check_stream_pos
         self.stream = stream
 
-    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         retlist = ListContainer()
         # this is essentially a fancy pointer, so no size (instead we use _ptrsize)
         extra_info = {"_offset": offset, "_size": 0, "_endoffset": offset}
         ptrsize = 0
         for i, e in enumerate(obj):
             context._index = i
-            obj, child_extra_info = self.subcon._preprocess(e, context, path, offset)
+            obj, child_extra_info = self.subcon._preprocess_size(e, context, path, offset)
             retlist.append(obj)
 
             extra = {f"_ptr_{i}{k}": v for k, v in child_extra_info.items()}
@@ -1851,10 +1958,14 @@ class Renamed(Subconstruct):
     def _parse(self, stream, context, path):
         path += " -> %s" % (self.name,)
         return self.subcon._parsereport(stream, context, path)
-    
-    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
         path += " -> %s" % (self.name,)
-        return self.subcon._preprocess(obj, context, path, offset)
+        return self.subcon._preprocess(obj, context, path)
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+        path += " -> %s" % (self.name,)
+        return self.subcon._preprocess_size(obj, context, path, offset)
 
     def _build(self, obj, stream, context, path):
         path += " -> %s" % (self.name,)
@@ -2099,7 +2210,10 @@ class Rebuild(Subconstruct):
         obj = evaluate(self.func, context)
         return self.subcon._build(obj, stream, context, path)
 
-    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+        return self.func, {}
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         ctx = Container(**context)
         ctx["root"] = obj
         size = self._sizeof("root", ctx, path)
@@ -2234,7 +2348,7 @@ class Error(Construct):
         raise SizeofError("Error does not have size, because it interrupts parsing and building", path=path)
 
 
-class FocusedSeq(Construct):
+class FocusedSeq(Structconstruct):
     r"""
     Allows constructing more elaborate "adapters" than Adapter class.
 
@@ -2318,20 +2432,6 @@ class FocusedSeq(Construct):
             if sc.name == parsebuildfrom:
                 finalret = buildret
         return finalret
-
-    def _static_sizeof(self, context: Container, path: str) -> int:
-        return sum(sc._static_sizeof(context, path) for sc in self.subcons)
-
-    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        # we go down one layer
-        try:
-            sum_size: int = 0
-            for sc in self.subcons:
-                ctx = create_child_context(context, sc.name)
-                child_obj = ctx[sc.name]
-                sum_size += sc._sizeof(child_obj, ctx, path)
-        except (KeyError, AttributeError):
-            raise SizeofError("cannot calculate size, key not found in context", path=path)
 
     def _toET(self, parent, name, context, path):
         assert (isinstance(self.parsebuildfrom, str))
@@ -2967,14 +3067,25 @@ class Switch(Construct):
         return sc._build(obj, stream, context, path)
 
     def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
-        keyfunc = evaluate(self.keyfunc, context)
-        # FIXME: hack because of the indirection, lambda -> rebuild (generates lambda) -> final id
-        keyfunc = evaluate(keyfunc, context)
+        keyfunc = evaluate(self.keyfunc, context, recurse=True)
+        sc = self.cases[keyfunc]
+
+        extra_info = {}
+
+        obj, child_extra_info = sc._preprocess(obj, context, path)
+
+        extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
+        extra_info.update(extra)
+
+        return obj, extra_info
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+        keyfunc = evaluate(self.keyfunc, context, recurse=True)
         sc = self.cases[keyfunc]
 
         extra_info = {"_offset": offset}
 
-        obj, child_extra_info = sc._preprocess(obj, context, path, offset)
+        obj, child_extra_info = sc._preprocess_size(obj, context, path, offset)
 
         extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
         extra_info.update(extra)
@@ -3366,10 +3477,10 @@ class Pointer(Subconstruct):
         self.stream = stream
 
 
-    def _preprocess(self, obj, context, path, offset=0):
+    def _preprocess_size(self, obj, context, path, offset=0):
         # the offset doesn't change, because the pointer itself has no size
         # therefor just generate relative offsets from here
-        obj, child_extra_info = self.subcon._preprocess(obj, context, path, offset=0)
+        obj, child_extra_info = self.subcon._preprocess_size(obj, context, path, offset=0)
 
         extra_info = {f"_ptr{k}": v for k, v in child_extra_info.items()}
         extra_info["_offset"] = offset
@@ -4790,8 +4901,10 @@ class Slicing(Adapter):
         self.stop = stop
         self.step = step
         self.empty = empty
+
     def _decode(self, obj, context, path):
         return obj[self.start:self.stop:self.step]
+
     def _encode(self, obj, context, path):
         if self.start is None:
             return obj
@@ -4825,8 +4938,10 @@ class Indexing(Adapter):
         self.count = count
         self.index = index
         self.empty = empty
+
     def _decode(self, obj, context, path):
         return obj[self.index]
+
     def _encode(self, obj, context, path):
         output = [self.empty] * self.count
         output[self.index] = obj
