@@ -5,7 +5,7 @@ from dingsda.core import Construct, Subconstruct, Structconstruct
 from dingsda.errors import *
 from dingsda.lib import stringtypes, Container, ListContainer
 
-from typing import Any
+from typing import Any, Tuple, Dict
 
 class Lazy(Subconstruct):
     r"""
@@ -380,3 +380,27 @@ class LazyBound(Construct):
     def _fromET(self, parent, name, context, path, is_root=False):
         sc = self.subconfunc()
         return sc._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
+
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        sc = self.subconfunc()
+        return sc._static_sizeof(context, path)
+
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        sc = self.subconfunc()
+        return sc._sizeof(obj, context, path)
+
+    def _full_sizeof(self, obj: Any, context: Container, path: str) -> int:
+        sc = self.subconfunc()
+        return sc._full_sizeof(obj, context, path)
+
+    def _expected_size(self, stream, context: Container, path: str) -> int:
+        sc = self.subconfunc()
+        return sc._expected_size(stream, context, path)
+
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+        sc = self.subconfunc()
+        return sc._preprocess(obj, context, path)
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+        sc = self.subconfunc()
+        return sc._preprocess_size(obj, context, path, offset)

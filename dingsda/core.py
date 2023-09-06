@@ -339,7 +339,8 @@ class Construct(object):
         context._building = False
         context._sizing = True
         context._params = context
-        context.update(obj)
+        if isinstance(obj, dict) or isinstance(obj, Container):
+            context.update(obj)
 
         return self._sizeof(obj, context, "(sizeof)")
 
@@ -534,9 +535,18 @@ class Structconstruct(Construct):
                 try:
                     size_sum += sc._static_sizeof(context, path)
                 except SizeofError:
-                    ctx = create_child_context(context, obj)
-                    child_obj = context[sc.name]
+                    if not sc._is_array():
+                        ctx = create_child_context(context, obj)
+                    else:
+                        ctx = create_child_context(context, {})
+
+                    for name in sc._names():
+                        child_obj = context.get(name, None)
+                        if child_obj is not None:
+                            break
+
                     size_sum += sc._sizeof(child_obj, ctx, path)
+
             return size_sum
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
@@ -642,6 +652,21 @@ class Arrayconstruct(Subconstruct):
                     context.pop(n)
 
         return context
+
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        try:
+            return self._static_sizeof(context, path)
+        except SizeofError:
+            pass
+
+        if obj is None:
+            return 0
+
+        sum_size = 0
+        for i, e in enumerate(obj):
+            context._index = i
+            sum_size += self.subcon._sizeof(e, context, path)
+        return sum_size
 
     def _is_simple_type(self) -> bool:
         return self.subcon._is_simple_type()
@@ -869,10 +894,7 @@ class GreedyBytes(Construct):
         return data
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        try:
-            return len(get_current_field(context, path))
-        except (KeyError, AttributeError):
-            raise SizeofError("cannot calculate size, key not found in context", path=path)
+        return len(obj)
 
 
 def Bitwise(subcon):
@@ -880,7 +902,7 @@ def Bitwise(subcon):
     Converts the stream from bytes to bits, and passes the bitstream to underlying subcon. Bitstream is a stream that contains 8 times as many bytes, and each byte is either \\x00 or \\x01 (in documentation those bytes are called bits).
 
     Parsing building and size are deferred to subcon, although size gets divided by 8 (therefore the subcon's size must be a multiple of 8).
-    
+
     Note that by default the bit ordering is from MSB to LSB for every byte (ie. bit-level big-endian). If you need it reversed, wrap this subcon with :class:`dingsda.core.BitsSwapped`.
 
     :param subcon: Construct instance, any field that works with bits (like BitsInteger) or is bit-byte agnostic (like Struct or Flag)
@@ -1228,7 +1250,7 @@ class Struct(Structconstruct):
     r"""
     Sequence of usually named constructs, similar to structs in C. The members are parsed and build in the order they are defined. If a member is anonymous (its name is None) then it gets parsed and the value discarded, or it gets build from nothing (from None).
 
-    Some fields do not need to be named, since they are built without value anyway. See: Const Padding Check Error Pass Terminated Seek Tell for examples of such fields. 
+    Some fields do not need to be named, since they are built without value anyway. See: Const Padding Check Error Pass Terminated Seek Tell for examples of such fields.
 
     Operator + can also be used to make Structs (although not recommended).
 
@@ -1544,20 +1566,6 @@ class Sequence(Structconstruct):
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         raise NotImplementedError
 
-#    def _static_sizeof(self, context: Container, path: str) -> int:
-#        return sum(sc._static_sizeof(context, path) for sc in self.subcons)
-#
-#    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-#        try:
-#            size_sum = 0
-#            for sc in self.subcons:
-#                ctx = create_child_context(context, sc.name)
-#                child_obj = context[sc.name]
-#                size_sum += sc._sizeof(child_obj, ctx, path)
-#            return size_sum
-#        except (KeyError, AttributeError):
-#            raise SizeofError("cannot calculate size, key not found in context", path=path)
-
 
 #===============================================================================
 # arrays ranges and repeaters
@@ -1629,15 +1637,7 @@ class Array(Arrayconstruct):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
         return count * self.subcon._static_sizeof(context, path)
 
-    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        try:
-            count = evaluate(self.count, context)
-        except (KeyError, AttributeError):
-            raise SizeofError("cannot calculate size, key not found in context", path=path)
-        return count * self.subcon._sizeof(obj, context, path)
 
-
-# FIXME: GreedyRange/RepeatUntil etc should also be able to calculate their size with sizeof
 class GreedyRange(Subconstruct):
     r"""
     Homogenous array of elements, similar to C# generic IEnumerable<T>, but works with unknown count of elements by parsing until end of stream.
@@ -1735,6 +1735,9 @@ class GreedyRange(Subconstruct):
         except StopFieldError:
             pass
 
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        raise SizeofError("GreedyRange cannot calculate size statically", path)
+
 
 class RepeatUntil(Arrayconstruct):
     r"""
@@ -1808,6 +1811,9 @@ class RepeatUntil(Arrayconstruct):
         sc_names = [self.name]
         sc_names += self.subcon._names()
         return sc_names
+
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        raise SizeofError("cannot calculate size of RepeatUntil", path=path)
 
 
 class Area(Arrayconstruct):
@@ -2944,6 +2950,16 @@ class IfThenElse(Construct):
         sc = self.thensubcon if condfunc else self.elsesubcon
         return sc._build(obj, stream, context, path)
 
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+        condfunc = evaluate(self.condfunc, context)
+        sc = self.thensubcon if condfunc else self.elsesubcon
+        return sc._preprocess(obj, context, path)
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+        condfunc = evaluate(self.condfunc, context)
+        sc = self.thensubcon if condfunc else self.elsesubcon
+        return sc._preprocess_size(obj, context, path, offset)
+
     def _static_sizeof(self, context: Container, path: str) -> int:
         condfunc = evaluate(self.condfunc, context)
         sc = self.thensubcon if condfunc else self.elsesubcon
@@ -3916,6 +3932,9 @@ class Prefixed(Subconstruct):
 
     def _static_sizeof(self, context, path):
         return self.lengthfield._static_sizeof(context, path) + self.subcon._static_sizeof(context, path)
+
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        return self.lengthfield._static_sizeof(context, path) + self.subcon._sizeof(obj, context, path)
 
     def _expected_size(self, stream, context, path):
         position1 = stream_tell(stream, path)
