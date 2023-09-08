@@ -41,7 +41,7 @@ class Lazy(Subconstruct):
 
     def _parse(self, stream, context, path):
         offset = stream_tell(stream, path)
-        def execute():
+        def execute(ctx: Container = Container()):
             fallback = stream_tell(stream, path)
             stream_seek(stream, offset, 0, path)
             obj = self.subcon._parsereport(stream, context, path)
@@ -370,7 +370,7 @@ class LazyBound(Construct):
 
     def _build(self, obj, stream, context, path):
         sc = self.subconfunc()
-        return sc._build(obj, stream, context, path)
+        return sc._build(obj, stream, context, f"{path} -> LazyBound")
 
     def _toET(self, parent, name, context, path):
         sc = self.subconfunc()
@@ -399,7 +399,7 @@ class LazyBound(Construct):
 
     def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
         sc = self.subconfunc()
-        return sc._preprocess(obj, context, path)
+        return sc._preprocess(obj=obj, context=context, path=path)
 
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         sc = self.subconfunc()
