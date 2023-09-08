@@ -9,7 +9,7 @@ def test_lazy():
         'exists' / Computed(1),
     )
     obj = d.parse(b'')
-    assert obj.dup() == 1
+    assert(obj.dup == 1)
 
     d = Lazy(Byte)
     x = d.parse(b'\x00')
@@ -35,9 +35,9 @@ def test_lazy_seek():
     obj = d.parse(b"\x01\x02\x03\x04\x05\x06\x07\x08\x09")
 
     assert obj.a == 0x01
-    assert obj.b() == b'\x02\x03'
+    assert obj.b == b'\x02\x03'
     assert obj.c == 0x0405
-    assert obj.d() == b'\x06\x07\x08\x09'
+    assert obj.d == b'\x06\x07\x08\x09'
 
 
 def test_lazystruct():

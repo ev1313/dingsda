@@ -54,7 +54,7 @@ class FormatField(Construct):
 
     def _build(self, obj, stream, context, path):
         try:
-            data = struct.pack(self.fmtstr, obj)
+            data = struct.pack(self.fmtstr, evaluate(obj, context))
         except Exception:
             raise FormatFieldError("struct %r error during building, given value %r" % (self.fmtstr, obj), path=path)
         stream_write(stream, data, self.length, path)

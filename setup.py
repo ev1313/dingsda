@@ -21,7 +21,7 @@ setup(
     },
     author = "Tim Blume",
     author_email = "dingsda@3nd.io",
-    python_requires = ">=3.11",
+    python_requires = ">=3.10",
     install_requires = [],
     extras_require = {
         "extras": [

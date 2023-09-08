@@ -231,7 +231,7 @@ class Construct(object):
 
         :param obj: The object
         :param contextkw: further arguments, passed directly into the context
-        :returns: an ElementTree 
+        :returns: an ElementTree
         """
 
         context = Container(**contextkw)
@@ -560,8 +560,8 @@ class Arrayconstruct(Subconstruct):
         extra_info = {}
         for i, e in enumerate(obj):
             context._index = i
-            obj, child_extra_info = self.subcon._preprocess(e, context, path)
-            retlist.append(obj)
+            child_obj, child_extra_info = self.subcon._preprocess(e, context, path)
+            retlist.append(child_obj)
 
             extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
             extra_info.update(extra)
@@ -577,8 +577,8 @@ class Arrayconstruct(Subconstruct):
         size = 0
         for i, e in enumerate(obj):
             context._index = i
-            obj, child_extra_info = self.subcon._preprocess_size(e, context, path, offset)
-            retlist.append(obj)
+            child_obj, child_extra_info = self.subcon._preprocess_size(e, context, path, offset)
+            retlist.append(child_obj)
 
             extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
             extra_info.update(extra)
@@ -694,7 +694,12 @@ class Adapter(Subconstruct):
     def _build(self, obj, stream, context, path):
         obj2 = self._encode(obj, context, path)
         buildret = self.subcon._build(obj2, stream, context, path)
+        # FIXME: is this a bug?
         return obj
+
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        obj2 = self._encode(obj, context, path)
+        return self.subcon._sizeof(obj2, context, path)
 
     def _decode(self, obj, context, path):
         raise NotImplementedError
@@ -1349,18 +1354,19 @@ class Struct(Structconstruct):
             subobj = obj.get(sc.name, None)
 
             if sc.name:
-                context[sc.name] = subobj
+                ctx[sc.name] = subobj
 
             preprocessret, child_extra_info = sc._preprocess(subobj, ctx, path)
             # put named extra info to the context
-            extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
-            extra_info.update(extra)
+            #extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
+            #extra_info.update(extra)
 
             if sc.name:
                 ctx[sc.name] = preprocessret
 
             # add current extra_info to context, so e.g. lambdas can use them already
-            ctx.update(extra_info)
+            #ctx.update(extra_info)
+            ctx[f"_{sc.name}_meta"] = Container(child_extra_info)
 
         return ctx, extra_info
 
@@ -1375,12 +1381,12 @@ class Struct(Structconstruct):
             subobj = obj.get(sc.name, None)
 
             if sc.name:
-                context[sc.name] = subobj
+                ctx[sc.name] = subobj
 
             preprocessret, child_extra_info = sc._preprocess_size(subobj, ctx, path, offset=offset)
             # put named extra info to the context
-            extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
-            extra_info.update(extra)
+            #extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
+            #extra_info.update(extra)
 
             # update offset & size
             retsize = child_extra_info["_size"]
@@ -1390,7 +1396,7 @@ class Struct(Structconstruct):
                 ctx[sc.name] = preprocessret
 
             # add current extra_info to context, so e.g. lambdas can use them already
-            ctx.update(extra_info)
+            ctx[f"_{sc.name}_meta"] = Container(child_extra_info)
 
         extra_info["_size"] = size
         extra_info["_endoffset"] = offset
@@ -1632,7 +1638,7 @@ class Array(Arrayconstruct):
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         try:
-            count = evaluate(self.count, context)
+            count = evaluate(self.count, context, recurse=True)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
         return count * self.subcon._static_sizeof(context, path)
@@ -1872,7 +1878,7 @@ class Area(Arrayconstruct):
             extra_info.update(extra)
             ptrsize += child_extra_info["_size"]
 
-            context.update(extra_info)
+            #context.update(extra_info)
 
         extra_info["_ptrsize"] = ptrsize
 
@@ -1971,7 +1977,7 @@ class Renamed(Subconstruct):
 
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         path += " -> %s" % (self.name,)
-        return self.subcon._preprocess_size(obj, context, path, offset)
+        return self.subcon._preprocess_size(obj=obj, context=context, path=path, offset=offset)
 
     def _build(self, obj, stream, context, path):
         path += " -> %s" % (self.name,)
@@ -2119,10 +2125,13 @@ class Computed(Construct):
         self.flagbuildnone = True
 
     def _parse(self, stream, context, path):
-        return self.func(context) if callable(self.func) else self.func
+        return evaluate(self.func, context)
 
     def _build(self, obj, stream, context, path):
-        return self.func(context) if callable(self.func) else self.func
+        return evaluate(self.func, context)
+
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+        return self.func, {}
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
@@ -2220,9 +2229,13 @@ class Rebuild(Subconstruct):
         return self.func, {}
 
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
-        ctx = Container(**context)
-        ctx["root"] = obj
-        size = self._sizeof("root", ctx, path)
+        try:
+            size = self.subcon._static_sizeof(context, path)
+            return self.func, {"_offset": offset, "_size": size, "_endoffset": offset + size}
+        except SizeofError:
+            pass
+        ev_obj = evaluate(self.func, context)
+        size = self.subcon.sizeof(ev_obj, context, path)
         return self.func, {"_offset": offset, "_size": size, "_endoffset": offset + size}
 
     def _toET(self, parent, name, context, path):
@@ -2230,6 +2243,12 @@ class Rebuild(Subconstruct):
 
     def _fromET(self, parent, name, context, path, is_root=False):
         return context
+
+    def _is_array(self) -> bool:
+        return self.subcon._is_array()
+
+    def _is_simple_type(self) -> bool:
+        return self.subcon._is_simple_type()
 
 
 class Default(Subconstruct):
@@ -2354,7 +2373,7 @@ class Error(Construct):
         raise SizeofError("Error does not have size, because it interrupts parsing and building", path=path)
 
 
-class FocusedSeq(Structconstruct):
+class FocusedSeq(Construct):
     r"""
     Allows constructing more elaborate "adapters" than Adapter class.
 
@@ -2489,6 +2508,31 @@ class FocusedSeq(Structconstruct):
                 break
         assert(sc is not None)
         return sc
+
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        try:
+            return sum(sc._static_sizeof(context, path) for sc in self.subcons)
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        # FIXME: this should be incorporated in an extra _sizeof, which is called before by sizeof(), which first tries to call _static_sizeof
+        try:
+            return self._static_sizeof(context, path)
+        except SizeofError:
+            pass
+        try:
+            size_sum = 0
+            for sc in self.subcons:
+                if sc.name == self.parsebuildfrom:
+                    size_sum += sc._sizeof(obj, context, path)
+                else:
+                    size_sum += sc._static_sizeof(context, path)
+
+            return size_sum
+        except (KeyError, AttributeError):
+            raise SizeofError("cannot calculate size, key not found in context", path=path)
+        assert(0)
 
     def _names(self):
         return self._get_main_sc()._names()
@@ -3101,7 +3145,7 @@ class Switch(Construct):
 
         extra_info = {"_offset": offset}
 
-        obj, child_extra_info = sc._preprocess_size(obj, context, path, offset)
+        obj, child_extra_info = sc._preprocess_size(obj=obj, context=context, path=path, offset=offset)
 
         extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
         extra_info.update(extra)
@@ -3968,10 +4012,21 @@ def PrefixedArray(countfield, subcon):
         [1684234849, 1751606885]
     """
     macro = FocusedSeq("items",
-        "count" / Rebuild(countfield, len_(this.items)),
-        "items" / subcon[this.count],
-    )
+                       "count" / Rebuild(countfield, len_(this.items)),
+                       "items" / subcon[this.count],
+                       )
 
+    # FIXME: FocusedSeq needs to be fixed, it should not be necessary to override these methods
+    def _preprocess_size(obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+        count_size = countfield._static_sizeof(context, path)
+        extra_info = {"_offset": offset}
+        obj, child_extra_info = subcon._preprocess_size(obj=obj, context=context, path=path, offset=offset+count_size)
+        extra = {f"_{subcon.name}{k}": v for k, v in child_extra_info.items()}
+        extra_info.update(extra)
+        extra_info["_size"] = count_size + child_extra_info["_size"]
+        extra_info["_endoffset"] = extra_info["_offset"] + extra_info["_size"]
+        return obj, extra_info
+    macro._preprocess_size = _preprocess_size
 
     def _expected_size(self, stream, context, path):
         position1 = stream_tell(stream, path)
