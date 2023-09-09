@@ -168,7 +168,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Constructdoc'
+htmlhelp_basename = 'DingsDadoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -182,7 +182,6 @@ htmlhelp_basename = 'Constructdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'dingsda.tex', u'Construct Documentation', u'Arkadiusz Bulski', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -214,6 +213,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'dingsda', u'Construct Documentation',
-     [u'Arkadiusz Bulski (taken over from Tomer Filiba and Corbin Simpson)'], 1)
+    ('index', 'dingsda', u'DingsDa Documentation',
+     [u'Tim Blume (forked over from Arkadiusz Bulski, Tomer Filiba and Corbin Simpson)'], 1)
 ]
