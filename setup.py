@@ -13,10 +13,10 @@ setup(
     description = "A powerful declarative symmetric parser/builder for binary data with XML de- and encoding",
     long_description = open("README.rst").read(),
     platforms = ["POSIX", "Windows"],
-#    url = "http://construct.readthedocs.org",
+    url = "http://dingsda.readthedocs.org",
     project_urls = {
         "Source": "https://github.com/ev1313/dingsda",
-#        "Documentation": "https://construct.readthedocs.io/en/latest/",
+        "Documentation": "https://dingsda.readthedocs.io/en/latest/",
         "Issues": "https://github.com/ev1313/dingsda/issues",
     },
     author = "Tim Blume",
