@@ -901,6 +901,34 @@ class GreedyBytes(Construct):
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         return len(obj)
 
+    def _toET(self, parent, name, context, path):
+        assert (name is not None)
+
+        f = get_current_field(context, name)
+        assert (isinstance(f, bytes))
+        data = f.hex()
+        if parent is None:
+            return data
+        else:
+            parent.attrib[name] = data
+        return None
+
+    def _fromET(self, parent, name, context, path, is_root=False):
+        assert(parent is not None)
+        assert(name is not None)
+
+        if isinstance(parent, str):
+            elem = parent
+        else:
+            elem = parent.attrib[name]
+
+        elem = b"".fromhex(elem)
+        insert_or_append_field(context, name, elem)
+        return context
+
+    def _is_simple_type(self):
+        return True
+
 
 def Bitwise(subcon):
     r"""
