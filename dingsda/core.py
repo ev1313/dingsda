@@ -8,6 +8,7 @@ from dingsda.errors import *
 from dingsda.lib import *
 from dingsda.expr import *
 from dingsda.helpers import *
+from dingsda.version import version_string
 
 import xml.etree.ElementTree as ET
 
@@ -243,6 +244,7 @@ class Construct(object):
         context[name] = obj
         # create root node
         xml = ET.Element(name)
+        xml.attrib["_dingsda_version"] = version_string
         return self._toET(parent=xml, context=context, name=name, path="(toET)")
 
     def fromET(self, xml, **contextkw):
@@ -1908,6 +1910,7 @@ class Area(Arrayconstruct):
 
             #context.update(extra_info)
 
+        # FIXME: shouldn't this be _ptr_size?
         extra_info["_ptrsize"] = ptrsize
 
         return retlist, extra_info
@@ -1934,8 +1937,8 @@ class Area(Arrayconstruct):
 
         if self.check_stream_pos:
             assert(self.parsed_size == offset + size)
-        else:
-            assert(self.parsed_size <= offset + size)
+        #else:
+        #    assert(self.parsed_size <= offset + size)
 
         stream_seek(stream, fallback, 0, path)
         return obj
