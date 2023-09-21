@@ -1884,7 +1884,7 @@ class Area(Arrayconstruct):
         )
     """
 
-    def __init__(self, subcon, offset, size, stream=None, check_stream_pos=True):
+    def __init__(self, subcon, offset, size, stream=None, check_stream_pos=True, count=None):
         super().__init__(subcon)
         self.size = size
         self.offset = offset
@@ -1893,6 +1893,7 @@ class Area(Arrayconstruct):
         self.parsed_size = 0
         self.check_stream_pos = check_stream_pos
         self.stream = stream
+        self.count = count
 
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         retlist = ListContainer()
@@ -1937,8 +1938,12 @@ class Area(Arrayconstruct):
 
         if self.check_stream_pos:
             assert(self.parsed_size == offset + size)
-        #else:
-        #    assert(self.parsed_size <= offset + size)
+        else:
+            assert(self.parsed_size <= offset + size)
+
+        if self.count is not None:
+            count = evaluate(self.count, context)
+            assert(len(obj) == count)
 
         stream_seek(stream, fallback, 0, path)
         return obj
@@ -2777,7 +2782,7 @@ class Union(Construct):
 
     Example::
 
-        >>> d = Union(0, 
+        >>> d = Union(0,
         ...     "raw" / Bytes(8),
         ...     "ints" / Int32ub[2],
         ...     "shorts" / Int16ub[4],
@@ -3606,8 +3611,7 @@ class Pointer(Subconstruct):
     def _fromET(self, parent, name, context, path, is_root=False):
         return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
 
-
-    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+    def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
 
 
