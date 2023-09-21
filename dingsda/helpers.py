@@ -20,6 +20,8 @@ def create_child_context_2(context: Container, name: str, list_index: Optional[i
     data = get_current_field(context, name)
 
     if isinstance(data, Container) or isinstance(data, dict):
+        if data.get("_", None) is not None:
+            data.pop("_")
         ctx = Container(_=context, **data)
     elif isinstance(data, ListContainer) or isinstance(data, list):
         assert (list_index is not None)
