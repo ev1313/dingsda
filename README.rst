@@ -1,4 +1,4 @@
-DingsDa 0.1
+DingsDa 0.2.1
 ===================
 
 DingsDa is a powerful **declarative** and **symmetrical** parser and builder for binary data.

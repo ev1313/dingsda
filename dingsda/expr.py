@@ -1,4 +1,6 @@
 import operator
+from dingsda.helpers import evaluate
+
 if not hasattr(operator, "div"):
     operator.div = operator.truediv
 
@@ -157,8 +159,8 @@ class BinExpr(ExprMixin):
         return "(%s %s %s)" % (self.lhs, opnames[self.op], self.rhs)
 
     def __call__(self, obj, *args):
-        lhs = self.lhs(obj) if callable(self.lhs) else self.lhs
-        rhs = self.rhs(obj) if callable(self.rhs) else self.rhs
+        lhs = evaluate(self.lhs, obj, True)
+        rhs = evaluate(self.rhs, obj, True)
         return self.op(lhs, rhs)
 
 

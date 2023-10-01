@@ -277,7 +277,7 @@ class Construct(object):
             values to the construct, so especially Rebuilds can use them in the build step afterwards.
 
             After the basic preprocessing, if the sizing parameter is set, the size of the construct and
-            all subconstructs is added to the context. This adds attributes like _size and _ptrsize.
+            all subconstructs is added to the context. This adds attributes like _size and _ptr_size.
 
             :param obj: the object to preprocess
             :param sizing: whether to size the object after the first preprocessing step.
@@ -358,7 +358,7 @@ class Construct(object):
 
         Note this can not be used to determine the end of a buffer / the full size of a buffer, as empty places
         between mapped Constructs and the Pointer data will not be accounted for. Usually just use this on
-        Pointertypes, so you don't have to search for the _ptrsize attribute.
+        Pointertypes, so you don't have to search for the _ptr_size attribute.
 
         This function is experimental!
 
@@ -1897,7 +1897,7 @@ class Area(Arrayconstruct):
 
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         retlist = ListContainer()
-        # this is essentially a fancy pointer, so no size (instead we use _ptrsize)
+        # this is essentially a fancy pointer, so no size (instead we use _ptr_size)
         extra_info = {"_offset": offset, "_size": 0, "_endoffset": offset}
         ptrsize = 0
         for i, e in enumerate(obj):
@@ -1911,8 +1911,7 @@ class Area(Arrayconstruct):
 
             #context.update(extra_info)
 
-        # FIXME: shouldn't this be _ptr_size?
-        extra_info["_ptrsize"] = ptrsize
+        extra_info["_ptr_size"] = ptrsize
 
         return retlist, extra_info
 
