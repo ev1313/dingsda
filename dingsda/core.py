@@ -8,6 +8,7 @@ from dingsda.errors import *
 from dingsda.lib import *
 from dingsda.expr import *
 from dingsda.helpers import *
+from dingsda.lib import MetaInformation
 from dingsda.version import version_string
 
 import xml.etree.ElementTree as ET
@@ -138,7 +139,7 @@ class Construct(object):
     def _fromET(self, parent, name, context, path, is_root=False):
         raise NotImplementedError
 
-    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         r"""
            Preprocess an object before building or sizing, called by the preprocess function.
 
@@ -151,10 +152,10 @@ class Construct(object):
             :return obj: the preprocessed object
             :return extra_info: a dictionary containing extra information regarding offset, size, etc.
         """
-        return obj, {}
+        return obj, None
 
 
-    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         r"""
            Preprocess an object before building or sizing, called by the preprocess function.
 
@@ -170,14 +171,15 @@ class Construct(object):
             :param path: the path to the construct
 
             :return obj: the preprocessed object
-            :return extra_info: a dictionary containing extra information regarding offset, size, etc.
+            :return meta_info: a MetaInformation object containing extra information regarding offset, size, etc.
         """
-        ctx = Container(**context)
+        ctx = Container(context)
         # FIXME: i do not know a better solution for this yet
-        if isinstance(obj, dict) or isinstance(obj, Container):
+        if isinstance(obj, Container):
             ctx.update(obj)
         size = self._sizeof(obj, ctx, path)
-        return obj, {"_offset": offset, "_size": size, "_endoffset": offset + size}
+        meta = MetaInformation(size=size, offset=offset, end_offset=offset + size)
+        return obj, meta
 
     def build(self, obj, **contextkw):
         r"""
@@ -269,7 +271,7 @@ class Construct(object):
 
         return result.get(xml.tag)
 
-    def preprocess(self, obj: Any, sizing: bool = True, **contextkw) -> Tuple[Any, Dict[str, Any]]:
+    def preprocess(self, obj: Any, sizing: bool = True, **contextkw) -> Tuple[Any, Optional[MetaInformation]]:
         r"""
             Preprocess an object before building.
 
@@ -291,12 +293,12 @@ class Construct(object):
         context._sizing = False
         context._params = context
 
-        obj, extra_info = self._preprocess(obj=obj, context=context, path="(preprocess)")
+        obj, meta_info = self._preprocess(obj=obj, context=context, path="(preprocess)")
 
         if sizing:
             return self._preprocess_size(obj=obj, context=context, path="(preprocess_size)", offset=0)
 
-        return obj, extra_info
+        return obj, meta_info
 
     def static_sizeof(self, **contextkw):
         r"""
@@ -500,7 +502,7 @@ class Subconstruct(Construct):
     def _parse(self, stream, context, path):
         return self.subcon._parsereport(stream, context, path)
 
-    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         return self.subcon._preprocess(obj, context, path)
 
     def _build(self, obj, stream, context, path):
@@ -556,43 +558,35 @@ class Structconstruct(Construct):
 
 
 class Arrayconstruct(Subconstruct):
-    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         # predicates don't need to be checked in preprocessing
         retlist = ListContainer()
-        extra_info = {}
         for i, e in enumerate(obj):
             context._index = i
-            child_obj, child_extra_info = self.subcon._preprocess(e, context, path)
+            child_obj, _ = self.subcon._preprocess(e, context, path)
             retlist.append(child_obj)
+            assert(_ is None)
 
-            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
-            extra_info.update(extra)
+        return retlist, None
 
-            context.update(extra_info)
-
-        return retlist, extra_info
-
-    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         # predicates don't need to be checked in preprocessing
         retlist = ListContainer()
-        extra_info = {"_offset": offset}
+        meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
         size = 0
         for i, e in enumerate(obj):
             context._index = i
-            child_obj, child_extra_info = self.subcon._preprocess_size(e, context, path, offset)
+            child_obj, child_meta_info = self.subcon._preprocess_size(e, context, path, offset)
             retlist.append(child_obj)
 
-            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
-            extra_info.update(extra)
-            offset += child_extra_info["_size"]
-            size += child_extra_info["_size"]
+            offset += child_meta_info.size
+            size += child_meta_info.size
+            retlist.set_meta(i, child_meta_info)
 
-            context.update(extra_info)
+        meta_info.size = size
+        meta_info.end_offset = offset
 
-        extra_info["_size"] = size
-        extra_info["_endoffset"] = offset
-
-        return retlist, extra_info
+        return retlist, meta_info
 
     def _toET(self, parent, name, context, path):
         data = get_current_field(context, name)
@@ -1373,9 +1367,7 @@ class Struct(Structconstruct):
 
         return obj
 
-    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
-        extra_info = {}
-
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         if obj is None:
             obj = Container()
         ctx = create_child_context(context, obj)
@@ -1386,53 +1378,43 @@ class Struct(Structconstruct):
             if sc.name:
                 ctx[sc.name] = subobj
 
-            preprocessret, child_extra_info = sc._preprocess(subobj, ctx, path)
-            # put named extra info to the context
-            #extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
-            #extra_info.update(extra)
+            preprocessret, _ = sc._preprocess(subobj, ctx, path)
+            assert(_ is None)
 
             if sc.name:
                 ctx[sc.name] = preprocessret
 
-            # add current extra_info to context, so e.g. lambdas can use them already
-            #ctx.update(extra_info)
-            ctx[f"_{sc.name}_meta"] = Container(child_extra_info)
+        return ctx, None
 
-        return ctx, extra_info
-
-    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         size = 0
         extra_info = {}
         if obj is None:
             obj = Container()
         ctx = create_child_context(context, obj)
-        extra_info["_offset"] = offset
+        meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
         for sc in self.subcons:
             subobj = obj.get(sc.name, None)
 
             if sc.name:
                 ctx[sc.name] = subobj
 
-            preprocessret, child_extra_info = sc._preprocess_size(subobj, ctx, path, offset=offset)
-            # put named extra info to the context
-            #extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
-            #extra_info.update(extra)
+            preprocessret, child_meta_info = sc._preprocess_size(subobj, ctx, path, offset=offset)
 
             # update offset & size
-            retsize = child_extra_info["_size"]
+            retsize = child_meta_info.size
             offset += retsize
             size += retsize
             if sc.name:
                 ctx[sc.name] = preprocessret
 
             # add current extra_info to context, so e.g. lambdas can use them already
-            ctx[f"_{sc.name}_meta"] = Container(child_extra_info)
+            ctx.set_meta(sc.name, child_meta_info)
 
-        extra_info["_size"] = size
-        extra_info["_endoffset"] = offset
-        ctx.update(extra_info)
+        meta_info.size = size
+        meta_info.end_offset = offset
 
-        return ctx, extra_info
+        return ctx, meta_info
 
     def _build(self, obj: Any, stream, context: Container, path: str) -> Container:
         if obj is None:
@@ -1442,10 +1424,9 @@ class Struct(Structconstruct):
         ctx["_subcons"] = self._subcons
         for sc in self.subcons:
             try:
-                if sc.flagbuildnone:
-                    subobj = obj.get(sc.name, None)
-                else:
-                    subobj = obj[sc.name] # raises KeyError
+                if not sc.flagbuildnone and not obj.__contains__(sc.name):
+                    raise KeyError(sc.name)
+                subobj = obj.get(sc.name, None)
 
                 if sc.name:
                     ctx[sc.name] = subobj
@@ -1596,10 +1577,10 @@ class Sequence(Structconstruct):
                 break
         return retlist
 
-    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         raise NotImplementedError
 
-    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         raise NotImplementedError
 
 
@@ -1703,42 +1684,35 @@ class GreedyRange(Subconstruct):
         super().__init__(subcon)
         self.discard = discard
 
-    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         # predicates don't need to be checked in preprocessing
         retlist = ListContainer()
-        extra_info = {}
         for i,e in enumerate(obj):
             context._index = i
-            obj, child_extra_info = self.subcon._preprocess(e, context, path)
+            obj, _ = self.subcon._preprocess(e, context, path)
+            assert(_ is None)
             retlist.append(obj)
 
-            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
-            extra_info.update(extra)
-            context.update(extra_info)
+        return retlist, None
 
-        return retlist, extra_info
-
-    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         # predicates don't need to be checked in preprocessing
         retlist = ListContainer()
-        extra_info = {"_offset": offset}
+        meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
         size = 0
         for i,e in enumerate(obj):
             context._index = i
-            obj, child_extra_info = self.subcon._preprocess_size(e, context, path, offset)
+            obj, child_meta_info = self.subcon._preprocess_size(e, context, path, offset)
             retlist.append(obj)
 
-            extra = {f"_{i}{k}": v for k, v in child_extra_info.items()}
-            extra_info.update(extra)
-            offset += child_extra_info["_size"]
-            size += child_extra_info["_size"]
+            offset += child_meta_info.size
+            size += child_meta_info.size
+            retlist.set_meta(i, child_meta_info)
 
-            context.update(extra_info)
+        meta_info.size = size
+        meta_info.end_offset = offset
 
-        extra_info["_size"] = size
-        extra_info["_endoffset"] = offset
-
-        return retlist, extra_info
+        return retlist, meta_info
 
     def _parse(self, stream, context, path):
         discard = self.discard
@@ -1872,13 +1846,13 @@ class Area(Arrayconstruct):
     Example::
         Struct(
             "header1" / Struct(
-                "offset" / Rebuild(Int32ul, lambda ctx: ctx._._header2_endoffset),
-                "size" / Rebuild(Int32ul, lambda ctx: ctx._data1_size),
+                "offset" / Rebuild(Int32ul, lambda ctx: ctx._.get_meta("header1").end_offset),
+                "size" / Rebuild(Int32ul, lambda ctx: ctx.get_meta("data1").size),
                 "data1" / Area(Int32ul, this.offset, this.size),
             ),
             "header2" / Struct(
-                "offset" / Rebuild(Int32ul, lambda ctx: ctx._.header1.offset + ctx._.header1.size),
-                "size" / Rebuild(Int32ul, lambda ctx: ctx._data2_size),
+                "offset" / Rebuild(Int32ul, lambda ctx: ctx._.get_meta("header1").offset + ctx._.get_meta("header1").size),
+                "size" / Rebuild(Int32ul, lambda ctx: ctx.get_meta("data2").size),
                 "data2" / Area(Int8ul, this.offset, this.size),
             )
         )
@@ -1898,22 +1872,19 @@ class Area(Arrayconstruct):
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         retlist = ListContainer()
         # this is essentially a fancy pointer, so no size (instead we use _ptr_size)
-        extra_info = {"_offset": offset, "_size": 0, "_endoffset": offset}
+        meta_info = MetaInformation(offset=offset, size=0, end_offset=offset)
         ptrsize = 0
         for i, e in enumerate(obj):
             context._index = i
-            obj, child_extra_info = self.subcon._preprocess_size(e, context, path, offset)
+            obj, child_meta_info = self.subcon._preprocess_size(e, context, path, offset)
             retlist.append(obj)
 
-            extra = {f"_ptr_{i}{k}": v for k, v in child_extra_info.items()}
-            extra_info.update(extra)
-            ptrsize += child_extra_info["_size"]
+            ptrsize += child_meta_info.size
+            retlist.set_meta(i, child_meta_info)
 
-            #context.update(extra_info)
+        meta_info.ptr_size = ptrsize
 
-        extra_info["_ptr_size"] = ptrsize
-
-        return retlist, extra_info
+        return retlist, meta_info
 
     def _parse(self, stream, context, path):
         offset = evaluate(self.offset, context)
@@ -2260,18 +2231,20 @@ class Rebuild(Subconstruct):
         obj = evaluate(self.func, context)
         return self.subcon._build(obj, stream, context, path)
 
-    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
-        return self.func, {}
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
+        return self.func, None
 
-    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         try:
             size = self.subcon._static_sizeof(context, path)
-            return self.func, {"_offset": offset, "_size": size, "_endoffset": offset + size}
+            meta_info = MetaInformation(offset=offset, size=size, end_offset=offset + size)
+            return self.func, meta_info
         except SizeofError:
             pass
         ev_obj = evaluate(self.func, context)
         size = self.subcon.sizeof(ev_obj, context, path)
-        return self.func, {"_offset": offset, "_size": size, "_endoffset": offset + size}
+        meta_info = MetaInformation(offset=offset, size=size, end_offset=offset + size)
+        return self.func, meta_info
 
     def _toET(self, parent, name, context, path):
         return None
@@ -3161,34 +3134,29 @@ class Switch(Construct):
         sc = self.cases.get(keyfunc, self.default)
         return sc._build(obj, stream, context, path)
 
-    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         keyfunc = evaluate(self.keyfunc, context, recurse=True)
         sc = self.cases[keyfunc]
 
         extra_info = {}
 
-        obj, child_extra_info = sc._preprocess(obj, context, path)
+        obj, _ = sc._preprocess(obj, context, path)
+        assert(_ is None)
 
-        extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
-        extra_info.update(extra)
+        return obj, None
 
-        return obj, extra_info
-
-    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         keyfunc = evaluate(self.keyfunc, context, recurse=True)
         sc = self.cases[keyfunc]
 
-        extra_info = {"_offset": offset}
+        meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
 
-        obj, child_extra_info = sc._preprocess_size(obj=obj, context=context, path=path, offset=offset)
+        obj, child_meta_info = sc._preprocess_size(obj=obj, context=context, path=path, offset=offset)
 
-        extra = {f"_{sc.name}{k}": v for k, v in child_extra_info.items()}
-        extra_info.update(extra)
+        meta_info.size = child_meta_info.size
+        meta_info.end_offset = offset + child_meta_info.size
 
-        extra_info["_size"] = child_extra_info["_size"]
-        extra_info["_endoffset"] = offset + child_extra_info["_size"]
-
-        return obj, extra_info
+        return obj, meta_info
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         raise SizeofError("Switches cannot calculate static size", path=path)
@@ -3577,12 +3545,9 @@ class Pointer(Subconstruct):
         # therefor just generate relative offsets from here
         obj, child_extra_info = self.subcon._preprocess_size(obj, context, path, offset=0)
 
-        extra_info = {f"_ptr{k}": v for k, v in child_extra_info.items()}
-        extra_info["_offset"] = offset
-        extra_info["_size"] = 0
-        extra_info["_endoffset"] = offset
+        meta_info = MetaInformation(offset=offset, size=0, end_offset=offset, ptr_size = child_extra_info.size)
 
-        return obj, extra_info
+        return obj, meta_info
 
     def _parse(self, stream, context, path):
         offset = evaluate(self.offset, context)
@@ -4053,13 +4018,11 @@ def PrefixedArray(countfield, subcon):
     # FIXME: FocusedSeq needs to be fixed, it should not be necessary to override these methods
     def _preprocess_size(obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         count_size = countfield._static_sizeof(context, path)
-        extra_info = {"_offset": offset}
-        obj, child_extra_info = subcon._preprocess_size(obj=obj, context=context, path=path, offset=offset+count_size)
-        extra = {f"_{subcon.name}{k}": v for k, v in child_extra_info.items()}
-        extra_info.update(extra)
-        extra_info["_size"] = count_size + child_extra_info["_size"]
-        extra_info["_endoffset"] = extra_info["_offset"] + extra_info["_size"]
-        return obj, extra_info
+        meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
+        obj, child_meta_info = subcon._preprocess_size(obj=obj, context=context, path=path, offset=offset+count_size)
+        meta_info.size = count_size + child_meta_info.size
+        meta_info.end_offset = meta_info.offset + meta_info.size
+        return obj, meta_info
     macro._preprocess_size = _preprocess_size
 
     def _expected_size(self, stream, context, path):

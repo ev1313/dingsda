@@ -31,18 +31,18 @@ def test_size_rebuild_array():
     d = Struct("asd" / Int32ul,
                 "foo" / Rebuild(Int32ul, lambda ctx: 4),
                "test" / Rebuild(Array(this.foo, Byte), lambda x: [1,2,3,4]))
-    obj, extra_info = d.preprocess({"asd": 12})
+    obj, meta_info = d.preprocess({"asd": 12})
 
-    assert(extra_info["_size"] == 12)
+    assert(meta_info.size == 12)
 
     size_test(d, obj, size=12)
 
     d = Struct("asd" / Int32ul,
                "foo" / Rebuild(Int32ul, lambda ctx: len(ctx.test)),
                "test" / Rebuild(Array(this.foo, Byte), lambda x: [1,2,3,4]))
-    obj, extra_info = d.preprocess({"asd": 12})
+    obj, meta_info = d.preprocess({"asd": 12})
 
-    assert(extra_info["_size"] == 12)
+    assert(meta_info.size == 12)
 
     size_test(d, obj, size=12)
 
@@ -65,8 +65,8 @@ def test_size_impr():
     data = b"\x00\x00\x00\x00\xFF\xFF\xFF\xFF\x01\x00\x00\x00\x04\x00\x00\x00\x01\x00\x00\x00\xFF\xFF\xFF\xFF\x01\x00\x00\x00\x04\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
 
     d = IMPR.parse(data)
-    obj, extra_info = IMPR.preprocess(d)
-    assert(extra_info["_size"] == len(data))
+    obj, meta_info = IMPR.preprocess(d)
+    assert(meta_info.size == len(data))
     built_data = IMPR.build(obj)
 
     assert(built_data == data)

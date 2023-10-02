@@ -301,3 +301,15 @@ def test_meta_info_add():
     assert(c.get_meta("a").end_offset == 1)
     assert(c.get_meta("a").ptr_size == 0)
     assert(c.get_meta("b") is None)
+
+def test_meta_info_merge():
+    x = Container({"a": 1, "b": 2})
+    x.set_meta("a", MetaInformation(offset=0, size=1, end_offset=1))
+
+    c = Container(x)
+
+    assert(c.get_meta("a").offset == 0)
+    assert(c.get_meta("a").size == 1)
+    assert(c.get_meta("a").end_offset == 1)
+    assert(c.get_meta("a").ptr_size == 0)
+    assert(c.get_meta("b") is None)

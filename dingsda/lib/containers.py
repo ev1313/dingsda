@@ -1,3 +1,5 @@
+from typing import Optional
+
 from dingsda.lib.py3compat import *
 import re
 import collections
@@ -149,17 +151,26 @@ class Container(collections.OrderedDict):
 
     def set_meta(self, name, value):
         try:
-            super().__setitem__(name, (self[name], value))
+            super().__setitem__(name, (self.get(name, None), value))
         except KeyError:
             raise AttributeError(name)
+
+    def meta_items(self):
+        for k,v in super().items():
+            yield k, v[1]
+    def meta_values(self):
+        for k,v in super().items():
+            yield v[1]
 
     def update(self, seqordict, **kwds):
         """
             Appends items from another dict/Container or list-of-tuples.
         """
         if isinstance(seqordict, dict):
-            seqordict = seqordict.items()
-        for k,v in seqordict:
+            loop = seqordict.items()
+        else:
+            loop = seqordict
+        for k,v in loop:
             self[k] = v
             if isinstance(seqordict, Container):
                 self.set_meta(k, seqordict.get_meta(k))
@@ -170,7 +181,7 @@ class Container(collections.OrderedDict):
 
     def get(self, key, default=None):
         try:
-            return self[key]
+            return super().__getitem__(key)[0]
         except KeyError:
             return default
 
@@ -342,6 +353,7 @@ class ListContainer(list):
             2
             3
     """
+    meta_infos = []
 
     @recursion_lock()
     def __repr__(self):
@@ -356,6 +368,17 @@ class ListContainer(list):
             lines = str(k).split("\n")
             text.append(indentation.join(lines))
         return "".join(text)
+
+    def get_meta(self, idx: int) -> Optional[MetaInformation]:
+        if idx < len(self.meta_infos):
+            return self.meta_infos[idx]
+        else:
+            return None
+
+    def set_meta(self, idx: int, value: MetaInformation):
+        if len(self.meta_infos) <= idx:
+            self.meta_infos.extend([None] * (1 + (idx - len(self.meta_infos))))
+        self.meta_infos[idx] = value
 
     def _search(self, compiled_pattern, search_all):
         items = []

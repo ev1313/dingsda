@@ -60,7 +60,7 @@ def create_child_context(context: Container, obj: Optional[Container]) -> Contai
     """ Creates a new context for the child node. Used e.g. in Struct when building,
     will fail, if child is not a Container. """
     if obj is None:
-        obj = {}
+        obj = Container()
 
     ret = Container(obj)
     ctx = Container(_params = context.get("_params", None),

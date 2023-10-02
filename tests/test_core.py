@@ -1973,13 +1973,13 @@ def test_lazy_rebuild():
 def test_area_int():
     fmt = Struct(
         "header1" / Struct(
-            "offset" / Rebuild(Int8ul, lambda ctx: ctx._._header2_meta._endoffset), # 0x04
-            "size" / Rebuild(Int8ul, lambda ctx: ctx._data1_meta._ptrsize), # 0x04
+            "offset" / Rebuild(Int8ul, lambda ctx: ctx._.get_meta("header2").end_offset), # 0x04
+            "size" / Rebuild(Int8ul, lambda ctx: ctx.get_meta("data1").ptr_size), # 0x04
             "data1" / Area(Int8ul, this.offset, this.size), # 0x01,0x02,0x03,0x04
             ),
         "header2" / Struct(
             "offset" / Rebuild(Int8ul, lambda ctx: ctx._.header1.offset + ctx._.header1.size), # 0x04 + 0x04 = 0x08
-            "size" / Rebuild(Int8ul, lambda ctx: ctx._data2_meta._ptrsize), # 0x05
+            "size" / Rebuild(Int8ul, lambda ctx: ctx.get_meta("data2").ptr_size), # 0x05
             "data2" / Area(Int8ul, this.offset, this.size), # 0x05,0x06,0x07,0x08,0x09
             )
     )

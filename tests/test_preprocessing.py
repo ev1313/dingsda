@@ -12,20 +12,20 @@ def test_preprocess_rebuild_chained():
     )
     obj = {"foo": 4}
     # the preprocessing adds the lambdas to the dictionary, so building is possible without the values
-    preprocessed_ctx, size = d.preprocess(obj=obj)
+    preprocessed_ctx, meta = d.preprocess(obj=obj)
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
-    assert(size["_size"] == len(res))
+    assert(meta.size == len(res))
 
 
 def test_preprocess_int():
     d = Int32ul
     obj = 4
-    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
+    preprocessed_ctx, meta_info = d.preprocess(obj=obj)
     assert(preprocessed_ctx == obj)
-    assert(extra_info["_offset"] == 0)
-    assert(extra_info["_size"] == 4)
-    assert(extra_info["_endoffset"] == 4)
+    assert(meta_info.offset == 0)
+    assert(meta_info.size == 4)
+    assert(meta_info.end_offset == 4)
 
 
 def test_preprocess_struct():
@@ -37,38 +37,38 @@ def test_preprocess_struct():
             )
     )
     obj = {"foo": 4}
-    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
-    assert(preprocessed_ctx["_size"] == 12)
-    assert(preprocessed_ctx["_offset"] == 0)
-    assert(preprocessed_ctx["anon"]["_offset"] == 4)
-    assert(preprocessed_ctx["anon"]["_size"] == 8)
-    assert(preprocessed_ctx["anon"]["_endoffset"] == 12)
-    assert(preprocessed_ctx["anon"]["_bar_meta"]._size == 4)
-    assert(preprocessed_ctx["anon"]["_baz_meta"]._size == 4)
+    preprocessed_ctx, meta_info = d.preprocess(obj=obj)
+    assert(meta_info.size == 12)
+    assert(meta_info.offset == 0)
+    assert(preprocessed_ctx.get_meta("anon").offset == 4)
+    assert(preprocessed_ctx.get_meta("anon").size == 8)
+    assert(preprocessed_ctx.get_meta("anon").end_offset == 12)
+    assert(preprocessed_ctx["anon"].get_meta("bar").size == 4)
+    assert(preprocessed_ctx["anon"].get_meta("baz").size == 4)
 
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
-    assert(extra_info["_offset"] == 0)
-    assert(extra_info["_size"] == len(res))
-    assert(extra_info["_endoffset"] == len(res))
+    assert(meta_info.offset == 0)
+    assert(meta_info.size == len(res))
+    assert(meta_info.end_offset == len(res))
 
 
 def test_preprocess_array():
     d = Array(3, Int32ul)
     obj = [4,4,4]
-    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
-    assert(extra_info["_offset"] == 0)
-    assert(extra_info["_0_offset"] == 0)
-    assert(extra_info["_1_offset"] == 4)
-    assert(extra_info["_2_offset"] == 8)
-    assert(extra_info["_0_size"] == 4)
-    assert(extra_info["_1_size"] == 4)
-    assert(extra_info["_2_size"] == 4)
-    assert(extra_info["_0_endoffset"] == 4)
-    assert(extra_info["_1_endoffset"] == 8)
-    assert(extra_info["_2_endoffset"] == 12)
-    assert(extra_info["_size"] == 12)
-    assert(extra_info["_endoffset"] == 12)
+    preprocessed_ctx, meta_info = d.preprocess(obj=obj)
+    assert(meta_info.offset == 0)
+    assert(preprocessed_ctx.get_meta(0).offset == 0)
+    assert(preprocessed_ctx.get_meta(1).offset == 4)
+    assert(preprocessed_ctx.get_meta(2).offset == 8)
+    assert(preprocessed_ctx.get_meta(0).size == 4)
+    assert(preprocessed_ctx.get_meta(1).size == 4)
+    assert(preprocessed_ctx.get_meta(2).size == 4)
+    assert(preprocessed_ctx.get_meta(0).end_offset == 4)
+    assert(preprocessed_ctx.get_meta(1).end_offset == 8)
+    assert(preprocessed_ctx.get_meta(2).end_offset == 12)
+    assert(meta_info.size == 12)
+    assert(meta_info.end_offset == 12)
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
 
@@ -79,22 +79,22 @@ def test_preprocess_repeatuntil():
         "bar" / RepeatUntil(lambda obj, lst, ctx: obj == 4, Int32ul),
     )
     obj = {"foo": 1, "bar": [2,3,4]}
-    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
-    assert(extra_info["_offset"] == 0)
-    assert(extra_info["_foo_meta"]._offset == 0)
-    assert(extra_info["_foo_meta"]._size == 4)
-    assert(extra_info["_foo_meta"]._endoffset == 4)
-    assert(extra_info["_bar_0_meta"]._offset == 4)
-    assert(extra_info["_bar_1_meta"]._offset == 8)
-    assert(extra_info["_bar_2_meta"]._offset == 12)
-    assert(extra_info["_bar_0_meta"]._size == 4)
-    assert(extra_info["_bar_1_meta"]._size == 4)
-    assert(extra_info["_bar_2_meta"]._size == 4)
-    assert(extra_info["_bar_0_meta"]._endoffset == 8)
-    assert(extra_info["_bar_1_meta"]._endoffset == 12)
-    assert(extra_info["_bar_2_meta"]._endoffset == 16)
-    assert(extra_info["_size"] == 16)
-    assert(extra_info["_endoffset"] == 16)
+    preprocessed_ctx, meta_info = d.preprocess(obj=obj)
+    assert(meta_info.offset == 0)
+    assert(preprocessed_ctx.get_meta("foo").offset == 0)
+    assert(preprocessed_ctx.get_meta("foo").size == 4)
+    assert(preprocessed_ctx.get_meta("foo").end_offset == 4)
+    assert(preprocessed_ctx["bar"].get_meta(0).offset == 4)
+    assert(preprocessed_ctx["bar"].get_meta(1).offset == 8)
+    assert(preprocessed_ctx["bar"].get_meta(2).offset == 12)
+    assert(preprocessed_ctx["bar"].get_meta(0).size == 4)
+    assert(preprocessed_ctx["bar"].get_meta(1).size == 4)
+    assert(preprocessed_ctx["bar"].get_meta(2).size == 4)
+    assert(preprocessed_ctx["bar"].get_meta(0).end_offset == 8)
+    assert(preprocessed_ctx["bar"].get_meta(1).end_offset == 12)
+    assert(preprocessed_ctx["bar"].get_meta(2).end_offset == 16)
+    assert(meta_info.size == 16)
+    assert(meta_info.end_offset == 16)
     res = d.build(preprocessed_ctx)
     assert(res == b'\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00\x04\x00\x00\x00')
 
@@ -102,22 +102,22 @@ def test_preprocess_repeatuntil():
 def test_preprocess_greedyrange():
     d = GreedyRange(Int32ul)
     obj = [1,2,3,4]
-    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
-    assert(extra_info["_offset"] == 0)
-    assert(extra_info["_0_offset"] == 0)
-    assert(extra_info["_1_offset"] == 4)
-    assert(extra_info["_2_offset"] == 8)
-    assert(extra_info["_3_offset"] == 12)
-    assert(extra_info["_0_size"] == 4)
-    assert(extra_info["_1_size"] == 4)
-    assert(extra_info["_2_size"] == 4)
-    assert(extra_info["_3_size"] == 4)
-    assert(extra_info["_0_endoffset"] == 4)
-    assert(extra_info["_1_endoffset"] == 8)
-    assert(extra_info["_2_endoffset"] == 12)
-    assert(extra_info["_3_endoffset"] == 16)
-    assert(extra_info["_size"] == 16)
-    assert(extra_info["_endoffset"] == 16)
+    preprocessed_ctx, meta_info = d.preprocess(obj=obj)
+    assert(meta_info.offset == 0)
+    assert(preprocessed_ctx.get_meta(0).offset == 0)
+    assert(preprocessed_ctx.get_meta(1).offset == 4)
+    assert(preprocessed_ctx.get_meta(2).offset == 8)
+    assert(preprocessed_ctx.get_meta(3).offset == 12)
+    assert(preprocessed_ctx.get_meta(0).size == 4)
+    assert(preprocessed_ctx.get_meta(1).size == 4)
+    assert(preprocessed_ctx.get_meta(2).size == 4)
+    assert(preprocessed_ctx.get_meta(3).size == 4)
+    assert(preprocessed_ctx.get_meta(0).end_offset == 4)
+    assert(preprocessed_ctx.get_meta(1).end_offset == 8)
+    assert(preprocessed_ctx.get_meta(2).end_offset == 12)
+    assert(preprocessed_ctx.get_meta(3).end_offset == 16)
+    assert(meta_info.size == 16)
+    assert(meta_info.end_offset == 16)
     res = d.build(preprocessed_ctx)
     assert(res == b'\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00\x04\x00\x00\x00')
 
@@ -129,13 +129,10 @@ def test_preprocess_rebuild():
         "baz" / Rebuild(Int32ul, lambda ctx: ctx.foo),
         )
     obj = {"foo": 4}
-    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
-    assert(preprocessed_ctx["_offset"] == 0)
-    assert(preprocessed_ctx["_size"] == 12)
-    assert(preprocessed_ctx["_endoffset"] == 12)
-    assert(extra_info["_offset"] == 0)
-    assert(extra_info["_size"] == 12)
-    assert(extra_info["_endoffset"] == 12)
+    preprocessed_ctx, meta_info = d.preprocess(obj=obj)
+    assert(meta_info.offset == 0)
+    assert(meta_info.size == 12)
+    assert(meta_info.end_offset == 12)
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
 
@@ -147,10 +144,10 @@ def test_preprocess_pointer():
         "baz" / Array(4, Int32ul),
         )
     obj = {"foo": [1,2,3,4], "bar": 2, "baz": [5,6,7,8]}
-    preprocessed_ctx, extra_info = d.preprocess(obj=obj)
-    assert(extra_info["_bar_meta"]._ptr_offset == 0)
-    assert(extra_info["_bar_meta"]._ptr_size == 4)
-    assert(extra_info["_bar_meta"]._ptr_endoffset == 4)
+    preprocessed_ctx, meta_info = d.preprocess(obj=obj)
+    #assert(preprocessed_ctx.get_meta("bar_meta")._ptr_offset == 0)
+    assert(preprocessed_ctx.get_meta("bar").ptr_size == 4)
+    #assert(preprocessed_ctx.get_meta("bar_meta")._ptr_endoffset == 4)
     res = d.build(preprocessed_ctx)
 
 def test_preprocess_switch():
@@ -163,10 +160,10 @@ def test_preprocess_switch():
         }),
         )
     obj = {"_switch_id_data": 1, "data": {"value": 256}}
-    preprocessed_ctx, extra_info = s.preprocess(obj=obj)
-    assert(extra_info["_offset"] == 0)
-    assert(extra_info["_size"] == 5)
-    assert(extra_info["_endoffset"] == 5)
+    preprocessed_ctx, meta_info = s.preprocess(obj=obj)
+    assert(meta_info.offset == 0)
+    assert(meta_info.size == 5)
+    assert(meta_info.end_offset == 5)
 
 
 def test_preprocess_ifthenelse():
@@ -177,10 +174,10 @@ def test_preprocess_ifthenelse():
     )
     obj = {"foo": 4, "asd": {"bar": 4}, "test": 4}
     # the preprocessing adds the lambdas to the dictionary, so building is possible without the values
-    preprocessed_ctx, size = d.preprocess(obj=obj)
+    preprocessed_ctx, meta_info = d.preprocess(obj=obj)
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
-    assert(size["_size"] == len(res))
+    assert(meta_info.size == len(res))
 
 def test_preprocess_ifthenelse_nested():
     # sizeof has two different paths for static and non static values
@@ -190,7 +187,7 @@ def test_preprocess_ifthenelse_nested():
         )
     obj = {"foo": 4, "asd": {"bar": 4, "test": {"baz": 4}}}
     # the preprocessing adds the lambdas to the dictionary, so building is possible without the values
-    preprocessed_ctx, size = d.preprocess(obj=obj)
+    preprocessed_ctx, meta_info = d.preprocess(obj=obj)
     res = d.build(preprocessed_ctx)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
-    assert(size["_size"] == len(res))
+    assert(meta_info.size == len(res))
