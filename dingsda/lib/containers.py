@@ -3,6 +3,19 @@ import re
 import collections
 import inspect
 
+from dataclasses import dataclass
+
+
+@dataclass
+class MetaInformation:
+    """
+    Used in Containers and ListContainers for storing the meta information
+    """
+    offset: int
+    size: int
+    end_offset: int
+    ptr_size: int = 0
+
 
 globalPrintFullStrings = False
 globalPrintFalseFlags = False
@@ -86,20 +99,26 @@ class Container(collections.OrderedDict):
     """
     __slots__ = ["__recursion_lock__"]
 
+    def __init__(self, other=(), /, **kwds):
+        self.update(other, **kwds)
+
     def __getattr__(self, name):
         try:
             if name in self.__slots__:
-                ret = object.__getattribute__(self, name)
-                if callable(ret):
-                    return ret(self)
-                return ret
+                return object.__getattribute__(self, name)
             else:
-                ret = self[name]
+                ret = super().__getitem__(name)[0]
                 if callable(ret):
                     return ret(self)
                 return ret
         except KeyError:
             raise AttributeError(name)
+
+    def __getitem__(self, name):
+        ret = super().__getitem__(name)[0]
+        if callable(ret):
+            return ret(self)
+        return ret
 
     def __setattr__(self, name, value):
         try:
@@ -110,6 +129,9 @@ class Container(collections.OrderedDict):
         except KeyError:
             raise AttributeError(name)
 
+    def __setitem__(self, key, value):
+        super().__setitem__(key, (value, self.get_meta(key)))
+
     def __delattr__(self, name):
         try:
             if name in self.__slots__:
@@ -119,12 +141,64 @@ class Container(collections.OrderedDict):
         except KeyError:
             raise AttributeError(name)
 
-    def update(self, seqordict):
-        """Appends items from another dict/Container or list-of-tuples."""
+    def get_meta(self, name):
+        try:
+            return super().__getitem__(name)[1]
+        except KeyError:
+            return None
+
+    def set_meta(self, name, value):
+        try:
+            super().__setitem__(name, (self[name], value))
+        except KeyError:
+            raise AttributeError(name)
+
+    def update(self, seqordict, **kwds):
+        """
+            Appends items from another dict/Container or list-of-tuples.
+        """
         if isinstance(seqordict, dict):
             seqordict = seqordict.items()
         for k,v in seqordict:
             self[k] = v
+            if isinstance(seqordict, Container):
+                self.set_meta(k, seqordict.get_meta(k))
+        for k,v in kwds.items():
+            self[k] = v
+            if isinstance(seqordict, Container):
+                self.set_meta(k, seqordict.get_meta(k))
+
+    def get(self, key, default=None):
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def setdefault(self, key):
+        if key not in self:
+            self[key] = None
+        return self[key]
+
+    def items(self):
+        for k,v in super().items():
+            yield k, v[0]
+
+    def values(self):
+        for v in super().values():
+            yield v[0]
+
+    def pop(self, key, default={}):
+        try:
+            return super().pop(key)[0]
+        except KeyError as k:
+            if default is not self.pop.__defaults__[0]:
+                return default
+            else:
+                raise k
+
+    def popitem(self):
+        ret = super().popitem()
+        return (ret[0], ret[1][0])
 
     def copy(self):
         return Container(self)

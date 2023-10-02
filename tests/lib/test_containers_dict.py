@@ -1,3 +1,4 @@
+from dingsda.lib import MetaInformation
 from dingsda.numbers import Int8ul
 from tests.declarativeunittest import *
 from dingsda import *
@@ -290,3 +291,13 @@ def test_regression_recursionlock():
     c = Container()
     str(c); repr(c)
     assert not c
+
+def test_meta_info_add():
+    c = Container({"a": 1, "b": 2})
+    c.set_meta("a", MetaInformation(offset=0, size=1, end_offset=1))
+
+    assert(c.get_meta("a").offset == 0)
+    assert(c.get_meta("a").size == 1)
+    assert(c.get_meta("a").end_offset == 1)
+    assert(c.get_meta("a").ptr_size == 0)
+    assert(c.get_meta("b") is None)
