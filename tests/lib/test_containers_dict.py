@@ -313,3 +313,22 @@ def test_meta_info_merge():
     assert(c.get_meta("a").end_offset == 1)
     assert(c.get_meta("a").ptr_size == 0)
     assert(c.get_meta("b") is None)
+
+def test_container_root():
+    p = Container({"a": 1, "b": 2})
+    c = Container({"c": 3, "d": 4}, parent=p)
+    c2 = Container({"x": 3, "y": 42}, parent=c)
+
+    assert(p._parent_node is None)
+    assert(p._root_node is None)
+    assert(c._parent_node is p)
+    assert(c._root_node is p)
+    assert(c2._parent_node is c)
+    assert(c2._root_node is p)
+
+    assert(raises(lambda: p._) == AttributeError)
+    assert(p._root is p)
+    assert(c._ is p)
+    assert(c._root is p)
+    assert(c2._ is c)
+    assert(c2._root is p)

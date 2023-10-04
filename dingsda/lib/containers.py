@@ -1,3 +1,4 @@
+from itertools import chain
 from typing import Optional
 
 from dingsda.lib.py3compat import *
@@ -5,13 +6,28 @@ import re
 import collections
 import inspect
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+
+@dataclass
+class ContainerParentMetaInformation:
+    """
+    Used in Containers to save the meta information on the current action of the construct.
+
+    Only created in the root context and given through the tree via indirection / references.
+    """
+    preprocessing: bool = False
+    parsing: bool = False
+    building: bool = False
+    sizing: bool = False
+    xml_building: bool = False
+    xml_parsing: bool = False
+    params: dict = field(default_factory=lambda: {})
 
 
 @dataclass
 class MetaInformation:
     """
-    Used in Containers and ListContainers for storing the meta information
+    Used in Containers and ListContainers for storing the meta information of single elements
     """
     offset: int
     size: int
@@ -74,9 +90,20 @@ def recursion_lock(retval="<recursion detected>", lock_name="__recursion_lock__"
 
 class Container(collections.OrderedDict):
     r"""
-    Generic ordered dictionary that allows both key and attribute access, and preserves key order by insertion. Adding keys is preferred using \*\*entrieskw (requires Python 3.6). Equality does NOT check item order. Also provides regex searching.
+    The container used for results in all constructs.
 
-    Note that not all parameters can be accessed via attribute access (dot operator). If the name of an item matches a method name of the Container, it can only be accessed via key acces (square brackets). This includes the following names: clear, copy, fromkeys, get, items, keys, move_to_end, pop, popitem, search, search_all, setdefault, update, values.
+    Under the hood it is a generic ordered dictionary that allows both key and attribute access, and preserves key order by insertion.
+    Adding keys is preferred using \*\*entrieskw. Equality does NOT check item order. Also provides regex searching.
+
+    Furthermore every item inside the dictionary gets a MetaInformation attribute. This can be accessed via get_meta and
+    set_meta.
+
+    For space efficiency dingsda tries to not create copies of Containers. For this every container stores his
+    parent and root node reference. These can be accessed using the "_" and "_root" node respectively.
+
+    Note that not all parameters can be accessed via attribute access (dot operator). If the name of an item matches
+    a method name of the Container, it can only be accessed via key acces (square brackets). This includes the following
+    names: clear, copy, fromkeys, get, items, keys, move_to_end, pop, popitem, search, search_all, setdefault, update, values.
 
     Example::
 
@@ -99,9 +126,17 @@ class Container(collections.OrderedDict):
             text = u'utf8 decoded string...' (total 22)
             value = 123
     """
-    __slots__ = ["__recursion_lock__"]
+    __slots__ = ["__recursion_lock__", "_root_node", "_parent_node", "_parent_meta_info"]
 
     def __init__(self, other=(), /, **kwds):
+        self._root_node = None
+        self._parent_node = None
+        self._parent_meta_info = None
+        parent = kwds.pop("parent", None)
+        if parent is not None:
+            self._parent_node = parent
+            self._root_node = parent if parent._root_node is None else parent._root_node
+
         self.update(other, **kwds)
 
     def __getattr__(self, name):
@@ -109,14 +144,20 @@ class Container(collections.OrderedDict):
             if name in self.__slots__:
                 return object.__getattribute__(self, name)
             else:
-                ret = super().__getitem__(name)[0]
-                if callable(ret):
-                    return ret(self)
-                return ret
+                return self.__getitem__(name)
         except KeyError:
             raise AttributeError(name)
 
     def __getitem__(self, name):
+        if name == "_":
+            if self._parent_node is None:
+                raise KeyError(name)
+            return self._parent_node
+        elif name == "_root":
+            if self._root_node is None:
+                return self
+            else:
+                return self._root_node
         ret = super().__getitem__(name)[0]
         if callable(ret):
             return ret(self)
@@ -127,38 +168,53 @@ class Container(collections.OrderedDict):
             if name in self.__slots__:
                 return object.__setattr__(self, name, value)
             else:
+                # calls __setitem__ + their checks
                 self[name] = value
         except KeyError:
             raise AttributeError(name)
 
     def __setitem__(self, key, value):
+        if key in ["_", "_root"]:
+            raise AttributeError(f"{key} not allowed to be set")
         super().__setitem__(key, (value, self.get_meta(key)))
 
     def __delattr__(self, name):
         try:
             if name in self.__slots__:
                 return object.__delattr__(self, name)
+            elif name in ["_", "_root"]:
+                raise AttributeError(f"{name} not allowed to be deleted")
             else:
                 del self[name]
         except KeyError:
             raise AttributeError(name)
 
     def get_meta(self, name):
+        if name in ["_", "_root"]:
+            raise AttributeError(f"{name} not allowed to have meta information")
         try:
             return super().__getitem__(name)[1]
         except KeyError:
             return None
 
+    def meta(self, name):
+        return self.get_meta(name)
+
     def set_meta(self, name, value):
+        if name in ["_", "_root"]:
+            raise AttributeError(f"{name} not allowed to be set")
         try:
             super().__setitem__(name, (self.get(name, None), value))
         except KeyError:
             raise AttributeError(name)
 
     def meta_items(self):
+        """ helper returning key/value tuple for meta information """
         for k,v in super().items():
             yield k, v[1]
+
     def meta_values(self):
+        """ helper returning values for meta information """
         for k,v in super().items():
             yield v[1]
 
@@ -166,21 +222,21 @@ class Container(collections.OrderedDict):
         """
             Appends items from another dict/Container or list-of-tuples.
         """
+        items = seqordict
         if isinstance(seqordict, dict):
-            loop = seqordict.items()
-        else:
-            loop = seqordict
-        for k,v in loop:
-            self[k] = v
-            if isinstance(seqordict, Container):
-                self.set_meta(k, seqordict.get_meta(k))
-        for k,v in kwds.items():
+            items = seqordict.items()
+        for k,v in chain(items, kwds.items()):
             self[k] = v
             if isinstance(seqordict, Container):
                 self.set_meta(k, seqordict.get_meta(k))
 
     def get(self, key, default=None):
         try:
+            if key == "_":
+                return self.parent_node
+            elif key == "_root":
+                return self._root_node
+
             return super().__getitem__(key)[0]
         except KeyError:
             return default
@@ -199,6 +255,8 @@ class Container(collections.OrderedDict):
             yield v[0]
 
     def pop(self, key, default={}):
+        if key in ["_", "_root"]:
+            raise AttributeError(f"{key} not allowed to be popped")
         try:
             return super().pop(key)[0]
         except KeyError as k:
@@ -220,12 +278,16 @@ class Container(collections.OrderedDict):
 
     def __dir__(self):
         """For auto completion of attributes based on container values."""
-        return list(self.keys()) + list(self.__class__.__dict__) + dir(super(Container, self))
+        return list(self.keys()) + list(self.__class__.__dict__) + dir(super(Container, self)) + ["_", "_root"]
 
     def __eq__(self, other):
         if self is other:
             return True
         if not isinstance(other, dict):
+            return False
+        if self._parent_node is not other._parent_node:
+            return False
+        if self._root_node is not other._root_node:
             return False
         def isequal(v1, v2):
             if v1.__class__.__name__ == "ndarray" or v2.__class__.__name__ == "ndarray":
@@ -338,6 +400,8 @@ class ListContainer(list):
     r"""
     Generic container like list. Provides pretty-printing. Also provides regex searching.
 
+    Further stores meta information for every item in the list.
+
     Example::
 
         >>> ListContainer()
@@ -370,13 +434,20 @@ class ListContainer(list):
         return "".join(text)
 
     def get_meta(self, idx: int) -> Optional[MetaInformation]:
+        """ returns the meta information of the item, if it exists, else None. """
         if idx < len(self.meta_infos):
             return self.meta_infos[idx]
         else:
             return None
 
+    def meta(self, name):
+        """ just a shorter name for get_meta """
+        return self.get_meta(name)
+
     def set_meta(self, idx: int, value: MetaInformation):
+        """ sets the meta information for the item, extends meta_info list if necessary.  """
         if len(self.meta_infos) <= idx:
+            assert(idx < len(self))
             self.meta_infos.extend([None] * (1 + (idx - len(self.meta_infos))))
         self.meta_infos[idx] = value
 
