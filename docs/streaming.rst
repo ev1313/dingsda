@@ -37,24 +37,6 @@ OffsettedEnd parses a greedy subcon until EOF plus a negative offset. This way y
 Container(header=b'\x01\x02', data=b'\x03\x04\x05', footer=b'\x06\x07')
 
 
-Pure side effects
-=================
-
-Seek makes a jump within the stream and leaves it there, for other constructs to follow up from that location. It does not read or write anything to the stream by itself.
-
->>> d = Struct("x" / Bytes(10), Seek(5), "y" / Byte)
->>> d.build({"x": b"0123456789", "y": 255})
-b'01234\xff6789'
-
-Tell checks the current stream position and returns it. The returned value gets automatically inserted into the context dictionary. It also does not read or write anything to the stream by itself.
-
->>> d = Struct("num"/VarInt, "offset"/Tell)
->>> d.parse(b"X")
-Container(num=88, offset=1)
->>> d.build(dict(num=88))
-b'X'
-
-
 Other fields
 =================
 

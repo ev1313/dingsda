@@ -1246,7 +1246,7 @@ class Struct(Structconstruct):
     r"""
     Sequence of usually named constructs, similar to structs in C. The members are parsed and build in the order they are defined. If a member is anonymous (its name is None) then it gets parsed and the value discarded, or it gets build from nothing (from None).
 
-    Some fields do not need to be named, since they are built without value anyway. See: Const Padding Check Error Pass Terminated Seek Tell for examples of such fields.
+    Some fields do not need to be named, since they are built without value anyway. See: Const Padding Check Error Pass Terminated Tell for examples of such fields.
 
     Operator + can also be used to make Structs (although not recommended).
 
@@ -3423,52 +3423,6 @@ class OffsettedEnd(Subconstruct):
     def _static_sizeof(self, context, path):
         raise SizeofError(path=path)
 
-
-class Seek(Construct):
-    r"""
-    Seeks the stream.
-
-    Parsing and building seek the stream to given location (and whence), and return stream.seek() return value. Size is not defined.
-
-    .. seealso:: Analog :class:`~dingsda.core.Pointer` wrapper that has same side effect but also processes a subcon, and also seeks back.
-
-    :param at: integer or context lambda, where to jump to
-    :param whence: optional, integer or context lambda, is the offset from beginning (0) or from current position (1) or from EOF (2), default is 0
-
-    :raises StreamError: stream is not seekable
-
-    Can propagate any exception from the lambda, possibly non-ConstructError.
-
-    Example::
-
-        >>> d = (Seek(5) >> Byte)
-        >>> d.parse(b"01234x")
-        [5, 120]
-
-        >>> d = (Bytes(10) >> Seek(5) >> Byte)
-        >>> d.build([b"0123456789", None, 255])
-        b'01234\xff6789'
-    """
-
-    def __init__(self, at, whence=0):
-        super().__init__()
-        self.at = at
-        self.whence = whence
-        self.flagbuildnone = True
-
-    def _parse(self, stream, context, path):
-        at = evaluate(self.at, context)
-        whence = evaluate(self.whence, context)
-        return stream_seek(stream, at, whence, path)
-
-    def _build(self, obj, stream, context, path):
-        at = evaluate(self.at, context)
-        whence = evaluate(self.whence, context)
-        return stream_seek(stream, at, whence, path)
-
-    def _static_sizeof(self, context: Container, path: str) -> int:
-        raise SizeofError("Seek only moves the stream, size is not meaningful", path=path)
-
 @singleton
 class Tell(Construct):
     r"""
@@ -3733,13 +3687,13 @@ class Prefixed(Subconstruct):
         return self.lengthfield._static_sizeof(context, path) + self.subcon._static_sizeof(context, path)
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        return self.lengthfield._static_sizeof(context, path) + self.subcon._sizeof(obj, context, path)
+        return self.lengthfield._sizeof(context, path) + self.subcon._sizeof(obj, context, path)
 
     def _expected_size(self, stream, context, path):
         position1 = stream_tell(stream, path)
         length = self.lengthfield._parse(stream, context, path)
         if self.includelength:
-            length -= self.lengthfield._static_sizeof(context, path)
+            length -= self.lengthfield._sizeof(context, path)
         position2 = stream_tell(stream, path)
         return (position2-position1) + length
 

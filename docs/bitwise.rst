@@ -129,7 +129,6 @@ Those do use stream seeking or telling (or both):
 * Aligned (actually works)
 * Pointer
 * Peek
-* Seek
 * Tell
 * RawCopy
 * Prefixed (actually works)

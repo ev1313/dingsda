@@ -674,20 +674,6 @@ def test_offsettedend():
     d = OffsettedEnd(0, Byte)
     assert raises(d.static_sizeof) == SizeofError
 
-def test_seek():
-    d = Seek(5)
-    assert d.parse(b"") == 5
-    assert d.build(None) == b""
-    assert (d >> Byte).parse(b"01234x") == [5,120]
-    assert (d >> Byte).build([5,255]) == b"\x00\x00\x00\x00\x00\xff"
-    assert (Bytes(10) >> d >> Byte).parse(b"0123456789") == [b"0123456789",5,ord('5')]
-    assert (Bytes(10) >> d >> Byte).build([b"0123456789",None,255]) == b"01234\xff6789"
-    assert Struct("data"/Bytes(10), d, "addin"/Byte).parse(b"0123456789") == Container(data=b"0123456789", addin=53)
-    assert Struct("data"/Bytes(10), d, "addin"/Byte).build(dict(data=b"0123456789",addin=53)) == b"01234\x356789"
-    assert (Seek(10,1) >> Seek(-5,1) >> Bytes(1)).parse(b"0123456789") == [10,5,b"5"]
-    assert (Seek(10,1) >> Seek(-5,1) >> Bytes(1)).build([None,None,255]) == b"\x00\x00\x00\x00\x00\xff"
-    assert raises(d.static_sizeof) == SizeofError
-
 def test_tell():
     d = Tell
     assert d.parse(b"") == 0

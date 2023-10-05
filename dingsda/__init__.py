@@ -141,7 +141,6 @@ __all__ = [
     'RestreamData',
     'Restreamed',
     'RestreamedBytesIO',
-    'Seek',
     'setGlobalPrintFalseFlags',
     'setGlobalPrintFullStrings',
     'setGlobalPrintPrivateEntries',
