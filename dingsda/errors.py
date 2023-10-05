@@ -120,13 +120,6 @@ class UnionError(ConstructError):
     pass
 
 
-class SelectError(ConstructError):
-    """
-    Only one parsing class can raise this exception: Select. It can mean neither subcon succeded when parsing or building.
-    """
-    pass
-
-
 class SwitchError(ConstructError):
     """
     Currently not used.

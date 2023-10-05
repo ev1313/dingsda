@@ -138,6 +138,7 @@ def test_this_shift_operator():
     )
     assert d.parse(b"\x02") == Container(a=2, ls=4, rs=1)
 
+@xfail(reason="these functions were deprecated")
 def test_create_parent_context():
     obj = {"a": 1}
     ctx = {"_foo": 2}

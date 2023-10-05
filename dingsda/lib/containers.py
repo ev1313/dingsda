@@ -1,27 +1,29 @@
 from itertools import chain
-from typing import Optional
+from typing import Any, Optional
 
 from dingsda.lib.py3compat import *
+import io
 import re
 import collections
-import inspect
 
 from dataclasses import dataclass, field
 
 @dataclass
-class ContainerParentMetaInformation:
+class ConstructMetaInformation:
     """
     Used in Containers to save the meta information on the current action of the construct.
 
     Only created in the root context and given through the tree via indirection / references.
     """
     preprocessing: bool = False
+    preprocessing_sizing: bool = False
     parsing: bool = False
     building: bool = False
     sizing: bool = False
     xml_building: bool = False
     xml_parsing: bool = False
     params: dict = field(default_factory=lambda: {})
+    io: Optional[Any] = field(default=None)
 
 
 @dataclass
@@ -136,6 +138,10 @@ class Container(collections.OrderedDict):
         if parent is not None:
             self._parent_node = parent
             self._root_node = parent if parent._root_node is None else parent._root_node
+        parent_meta = kwds.pop("metadata", None)
+        if parent_meta is not None:
+            assert(self._parent_node is None)
+            self._parent_meta_info = parent_meta
 
         self.update(other, **kwds)
 
@@ -148,7 +154,7 @@ class Container(collections.OrderedDict):
         except KeyError:
             raise AttributeError(name)
 
-    def __getitem__(self, name):
+    def __get_handle_special(self, name):
         if name == "_":
             if self._parent_node is None:
                 raise KeyError(name)
@@ -158,7 +164,32 @@ class Container(collections.OrderedDict):
                 return self
             else:
                 return self._root_node
+        elif name == "_parsing":
+            return self._root._parent_meta_info.parsing
+        elif name == "_building":
+            return self._root._parent_meta_info.building
+        elif name == "_sizing":
+            return self._root._parent_meta_info.sizing
+        elif name == "_preprocessing":
+            return self._root._parent_meta_info.preprocessing
+        elif name == "_preprocessing_sizing":
+            return self._root._parent_meta_info.preprocessing_sizing
+        elif name == "_xml_building":
+            return self._root._parent_meta_info.xml_building
+        elif name == "_xml_parsing":
+            return self._root._parent_meta_info.xml_parsing
+        elif name == "_params":
+            return self._root._parent_meta_info.params
+        elif name == "_io":
+            return self._root._parent_meta_info.io
         ret = super().__getitem__(name)[0]
+        if isinstance(ret, Container):
+            ret._parent_node = self
+            ret._root_node = None
+        return ret
+
+    def __getitem__(self, name):
+        ret = self.__get_handle_special(name)
         if callable(ret):
             return ret(self)
         return ret
@@ -174,7 +205,8 @@ class Container(collections.OrderedDict):
             raise AttributeError(name)
 
     def __setitem__(self, key, value):
-        if key in ["_", "_root"]:
+        if key in ["_", "_root", "_parsing", "_building", "_sizing", "_preprocessing",
+                   "_preprocessing_sizing", "_xml_building", "_xml_parsing", "_params", "_io"]:
             raise AttributeError(f"{key} not allowed to be set")
         super().__setitem__(key, (value, self.get_meta(key)))
 
@@ -190,7 +222,8 @@ class Container(collections.OrderedDict):
             raise AttributeError(name)
 
     def get_meta(self, name):
-        if name in ["_", "_root"]:
+        if name in ["_", "_root", "_parsing", "_building", "_sizing", "_preprocessing",
+                   "_xml_building", "_xml_parsing", "_params", "_io"]:
             raise AttributeError(f"{name} not allowed to have meta information")
         try:
             return super().__getitem__(name)[1]
@@ -225,19 +258,16 @@ class Container(collections.OrderedDict):
         items = seqordict
         if isinstance(seqordict, dict):
             items = seqordict.items()
-        for k,v in chain(items, kwds.items()):
-            self[k] = v
-            if isinstance(seqordict, Container):
-                self.set_meta(k, seqordict.get_meta(k))
+        chained = list(chain(items, kwds.items()))
+        if len(chained) > 0:
+            for k, v in chained:
+                self[k] = v
+                if isinstance(seqordict, Container):
+                    self.set_meta(k, seqordict.get_meta(k))
 
     def get(self, key, default=None):
         try:
-            if key == "_":
-                return self.parent_node
-            elif key == "_root":
-                return self._root_node
-
-            return super().__getitem__(key)[0]
+            return self.__get_handle_special(key)
         except KeyError:
             return default
 
@@ -284,10 +314,6 @@ class Container(collections.OrderedDict):
         if self is other:
             return True
         if not isinstance(other, dict):
-            return False
-        if self._parent_node is not other._parent_node:
-            return False
-        if self._root_node is not other._root_node:
             return False
         def isequal(v1, v2):
             if v1.__class__.__name__ == "ndarray" or v2.__class__.__name__ == "ndarray":

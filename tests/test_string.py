@@ -1,5 +1,5 @@
-from dingsda import PaddedString, PaddingError, this, Byte, Int16ub, Int16ul, VarInt, PascalString, SizeofError, Select, \
-    SelectError, CString, GreedyString
+from dingsda import PaddedString, PaddingError, this, Byte, Int16ub, Int16ul, VarInt, PascalString, SizeofError, \
+    CString, GreedyString
 from tests.declarativeunittest import common, raises
 
 
@@ -35,12 +35,6 @@ def test_pascalstring():
     for e in ["utf8","utf16","utf-16-le","utf32","utf-32-le","ascii"]:
         raises(PascalString(Byte, e).sizeof) == SizeofError
         raises(PascalString(VarInt, e).sizeof) == SizeofError
-
-
-def test_pascalstring_issue_960():
-    d = Select(PascalString(Byte, "ascii"))
-    assert raises(d.parse, b"\x01\xff") == SelectError
-    assert raises(d.build, u"Афон") == SelectError
 
 
 def test_cstring():

@@ -1,4 +1,6 @@
-from dingsda.lib import MetaInformation
+from io import BytesIO
+
+from dingsda.lib import MetaInformation, ConstructMetaInformation
 from dingsda.numbers import Int8ul
 from tests.declarativeunittest import *
 from dingsda import *
@@ -332,3 +334,39 @@ def test_container_root():
     assert(c._root is p)
     assert(c2._ is c)
     assert(c2._root is p)
+
+def test_container_construct_metadata():
+    metadata = ConstructMetaInformation(
+        preprocessing = True,
+        preprocessing_sizing = True,
+        parsing = True,
+        building = True,
+        sizing = True,
+        xml_building = True,
+        xml_parsing = True,
+        params = {"param1": 1, "param2": 2},
+        io=BytesIO(),
+    )
+    p = Container({"a": 1, "b": 2}, metadata=metadata)
+    c = Container({"c": 3, "d": 4}, parent=p)
+    c2 = Container({"x": 3, "y": 42}, parent=c)
+
+    assert(True == p._preprocessing == c._preprocessing == c2._preprocessing)
+    assert(True == p._preprocessing_sizing == c._preprocessing_sizing == c2._preprocessing_sizing)
+    assert(True == p._parsing == c._parsing == c2._parsing)
+    assert(True == p._building == c._building == c2._building)
+    assert(True == p._sizing == c._sizing == c2._sizing)
+    assert(True == p._xml_building == c._xml_building == c2._xml_building)
+    assert(True == p._xml_parsing == c._xml_parsing == c2._xml_parsing)
+    assert({"param1": 1, "param2": 2} == p._params == c._params == c2._params)
+    assert(p._io == c._io == c2._io)
+
+    assert(raises(lambda: p.__setattr__("_preprocessing", False)) == AttributeError)
+    assert(raises(lambda: p.__setattr__("_preprocessing_sizing", False)) == AttributeError)
+    assert(raises(lambda: p.__setattr__("_parsing", False)) == AttributeError)
+    assert(raises(lambda: p.__setattr__("_building", False)) == AttributeError)
+    assert(raises(lambda: p.__setattr__("_sizing", False)) == AttributeError)
+    assert(raises(lambda: p.__setattr__("_xml_building", False)) == AttributeError)
+    assert(raises(lambda: p.__setattr__("_xml_parsing", False)) == AttributeError)
+    assert(raises(lambda: p.__setattr__("_params", False)) == AttributeError)
+    assert(raises(lambda: p.__setattr__("_io", False)) == AttributeError)

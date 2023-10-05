@@ -58,7 +58,6 @@ class FormatField(Construct):
         except Exception:
             raise FormatFieldError("struct %r error during building, given value %r" % (self.fmtstr, obj), path=path)
         stream_write(stream, data, self.length, path)
-        return obj
 
     def _toET(self, parent, name, context, path):
         assert (name is not None)

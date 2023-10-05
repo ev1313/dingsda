@@ -20,7 +20,6 @@ Core API: Exception types
 .. autofunction:: dingsda.NamedTupleError
 .. autofunction:: dingsda.TimestampError
 .. autofunction:: dingsda.UnionError
-.. autofunction:: dingsda.SelectError
 .. autofunction:: dingsda.SwitchError
 .. autofunction:: dingsda.StopFieldError
 .. autofunction:: dingsda.PaddingError

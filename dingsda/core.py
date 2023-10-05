@@ -8,7 +8,7 @@ from dingsda.errors import *
 from dingsda.lib import *
 from dingsda.expr import *
 from dingsda.helpers import *
-from dingsda.lib import MetaInformation
+from dingsda.lib import MetaInformation, ConstructMetaInformation
 from dingsda.version import version_string
 
 import xml.etree.ElementTree as ET
@@ -105,12 +105,8 @@ class Construct(object):
         r"""
         Parse a stream. Files, pipes, sockets, and other streaming sources of data are handled by this method. See parse().
         """
-        context = Container(**contextkw)
-        context._preprocessing = False
-        context._parsing = True
-        context._building = False
-        context._sizing = False
-        context._params = context
+        metadata = ConstructMetaInformation(parsing=True, params=contextkw, io=stream)
+        context = Container(metadata=metadata, **contextkw)
         try:
             return self._parsereport(stream, context, "(parsing)")
         except CancelParsing:
@@ -150,7 +146,7 @@ class Construct(object):
             :param path: the path to the construct
 
             :return obj: the preprocessed object
-            :return extra_info: a dictionary containing extra information regarding offset, size, etc.
+            :return meta_info: a MetaInformation object containing extra information regarding offset, size, etc.
         """
         return obj, None
 
@@ -173,15 +169,11 @@ class Construct(object):
             :return obj: the preprocessed object
             :return meta_info: a MetaInformation object containing extra information regarding offset, size, etc.
         """
-        ctx = Container(context)
-        # FIXME: i do not know a better solution for this yet
-        if isinstance(obj, Container):
-            ctx.update(obj)
-        size = self._sizeof(obj, ctx, path)
+        size = self._sizeof(obj, context, path)
         meta = MetaInformation(size=size, offset=offset, end_offset=offset + size)
         return obj, meta
 
-    def build(self, obj, **contextkw):
+    def build(self, obj: Any, preprocess_before: bool = True, **contextkw) -> bytes:
         r"""
         Build an object in memory (a bytes object).
 
@@ -196,33 +188,40 @@ class Construct(object):
         :raises ConstructError: raised for any reason
         """
         stream = io.BytesIO()
-        self.build_stream(obj, stream, **contextkw)
+        self.build_stream(obj, stream, preprocess_before, **contextkw)
         return stream.getvalue()
 
-    def build_stream(self, obj, stream, **contextkw):
+    def build_stream(self, obj: Any, stream, preprocess_before: bool = True, **contextkw):
         r"""
         Build an object directly into a stream. See build().
-        """
-        context = Container(**contextkw)
-        context._parsing = False
-        context._preprocessing = False
-        context._building = True
-        context._sizing = False
-        context._params = context
-        self._build(obj, stream, context, "(building)")
 
-    def build_file(self, obj, filename, **contextkw):
+        Does not return anything.
+        """
+        if preprocess_before:
+            obj, _ = self.preprocess(obj, **contextkw)
+
+        metadata = ConstructMetaInformation(building=True, params=contextkw)
+        if isinstance(obj, dict):
+            context = Container(obj, metadata=metadata, **contextkw)
+            self._build(context, stream, context, "(building)")
+        else:
+            context = Container(metadata=metadata, **contextkw)
+            self._build(obj, stream, context, "(building)")
+
+    def build_file(self, obj: Any, filename: str, preprocess_before: bool = True, **contextkw):
         r"""
         Build an object into a closed binary file. See build().
+
+        Does not return anything.
         """
         # Open the file for reading as well as writing. This allows builders to
         # read back the stream just written. For example. RawCopy does this.
         # See issue #888.
         with open(filename, 'w+b') as f:
-            self.build_stream(obj, f, **contextkw)
+            self.build_stream(obj, f, preprocess_before, **contextkw)
 
-    def _build(self, obj, stream, context, path):
-        """Override in your subclass."""
+    def _build(self, obj: Any, stream: io.IOBase, context: Container, path: str):
+        """Override in your subclass. Shall not return anything."""
         raise NotImplementedError
 
     def toET(self, obj, name="Root", **contextkw):
@@ -236,13 +235,8 @@ class Construct(object):
         :param contextkw: further arguments, passed directly into the context
         :returns: an ElementTree
         """
-
-        context = Container(**contextkw)
-        context._preprocessing = False
-        context._parsing = False
-        context._building = False
-        context._sizing = False
-        context._params = context
+        metadata = ConstructMetaInformation(xml_building=True, params=contextkw)
+        context = Container(metadata=metadata, **contextkw)
         context[name] = obj
         # create root node
         xml = ET.Element(name)
@@ -257,13 +251,9 @@ class Construct(object):
         :param contextkw: further arguments, passed directly into the context
         :returns: a Container
         """
+        metadata = ConstructMetaInformation(xml_parsing=True, params=contextkw)
+        context = Container(metadata=metadata, **contextkw)
 
-        context = Container(**contextkw)
-        context._preprocessing = False
-        context._parsing = False
-        context._building = False
-        context._sizing = False
-        context._params = context
         # create root node
         parent = ET.Element("Root")
         parent.append(xml)
@@ -286,16 +276,19 @@ class Construct(object):
             :return obj: the preprocessed object
             :return extra_info: the dictionary containing extra information for the *current* object, like offset, size, etc.
         """
-        context = Container(**contextkw)
-        context._preprocessing = True
-        context._parsing = False
-        context._building = False
-        context._sizing = False
-        context._params = context
+        metadata = ConstructMetaInformation(preprocessing=True, params=contextkw)
 
-        obj, meta_info = self._preprocess(obj=obj, context=context, path="(preprocess)")
+        if isinstance(obj, dict):
+            context = Container(obj, metadata=metadata, **contextkw)
+            obj, meta_info = self._preprocess(obj=context, context=context, path="(preprocess)")
+        else:
+            context = Container(metadata=metadata, **contextkw)
+            obj, meta_info = self._preprocess(obj=obj, context=context, path="(preprocess)")
 
         if sizing:
+            metadata = ConstructMetaInformation(preprocessing_sizing=True, params=contextkw)
+            # FIXME: maybe function for force changing metadata?
+            context._parent_meta_info = metadata
             return self._preprocess_size(obj=obj, context=context, path="(preprocess_size)", offset=0)
 
         return obj, meta_info
@@ -313,12 +306,8 @@ class Construct(object):
 
         :raises SizeofError: size could not be determined in current context, or is impossible to be determined
         """
-        context = Container(**contextkw)
-        context._preprocessing = False
-        context._parsing = False
-        context._building = False
-        context._sizing = True
-        context._params = context
+        metadata = ConstructMetaInformation(sizing=True, params=contextkw)
+        context = Container(metadata=metadata, **contextkw)
         return self._static_sizeof(context, "(static_sizeof)")
 
     def sizeof(self, obj: Container, **contextkw) -> int:
@@ -337,12 +326,8 @@ class Construct(object):
 
         :raises SizeofError: size could not be determined in current context, or is impossible to be determined
         """
-        context = Container(**contextkw)
-        context._preprocessing = False
-        context._parsing = False
-        context._building = False
-        context._sizing = True
-        context._params = context
+        metadata = ConstructMetaInformation(sizing=True, params=contextkw)
+        context = Container(metadata=metadata, **contextkw)
         if isinstance(obj, dict) or isinstance(obj, Container):
             context.update(obj)
 
@@ -373,12 +358,8 @@ class Construct(object):
 
         :raises SizeofError: size could not be determined in current context, or is impossible to be determined
         """
-        context = Container(**contextkw)
-        context._preprocessing = False
-        context._parsing = False
-        context._building = False
-        context._sizing = True
-        context._params = context
+        metadata = ConstructMetaInformation(sizing=True, params=contextkw)
+        context = Container(metadata=metadata, **contextkw)
         context.update(obj)
         return self._full_sizeof(obj, context, "(full_sizeof)")
 
@@ -506,7 +487,7 @@ class Subconstruct(Construct):
         return self.subcon._preprocess(obj, context, path)
 
     def _build(self, obj, stream, context, path):
-        return self.subcon._build(obj, stream, context, path)
+        self.subcon._build(obj, stream, context, path)
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         return self.subcon._static_sizeof(context, path)
@@ -540,9 +521,9 @@ class Structconstruct(Construct):
                     size_sum += sc._static_sizeof(context, path)
                 except SizeofError:
                     if not sc._is_array():
-                        ctx = create_child_context(context, obj)
+                        ctx = Container(parent=context)
                     else:
-                        ctx = create_child_context(context, {})
+                        ctx = Container(parent=context)
 
                     for name in sc._names():
                         child_obj = context.get(name, None)
@@ -689,9 +670,7 @@ class Adapter(Subconstruct):
 
     def _build(self, obj, stream, context, path):
         obj2 = self._encode(obj, context, path)
-        buildret = self.subcon._build(obj2, stream, context, path)
-        # FIXME: is this a bug?
-        return obj
+        self.subcon._build(obj2, stream, context, path)
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         obj2 = self._encode(obj, context, path)
@@ -746,11 +725,10 @@ class Tunnel(Subconstruct):
 
     def _build(self, obj, stream, context, path):
         stream2 = io.BytesIO()
-        buildret = self.subcon._build(obj, stream2, context, path)
+        self.subcon._build(obj, stream2, context, path)
         data = stream2.getvalue()
         data = self._encode(data, context, path)
         stream_write(stream, data, len(data), path)
-        return obj
 
     def _static_sizeof(self, context, path):
         raise SizeofError(path=path)
@@ -821,7 +799,6 @@ class Bytes(Construct):
         data = integer2bytes(obj, length) if isinstance(obj, int) else obj
         data = bytes(data) if type(data) is bytearray else data
         stream_write(stream, data, length, path)
-        return data
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         try:
@@ -892,7 +869,6 @@ class GreedyBytes(Construct):
     def _build(self, obj, stream, context, path):
         data = bytes(obj) if type(obj) is bytearray else obj
         stream_write(stream, data, len(data), path)
-        return data
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         return len(obj)
@@ -1022,7 +998,6 @@ class Flag(Construct):
 
     def _build(self, obj, stream, context, path):
         stream_write(stream, b"\x01" if obj else b"\x00", 1, path)
-        return obj
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         return 1
@@ -1337,6 +1312,7 @@ class Struct(Structconstruct):
     def __init__(self, *subcons, **subconskw):
         super().__init__()
         self.subcons = list(subcons) + list(k/v for k,v in subconskw.items())
+        # FIXME: for what is this?
         self._subcons = Container((sc.name,sc) for sc in self.subcons if sc.name)
         self.flagbuildnone = all(sc.flagbuildnone for sc in self.subcons)
 
@@ -1346,99 +1322,108 @@ class Struct(Structconstruct):
         raise AttributeError
 
     def _parse(self, stream, context, path):
-        obj = Container()
-        obj._io = stream
-        ctx = create_child_context(context, obj)
+        """
+        When parsing a Struct we need to create a new subcontext, where the subcons of the structure store
+        their values. For this we create a new Container and set the parent to the current context.
+
+        Furthermore we return the reference to this context after all subcons got parsed.
+        If this is a nested Struct for example, this reference gets set as a value in the parent context afterwards.
+
+        """
+        ctx = Container(parent=context)
         ctx["_subcons"] = self._subcons
         for sc in self.subcons:
             try:
                 subobj = sc._parsereport(stream, ctx, path)
                 if sc.name:
-                    obj[sc.name] = subobj
                     ctx[sc.name] = subobj
-
-                # this adds the objects to the root of the context, if this struct is the root
-                if context.get("_root", None) is None:
-                    ctx["_root"].update(obj)
-                    ctx["_root"].update(ctx)
 
             except StopFieldError:
                 break
 
-        return obj
+        return ctx
 
-    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
+    def _preprocess(self, obj: Container, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         if obj is None:
-            obj = Container()
-        ctx = create_child_context(context, obj)
+            obj = Container(parent=context)
+        else:
+            assert(isinstance(obj, Container))
+            if obj is not context:
+                assert(obj._ is context)
 
         for sc in self.subcons:
             subobj = obj.get(sc.name, None)
 
-            if sc.name:
-                ctx[sc.name] = subobj
-
-            preprocessret, _ = sc._preprocess(subobj, ctx, path)
+            preprocessret, _ = sc._preprocess(subobj, obj, path)
             assert(_ is None)
 
             if sc.name:
-                ctx[sc.name] = preprocessret
+                obj[sc.name] = preprocessret
 
-        return ctx, None
+        return obj, None
 
-    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
-        size = 0
-        extra_info = {}
+    def _preprocess_size(self, obj: Container, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         if obj is None:
-            obj = Container()
-        ctx = create_child_context(context, obj)
+            obj = Container(parent=context)
+        else:
+            assert(isinstance(obj, Container))
+            if obj is not context:
+                assert(obj._ is context)
+
+        size = 0
         meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
         for sc in self.subcons:
-            subobj = obj.get(sc.name, None)
+            try:
+                subobj = obj.get(sc.name, None)
 
-            if sc.name:
-                ctx[sc.name] = subobj
+                preprocessret, child_meta_info = sc._preprocess_size(subobj, obj, path, offset=offset)
 
-            preprocessret, child_meta_info = sc._preprocess_size(subobj, ctx, path, offset=offset)
+                # update offset & size
+                retsize = child_meta_info.size
+                offset += retsize
+                size += retsize
+                if sc.name:
+                    obj[sc.name] = preprocessret
 
-            # update offset & size
-            retsize = child_meta_info.size
-            offset += retsize
-            size += retsize
-            if sc.name:
-                ctx[sc.name] = preprocessret
-
-            # add current extra_info to context, so e.g. lambdas can use them already
-            ctx.set_meta(sc.name, child_meta_info)
+                # add current meta_info to context, so e.g. lambdas can use them already
+                obj.set_meta(sc.name, child_meta_info)
+            except StopFieldError:
+                break
 
         meta_info.size = size
         meta_info.end_offset = offset
 
-        return ctx, meta_info
+        return obj, meta_info
 
-    def _build(self, obj: Any, stream, context: Container, path: str) -> Container:
-        if obj is None:
-            obj = Container()
+    def _build(self, obj: Any, stream: io.IOBase, context: Container, path: str):
+        """
+        When building we get a context containing all the values of the subcons.
 
-        ctx = create_child_context(context, obj)
-        ctx["_subcons"] = self._subcons
+        Furthermore when parsing a structure, obj contains a reference to the current part of the context.
+
+        Python doesn't allow something like const, however the context should not be changed usually.
+
+        This layout is for legacy reasons and with the new Containers storing their parents and the root, the context
+        can also be gotten using the "_" of the obj.
+        """
+        # the _subcons get updated here, because fromET wouldn't add them
+        context["_subcons"] = self._subcons
+        idx = context.get("_index", None)
+        if idx is not None:
+            context["_index"] = idx
+
         for sc in self.subcons:
             try:
                 if not sc.flagbuildnone and not obj.__contains__(sc.name):
                     raise KeyError(sc.name)
                 subobj = obj.get(sc.name, None)
 
-                if sc.name:
-                    ctx[sc.name] = subobj
+                sc._build(subobj, stream, obj, path)
 
-                buildret = sc._build(subobj, stream, ctx, path)
-                if sc.name:
-                    ctx[sc.name] = buildret
             except StopFieldError:
                 break
-        return ctx
 
-    def _toET(self, parent, name, context, path):
+    def _toET(self, parent: ET.Element, name: str, context: Container, path: str) -> ET.Element:
         assert(name is not None)
         assert(parent is not None)
 
@@ -1458,7 +1443,7 @@ class Struct(Structconstruct):
 
     def _fromET(self, parent, name, context, path, is_root=False):
         # we go down one layer
-        ctx = create_parent_context(context)
+        ctx = Container(parent=context)
 
         # get the xml element
         if not is_root:
@@ -1472,10 +1457,6 @@ class Struct(Structconstruct):
 
         for sc in self.subcons:
             ctx = sc._fromET(context=ctx, parent=elem, name=sc.name, path=f"{path} -> {name}")
-
-        # remove _, because rebuild will fail otherwise
-        if "_" in ctx.keys():
-            ctx.pop("_")
 
         # now we have to go back up
         ret_ctx = context
@@ -1543,45 +1524,74 @@ class Sequence(Structconstruct):
 
     def _parse(self, stream, context, path):
         obj = ListContainer()
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = stream, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
         for sc in self.subcons:
             try:
                 subobj = sc._parsereport(stream, context, path)
-                obj.append(subobj)
+
                 if sc.name:
                     context[sc.name] = subobj
+
+                obj.append(subobj)
             except StopFieldError:
                 break
         return obj
 
     def _build(self, obj, stream, context, path):
         if obj is None:
+            # FIXME: why is this here?
             obj = ListContainer([None for sc in self.subcons])
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = stream, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
+            assert(False)
+
+        ctx = Container(parent=context)
         objiter = iter(obj)
-        retlist = ListContainer()
         for i,sc in enumerate(self.subcons):
             try:
                 subobj = next(objiter)
-                if sc.name:
-                    context[sc.name] = subobj
+                ctx["_index"] = i
 
-                buildret = sc._build(subobj, stream, context, path)
-                retlist.append(buildret)
-
-                if sc.name:
-                    context[sc.name] = buildret
+                sc._build(subobj, stream, ctx, path)
             except StopFieldError:
                 break
-        return retlist
 
-    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
-        raise NotImplementedError
+    def _preprocess(self, obj: Container, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
+        i = 0
+        for sc in self.subcons:
 
-    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
-        raise NotImplementedError
+            preprocessret, _ = sc._preprocess(subobj, context, path)
+            assert(_ is None)
+
+            if sc.name:
+                context[sc.name] = preprocessret
+
+            i+=1
+
+        return obj, None
+
+    def _preprocess_size(self, obj: Container, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
+        size = 0
+        meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
+        for sc in self.subcons:
+            try:
+                subobj = obj.get(sc.name, None)
+
+                preprocessret, child_meta_info = sc._preprocess_size(subobj, obj, path, offset=offset)
+
+                # update offset & size
+                retsize = child_meta_info.size
+                offset += retsize
+                size += retsize
+                if sc.name:
+                    obj[sc.name] = preprocessret
+
+                # add current meta_info to context, so e.g. lambdas can use them already
+                obj.set_meta(sc.name, child_meta_info)
+            except StopFieldError:
+                break
+
+        meta_info.size = size
+        meta_info.end_offset = offset
+
+        return obj, meta_info
 
 
 #===============================================================================
@@ -1632,20 +1642,15 @@ class Array(Arrayconstruct):
                 obj.append(e)
         return obj
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream, context: Container, path: str):
         count = evaluate(self.count, context)
         if not 0 <= count:
             raise RangeError("invalid count %s" % (count,), path=path)
         if not len(obj) == count:
             raise RangeError("expected %d elements, found %d" % (count, len(obj)), path=path)
-        discard = self.discard
-        retlist = ListContainer()
         for i,e in enumerate(obj):
             context._index = i
-            buildret = self.subcon._build(e, stream, context, path)
-            if not discard:
-                retlist.append(buildret)
-        return retlist
+            self.subcon._build(e, stream, context, path)
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         try:
@@ -1732,16 +1737,11 @@ class GreedyRange(Subconstruct):
             stream_seek(stream, fallback, 0, path)
         return obj
 
-    def _build(self, obj, stream, context, path):
-        discard = self.discard
+    def _build(self, obj: Any, stream, context: Container, path: str):
         try:
-            retlist = ListContainer()
             for i,e in enumerate(obj):
                 context._index = i
-                buildret = self.subcon._build(e, stream, context, path)
-                if not discard:
-                    retlist.append(buildret)
-            return retlist
+                self.subcon._build(e, stream, context, path)
         except StopFieldError:
             pass
 
@@ -1798,26 +1798,19 @@ class RepeatUntil(Arrayconstruct):
             if predicate(e, obj, context):
                 return obj
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream, context: Container, path: str):
         predicate = self.predicate
-        discard = self.discard
         if not callable(predicate):
             predicate = lambda _1,_2,_3: predicate
-        partiallist = ListContainer()
-        retlist = ListContainer()
         for i,e in enumerate(obj):
             context._index = i
-            buildret = self.subcon._build(e, stream, context, path)
-            if not discard:
-                retlist.append(buildret)
-                partiallist.append(buildret)
-            if self.check_predicate and predicate(e, partiallist, context):
+            self.subcon._build(e, stream, context, path)
+            if self.check_predicate and predicate(e, obj[:i], context):
                 break
         else:
             raise RepeatError("expected any item to match predicate, when building", path=path)
-        return retlist
 
-    def _names(self):
+    def _names(self) -> list[str]:
         sc_names = [self.name]
         sc_names += self.subcon._names()
         return sc_names
@@ -1886,7 +1879,7 @@ class Area(Arrayconstruct):
 
         return retlist, meta_info
 
-    def _parse(self, stream, context, path):
+    def _parse(self, stream, context: Container, path: str):
         offset = evaluate(self.offset, context)
         size = evaluate(self.size, context)
         stream = evaluate(self.stream, context) or stream
@@ -1918,18 +1911,16 @@ class Area(Arrayconstruct):
         stream_seek(stream, fallback, 0, path)
         return obj
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream, context: Container, path: str):
         offset = evaluate(self.offset, context)
         size = evaluate(self.size, context)
         stream = evaluate(self.stream, context) or stream
         fallback = stream_tell(stream, path)
 
         stream_seek(stream, offset, 2 if offset < 0 else 0, path)
-        retlist = ListContainer()
         for i,e in enumerate(obj):
             context._index = i
-            buildret = self.subcon._build(e, stream, context, path)
-            retlist.append(buildret)
+            self.subcon._build(e, stream, context, path)
 
         if self.check_stream_pos:
             assert(stream_tell(stream, path) == offset + size)
@@ -1937,7 +1928,6 @@ class Area(Arrayconstruct):
             assert(stream_tell(stream, path) <= offset + size)
 
         stream_seek(stream, fallback, 0, path)
-        return retlist
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
@@ -1987,7 +1977,7 @@ class Renamed(Subconstruct):
 
     def _build(self, obj, stream, context, path):
         path += " -> %s" % (self.name,)
-        return self.subcon._build(obj, stream, context, path)
+        self.subcon._build(obj, stream, context, path)
 
     def _toET(self, parent, name, context, path):
         ctx = context
@@ -2076,10 +2066,10 @@ class Const(Subconstruct):
             raise ConstError(f"parsing expected {repr(self.value)} but parsed {repr(obj)}", path=path)
         return obj
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream, context: Container, path):
         if obj not in (None, self.value):
             raise ConstError(f"building expected None or {repr(self.value)} but got {repr(obj)}", path=path)
-        return self.subcon._build(self.value, stream, context, path)
+        self.subcon._build(self.value, stream, context, path)
 
     def _toET(self, parent, name, context, path):
         return None
@@ -2133,11 +2123,11 @@ class Computed(Construct):
     def _parse(self, stream, context, path):
         return evaluate(self.func, context)
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream, context: Container, path: str):
         return evaluate(self.func, context)
 
     def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
-        return self.func, {}
+        return self.func, None
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
@@ -2184,8 +2174,8 @@ class Index(Construct):
     def _parse(self, stream, context, path):
         return context.get("_index", None)
 
-    def _build(self, obj, stream, context, path):
-        return context.get("_index", None)
+    def _build(self, obj: Any, stream, context: Container, path: str):
+        context.get("_index", None)
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
@@ -2227,9 +2217,9 @@ class Rebuild(Subconstruct):
         self.func = func
         self.flagbuildnone = True
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream, context: Container, path: str):
         obj = evaluate(self.func, context)
-        return self.subcon._build(obj, stream, context, path)
+        self.subcon._build(obj, stream, context, path)
 
     def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         return self.func, None
@@ -2296,7 +2286,7 @@ class Default(Subconstruct):
 
     def _build(self, obj, stream, context, path):
         obj = evaluate(self.value, context) if obj is None else obj
-        return self.subcon._build(obj, stream, context, path)
+        self.subcon._build(obj, stream, context, path)
 
     def _toET(self, parent, name, context, path):
         return None
@@ -2453,18 +2443,12 @@ class FocusedSeq(Construct):
                 finalret = parseret
         return finalret
 
-    def _build(self, obj, stream, context, path):
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = stream, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
-        parsebuildfrom = evaluate(self.parsebuildfrom, context)
-        context[parsebuildfrom] = obj
+    def _build(self, obj: Any, stream, context: Container, path: str):
+        ctx = Container(parent=context)
+        parsebuildfrom = evaluate(self.parsebuildfrom, ctx)
+        ctx[parsebuildfrom] = obj
         for i,sc in enumerate(self.subcons):
-            buildret = sc._build(obj if sc.name == parsebuildfrom else None, stream, context, path)
-            if sc.name:
-                context[sc.name] = buildret
-            if sc.name == parsebuildfrom:
-                finalret = buildret
-        return finalret
+            sc._build(obj if sc.name == parsebuildfrom else None, stream, ctx, path)
 
     def _toET(self, parent, name, context, path):
         assert (isinstance(self.parsebuildfrom, str))
@@ -2482,7 +2466,7 @@ class FocusedSeq(Construct):
 
         raise NotImplementedError
 
-    def _fromET(self, parent, name, context, path, is_root=False):
+    def _fromET(self, parent: ET.Element, name: str, context: Container, path: str, is_root=False) -> Container:
         parse_sc = None
         for sc in self.subcons:
             if sc.name == self.parsebuildfrom:
@@ -2505,8 +2489,6 @@ class FocusedSeq(Construct):
         assert(elem is not None)
 
         return parse_sc._fromET(context=context, parent=elem, name=name, path=f"{path} -> {name}", is_root=True)
-
-        assert(False)
 
     def _get_main_sc(self):
         sc = None
@@ -2542,13 +2524,13 @@ class FocusedSeq(Construct):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
         assert(0)
 
-    def _names(self):
+    def _names(self) -> list[str]:
         return self._get_main_sc()._names()
 
-    def _is_simple_type(self):
+    def _is_simple_type(self) -> bool:
         return self._get_main_sc()._is_simple_type()
 
-    def _is_array(self):
+    def _is_array(self) -> bool:
         return self._get_main_sc()._is_array()
 
 
@@ -2574,14 +2556,13 @@ class Numpy(Construct):
         array([1, 2, 3])
     """
 
-    def _parse(self, stream, context, path):
+    def _parse(self, stream, context: Container, path: str):
         import numpy
         return numpy.load(stream)
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream, context: Container, path: str):
         import numpy
         numpy.save(stream, obj)
-        return obj
 
 
 class NamedTuple(Adapter):
@@ -2794,30 +2775,25 @@ class Union(Construct):
             return self._subcons[name]
         raise AttributeError
 
-    def _parse(self, stream, context, path):
-        obj = Container()
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = stream, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
+    def _parse(self, stream, context: Container, path: str) -> Container:
+        ctx = Container(parent=context)
         fallback = stream_tell(stream, path)
         forwards = {}
         for i,sc in enumerate(self.subcons):
-            subobj = sc._parsereport(stream, context, path)
+            subobj = sc._parsereport(stream, ctx, path)
             if sc.name:
-                obj[sc.name] = subobj
-                context[sc.name] = subobj
+                ctx[sc.name] = subobj
             forwards[i] = stream_tell(stream, path)
             if sc.name:
                 forwards[sc.name] = stream_tell(stream, path)
             stream_seek(stream, fallback, 0, path)
-        parsefrom = evaluate(self.parsefrom, context)
+        parsefrom = evaluate(self.parsefrom, ctx)
         if parsefrom is not None:
             stream_seek(stream, forwards[parsefrom], 0, path) # raises KeyError
-        return obj
+        return ctx
 
-    def _build(self, obj, stream, context, path):
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = stream, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
-        context.update(obj)
+    def _build(self, obj: Any, stream, context: Container, path: str):
+        ctx = Container(parent=context)
         for sc in self.subcons:
             if sc.flagbuildnone:
                 subobj = obj.get(sc.name, None)
@@ -2826,103 +2802,15 @@ class Union(Construct):
             else:
                 continue
 
-            if sc.name:
-                context[sc.name] = subobj
-
-            buildret = sc._build(subobj, stream, context, path)
-            if sc.name:
-                context[sc.name] = buildret
-            return Container({sc.name:buildret})
+            sc._build(subobj, stream, ctx, path)
         else:
             raise UnionError("cannot build, none of subcons were found in the dictionary %r" % (obj,), path=path)
 
-    def _static_sizeof(self, context, path):
+    def _static_sizeof(self, context: Container, path: str) -> int:
         raise SizeofError("Union builds depending on actual object dict, size is unknown", path=path)
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         raise SizeofError(path=path)
-
-
-class Select(Construct):
-    r"""
-    Selects the first matching subconstruct.
-
-    Parses and builds by literally trying each subcon in sequence until one of them parses or builds without exception. Stream gets reverted back to original position after each failed attempt, but not if parsing succeeds. Size is not defined.
-
-    :param \*subcons: Construct instances, list of members, some can be anonymous
-    :param \*\*subconskw: Construct instances, list of members (requires Python 3.6)
-
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-    :raises StreamError: stream is not seekable and tellable
-    :raises SelectError: neither subcon succeded when parsing or building
-
-    Example::
-
-        >>> d = Select(Int32ub, CString("utf8"))
-        >>> d.build(1)
-        b'\x00\x00\x00\x01'
-        >>> d.build(u"Афон")
-        b'\xd0\x90\xd1\x84\xd0\xbe\xd0\xbd\x00'
-
-        Alternative syntax, but requires Python 3.6 or any PyPy:
-        >>> Select(num=Int32ub, text=CString("utf8"))
-    """
-
-    def __init__(self, *subcons, **subconskw):
-        super().__init__()
-        self.subcons = list(subcons) + list(k/v for k,v in subconskw.items())
-        self.flagbuildnone = any(sc.flagbuildnone for sc in self.subcons)
-
-    def _parse(self, stream, context, path):
-        for sc in self.subcons:
-            fallback = stream_tell(stream, path)
-            try:
-                obj = sc._parsereport(stream, context, path)
-            except ExplicitError:
-                raise
-            except Exception:
-                stream_seek(stream, fallback, 0, path)
-            else:
-                return obj
-        raise SelectError("no subconstruct matched", path=path)
-
-    def _build(self, obj, stream, context, path):
-        for sc in self.subcons:
-            try:
-                data = sc.build(obj, **context)
-            except ExplicitError:
-                raise
-            except Exception:
-                pass
-            else:
-                stream_write(stream, data, len(data), path)
-                return obj
-        raise SelectError("no subconstruct matched: %s" % (obj,), path=path)
-
-
-def TryParse(subcon):
-    r"""
-    Makes an optional field.
-
-    Parsing attempts to parse subcon. If sub-parsing fails, returns None and reports success. Building attempts to build subcon. If sub-building fails, writes nothing and reports success. Size is undefined, because whether bytes would be consumed or produced depends on actual data and actual context.
-
-    :param subcon: Construct instance
-
-    Example::
-
-        TryParse  <-->  Select(subcon, Pass)
-
-        >>> d = TryParse(Int64ul)
-        >>> d.parse(b"12345678")
-        4050765991979987505
-        >>> d.parse(b"")
-        None
-        >>> d.build(1)
-        b'\x01\x00\x00\x00\x00\x00\x00\x00'
-        >>> d.build(None)
-        b''
-    """
-    return Select(subcon, Pass)
 
 
 def If(condfunc, subcon):
@@ -2992,15 +2880,15 @@ class IfThenElse(Construct):
         self.flagbuildnone = thensubcon.flagbuildnone and elsesubcon.flagbuildnone
         self.rebuild_hack = rebuild_hack
 
-    def _parse(self, stream, context, path):
+    def _parse(self, stream, context: Container, path: str) -> Any:
         condfunc = evaluate(self.condfunc, context)
         sc = self.thensubcon if condfunc else self.elsesubcon
         return sc._parsereport(stream, context, path)
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream, context: Container, path: str):
         condfunc = evaluate(self.condfunc, context)
         sc = self.thensubcon if condfunc else self.elsesubcon
-        return sc._build(obj, stream, context, path)
+        sc._build(obj, stream, context, path)
 
     def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
         condfunc = evaluate(self.condfunc, context)
@@ -3022,13 +2910,13 @@ class IfThenElse(Construct):
         sc = self.thensubcon if condfunc else self.elsesubcon
         return sc._sizeof(obj, context, path)
 
-    def _toET(self, parent, name, context, path):
+    def _toET(self, parent: ET.Element, name: str, context: Container, path: str) -> ET.Element:
         condfunc = evaluate(self.condfunc, context)
         sc = self.thensubcon if condfunc else self.elsesubcon
 
         return sc._toET(parent, name, context, path)
 
-    def _fromET(self, parent, name, context, path, is_root=False):
+    def _fromET(self, parent: ET.Element, name: str, context: Container, path: str, is_root=False) -> Container:
         elems = []
 
         if self.rebuild_hack:
@@ -3124,15 +3012,15 @@ class Switch(Construct):
         allcases = list(cases.values()) + [default]
         self.flagbuildnone = all(sc.flagbuildnone for sc in allcases)
 
-    def _parse(self, stream, context, path):
+    def _parse(self, stream, context: Container, path: str) -> Any:
         keyfunc = evaluate(self.keyfunc, context)
         sc = self.cases.get(keyfunc, self.default)
         return sc._parsereport(stream, context, path)
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream, context: Container, path: str):
         keyfunc = evaluate(self.keyfunc, context)
         sc = self.cases.get(keyfunc, self.default)
-        return sc._build(obj, stream, context, path)
+        sc._build(obj, stream, context, path)
 
     def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         keyfunc = evaluate(self.keyfunc, context, recurse=True)
@@ -3247,7 +3135,11 @@ class StopIf(Construct):
             raise StopFieldError(path=path)
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        raise SizeofError("StopIf cannot determine size because it depends on actual context which then depends on actual data and outer constructs", path=path)
+        condfunc = evaluate(self.condfunc, context)
+        if condfunc:
+            raise StopFieldError(path=path)
+        else:
+            return 0
 
 
 #===============================================================================
@@ -3818,6 +3710,8 @@ class Terminated(Construct):
     def _fromET(self, parent, name, context, path, is_root=False):
         return context
 
+    def _static_sizeof(self, context: Container, path: str) -> int:
+        return 0
 
 #===============================================================================
 # tunneling and byte/bit swapping

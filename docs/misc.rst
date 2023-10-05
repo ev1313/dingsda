@@ -300,23 +300,6 @@ b'\x00\x01\x02\x03\x04\x05\x06\x07'
     Note that this syntax works ONLY on CPython 3.6 (and PyPy any version) due to ordered keyword arguments. There is similar syntax for many other constructs.
     >>> Union(0, raw=Bytes(8), ints=Int32ub[2], shorts=Int16ub[4], chars=Byte[8])
 
-Select
-------
-
-Attempts to parse or build each of the subcons, in order they were provided.
-
-::
-
-    >>> d = Select(Int32ub, CString("utf8"))
-    >>> d.build(1)
-    b'\x00\x00\x00\x01'
-    >>> d.build(u"Афон")
-    b'\xd0\x90\xd1\x84\xd0\xbe\xd0\xbd\x00'
-
-::
-
-    Note that this syntax works ONLY on CPython 3.6 (and PyPy any version) due to ordered keyword arguments. There is similar syntax for many other constructs.
-    >>> Select(num=Int32ub, text=CString("utf8"))
 
 Optional
 --------

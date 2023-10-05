@@ -125,7 +125,6 @@ Those do use stream seeking or telling (or both):
 
 * GreedyRange
 * Union
-* Select
 * Padded (actually works)
 * Aligned (actually works)
 * Pointer

@@ -19014,6 +19014,8 @@ Hidden context entries
 
 There are few additional, hidden entries in the context. They are mostly used internally so they are not very well documented.
 
+FIXME: this looks different in dingsda
+
 ::
 
     >>> d = Struct(
