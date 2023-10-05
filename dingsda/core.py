@@ -445,14 +445,6 @@ class Construct(object):
         rhs = other.subcons if isinstance(other, Struct) else [other]
         return Struct(*(lhs + rhs))
 
-    def __rshift__(self, other):
-        """
-        Used for making Sequences like (Byte >> Short).
-        """
-        lhs = self.subcons  if isinstance(self,  Sequence) else [self]
-        rhs = other.subcons if isinstance(other, Sequence) else [other]
-        return Sequence(*(lhs + rhs))
-
     def __getitem__(self, count):
         """
         Used for making Arrays like Byte[5] and Byte[this.count].
@@ -1465,135 +1457,6 @@ class Struct(Structconstruct):
         return ret_ctx
 
 
-class Sequence(Structconstruct):
-    r"""
-    Sequence of usually un-named constructs. The members are parsed and build in the order they are defined. If a member is named, its parsed value gets inserted into the context. This allows using members that refer to previous members.
-
-    Operator >> can also be used to make Sequences (although not recommended).
-
-    Parses into a ListContainer (list with pretty-printing) where values are in same order as subcons. Builds from a list (not necessarily a ListContainer) where each subcon is given the element at respective position. Size is the sum of all subcon sizes, unless any subcon raises SizeofError.
-
-    This class does context nesting, meaning its members are given access to a new dictionary where the "_" entry points to the outer context. When parsing, each member gets parsed and subcon parse return value is inserted into context under matching key only if the member was named. When building, the matching entry gets inserted into context before subcon gets build, and if subcon build returns a new value (not None) that gets replaced in the context.
-
-    This class exposes subcons as attributes. You can refer to subcons that were inlined (and therefore do not exist as variable in the namespace) by accessing the struct attributes, under same name. Also note that compiler does not support this feature. See examples.
-
-    This class exposes subcons in the context. You can refer to subcons that were inlined (and therefore do not exist as variable in the namespace) within other inlined fields using the context. Note that you need to use a lambda (`this` expression is not supported). Also note that compiler does not support this feature. See examples.
-
-    This class supports stopping. If :class:`~dingsda.core.StopIf` field is a member, and it evaluates its lambda as positive, this class ends parsing or building as successful without processing further fields.
-
-    :param \*subcons: Construct instances, list of members, some can be named
-    :param \*\*subconskw: Construct instances, list of members (requires Python 3.6)
-
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-    :raises KeyError: building a subcon but found no corresponding key in dictionary
-
-    Example::
-
-        >>> d = Sequence(Byte, Float32b)
-        >>> d.build([0, 1.23])
-        b'\x00?\x9dp\xa4'
-        >>> d.parse(_)
-        [0, 1.2300000190734863] # a ListContainer
-
-        >>> d = Sequence(
-        ...     "animal" / Enum(Byte, giraffe=1),
-        ... )
-        >>> d.animal.giraffe
-        'giraffe'
-        >>> d = Sequence(
-        ...     "count" / Byte,
-        ...     "data" / Bytes(lambda this: this.count - this._subcons.count.sizeof()),
-        ... )
-        >>> d.build([3, b"12"])
-        b'\x0312'
-
-        Alternative syntax, but requires Python 3.6 or any PyPy:
-        >>> Sequence(a=Byte, b=Byte, c=Byte, d=Byte)
-    """
-
-    def __init__(self, *subcons, **subconskw):
-        super().__init__()
-        self.subcons = list(subcons) + list(k/v for k,v in subconskw.items())
-        self._subcons = Container((sc.name,sc) for sc in self.subcons if sc.name)
-        self.flagbuildnone = all(sc.flagbuildnone for sc in self.subcons)
-
-    def __getattr__(self, name):
-        if name in self._subcons:
-            return self._subcons[name]
-        raise AttributeError
-
-    def _parse(self, stream, context, path):
-        obj = ListContainer()
-        for sc in self.subcons:
-            try:
-                subobj = sc._parsereport(stream, context, path)
-
-                if sc.name:
-                    context[sc.name] = subobj
-
-                obj.append(subobj)
-            except StopFieldError:
-                break
-        return obj
-
-    def _build(self, obj, stream, context, path):
-        if obj is None:
-            # FIXME: why is this here?
-            obj = ListContainer([None for sc in self.subcons])
-            assert(False)
-
-        ctx = Container(parent=context)
-        objiter = iter(obj)
-        for i,sc in enumerate(self.subcons):
-            try:
-                subobj = next(objiter)
-                ctx["_index"] = i
-
-                sc._build(subobj, stream, ctx, path)
-            except StopFieldError:
-                break
-
-    def _preprocess(self, obj: Container, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
-        i = 0
-        for sc in self.subcons:
-
-            preprocessret, _ = sc._preprocess(subobj, context, path)
-            assert(_ is None)
-
-            if sc.name:
-                context[sc.name] = preprocessret
-
-            i+=1
-
-        return obj, None
-
-    def _preprocess_size(self, obj: Container, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
-        size = 0
-        meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
-        for sc in self.subcons:
-            try:
-                subobj = obj.get(sc.name, None)
-
-                preprocessret, child_meta_info = sc._preprocess_size(subobj, obj, path, offset=offset)
-
-                # update offset & size
-                retsize = child_meta_info.size
-                offset += retsize
-                size += retsize
-                if sc.name:
-                    obj[sc.name] = preprocessret
-
-                # add current meta_info to context, so e.g. lambdas can use them already
-                obj.set_meta(sc.name, child_meta_info)
-            except StopFieldError:
-                break
-
-        meta_info.size = size
-        meta_info.end_offset = offset
-
-        return obj, meta_info
-
-
 #===============================================================================
 # arrays ranges and repeaters
 #===============================================================================
@@ -2573,10 +2436,10 @@ class NamedTuple(Adapter):
 
     :param tuplename: string
     :param tuplefields: string or list of strings
-    :param subcon: Construct instance, either Struct Sequence Array GreedyRange
+    :param subcon: Construct instance, either Struct Array GreedyRange
 
     :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-    :raises NamedTupleError: subcon is neither Struct Sequence Array GreedyRange
+    :raises NamedTupleError: subcon is neither Struct Array GreedyRange
 
     Can propagate collections exceptions.
 
@@ -2590,8 +2453,8 @@ class NamedTuple(Adapter):
     """
 
     def __init__(self, tuplename, tuplefields, subcon):
-        if not isinstance(subcon, (Struct,Sequence,Array,GreedyRange)):
-            raise NamedTupleError("subcon is neither Struct Sequence Array GreedyRange")
+        if not isinstance(subcon, (Struct,Array,GreedyRange)):
+            raise NamedTupleError("subcon is neither Struct Array GreedyRange")
         super().__init__(subcon)
         self.tuplename = tuplename
         self.tuplefields = tuplefields
@@ -2601,16 +2464,16 @@ class NamedTuple(Adapter):
         if isinstance(self.subcon, Struct):
             del obj["_io"]
             return self.factory(**obj)
-        if isinstance(self.subcon, (Sequence,Array,GreedyRange)):
+        if isinstance(self.subcon, (Array,GreedyRange)):
             return self.factory(*obj)
-        raise NamedTupleError("subcon is neither Struct Sequence Array GreedyRangeGreedyRange", path=path)
+        raise NamedTupleError("subcon is neither Struct Array GreedyRangeGreedyRange", path=path)
 
     def _encode(self, obj, context, path):
         if isinstance(self.subcon, Struct):
             return Container({sc.name:getattr(obj,sc.name) for sc in self.subcon.subcons if sc.name})
-        if isinstance(self.subcon, (Sequence,Array,GreedyRange)):
+        if isinstance(self.subcon, (Array,GreedyRange)):
             return list(obj)
-        raise NamedTupleError("subcon is neither Struct Sequence Array GreedyRange", path=path)
+        raise NamedTupleError("subcon is neither Struct Array GreedyRange", path=path)
 
 
 class Hex(Adapter):
@@ -3102,7 +2965,7 @@ class Switch(Construct):
 
 class StopIf(Construct):
     r"""
-    Checks for a condition, and stops certain classes (:class:`~dingsda.core.Struct` :class:`~dingsda.core.Sequence` :class:`~dingsda.core.GreedyRange`) from parsing or building further.
+    Checks for a condition, and stops certain classes (:class:`~dingsda.core.Struct` :class:`~dingsda.core.GreedyRange`) from parsing or building further.
 
     Parsing and building check the condition, and raise StopFieldError if indicated. Size is undefined.
 
@@ -3115,7 +2978,6 @@ class StopIf(Construct):
     Example::
 
         >>> Struct('x'/Byte, StopIf(this.x == 0), 'y'/Byte)
-        >>> Sequence('x'/Byte, StopIf(this.x == 0), 'y'/Byte)
         >>> GreedyRange(FocusedSeq(0, 'x'/Byte, StopIf(this.x == 0)))
     """
 
@@ -3486,9 +3348,9 @@ class Peek(Subconstruct):
 
     Example::
 
-        >>> d = Sequence(Peek(Int8ub), Peek(Int16ub))
+        >>> d = Struct("x" / Peek(Int8ub), "y" / Peek(Int16ub))
         >>> d.parse(b"\x01\x02")
-        [1, 258]
+        {"x": 1, "y": 258}
         >>> d.sizeof()
         0
     """
@@ -4825,7 +4687,7 @@ def Filter(predicate, subcon):
     r"""
     Filters a list leaving only the elements that passed through the predicate.
 
-    :param subcon: Construct instance, usually Array GreedyRange Sequence
+    :param subcon: Construct instance, usually Array GreedyRange
     :param predicate: lambda that takes (obj, context) and returns a bool
 
     Can propagate any exception from the lambda, possibly non-ConstructError.
@@ -4843,7 +4705,7 @@ def Filter(predicate, subcon):
 
 class Slicing(Adapter):
     r"""
-    Adapter for slicing a list. Works with GreedyRange and Sequence.
+    Adapter for slicing a list. Works with GreedyRange.
 
     :param subcon: Construct instance, subcon to slice
     :param count: integer, expected number of elements, needed during building
@@ -4884,7 +4746,7 @@ class Slicing(Adapter):
 
 class Indexing(Adapter):
     r"""
-    Adapter for indexing a list (getting a single item from that list). Works with Range and Sequence and their lazy equivalents.
+    Adapter for indexing a list (getting a single item from that list). Works with Range and their lazy equivalents.
 
     :param subcon: Construct instance, subcon to index
     :param count: integer, expected number of elements, needed during building

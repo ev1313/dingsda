@@ -53,7 +53,6 @@ def test_bitwise():
 def test_bytewise():
     common(format=Bitwise(Bytewise(Bytes(1))), datasample=b"\xff", objsample=b"\xff", sizesample=1)
     common(format=BitStruct("p1"/Nibble, "num"/Bytewise(Int24ub), "p2"/Nibble), datasample=b"\xf0\x10\x20\x3f", objsample=Container(p1=15, num=0x010203, p2=15), sizesample=4)
-    common(format=Bitwise(Sequence(Nibble, Bytewise(Int24ub), Nibble)), datasample=b"\xf0\x10\x20\x3f", objsample=[0x0f,0x010203,0x0f], sizesample=4)
     common(format=Bitwise(Bytewise(GreedyBytes)), datasample=bytes(10), objsample=bytes(10))
 
 
@@ -229,17 +228,6 @@ def test_struct_sizeof_context_nesting():
     )
     size_test(d, {}, 0, 0, None)
 
-def test_sequence():
-    common(Sequence(), b"", [], 0)
-    common(Sequence(Int8ub, Int16ub), b"\x01\x00\x02", [1,2], 3)
-    common(Int8ub >> Int16ub, b"\x01\x00\x02", [1,2], 3)
-    d = Sequence(Computed(7), Const(b"JPEG"), Pass, Terminated)
-    assert d.build(None) == d.build([None,None,None,None])
-
-def test_sequence_nested():
-    d = Sequence(Int8ub, Int16ub, Sequence(Int8ub, Int8ub))
-    common(d, b"\x01\x00\x02\x03\x04", [1,2,[3,4]], 5)
-
 def test_array():
     common(Byte[0], b"", [], 0)
     common(Byte[4], b"1234", [49,50,51,52], 4)
@@ -368,8 +356,6 @@ def test_rebuild_issue_664():
         ),
         Check(this.upfield == 200),
         Check(this.nestedstruct.nestedfield == 255),
-        "sequence" / Sequence(Computed(1), Computed(2), Computed(3), Computed(4)),
-        Check(this.sequence == [1,2,3,4]),
         "array" / Array(4, Byte),
         Check(this.array == [1,2,3,4]),
         "greedyrange" / GreedyRange(Byte),
@@ -444,8 +430,6 @@ def test_namedtuple():
     d = NamedTuple("coord", "x y z", GreedyRange(Byte))
     common(d, b"123", coord(49,50,51), SizeofError)
     d = NamedTuple("coord", "x y z", Struct("x"/Byte, "y"/Byte, "z"/Byte))
-    common(d, b"123", coord(49,50,51), 3)
-    d = NamedTuple("coord", "x y z", Sequence(Byte, Byte, Byte))
     common(d, b"123", coord(49,50,51), 3)
 
     assert raises(lambda: NamedTuple("coord", "x y z", BitStruct("x"/Byte, "y"/Byte, "z"/Byte))) == NamedTupleError
@@ -607,9 +591,6 @@ def test_stopif():
     d = Struct("x"/Byte, StopIf(this.x == 0), "y"/Byte)
     common(d, b"\x00", Container(x=0))
     common(d, b"\x01\x02", Container(x=1,y=2))
-
-    d = Sequence("x"/Byte, StopIf(this.x == 0), "y"/Byte)
-    common(d, b"\x01\x02", [1,None,2])
 
     d = GreedyRange(FocusedSeq("x", "x"/Byte, StopIf(this.x == 0)))
     assert d.parse(b"\x01\x00?????") == [1]
@@ -797,8 +778,6 @@ def test_prefixed():
     assert d.parse(b"\x03abc??????") == b"abc"
     assert d.build(b"abc") == b'\x03abc'
     assert raises(d.static_sizeof) == SizeofError
-    d = Prefixed(Byte, Sequence(Peek(Byte), Int16ub, GreedyBytes))
-    assert d.parse(b"\x02\x00\xff????????") == [0,255,b'']
 
     d = Prefixed(Byte, GreedyBytes)
     common(d, b"\x0a"+bytes(10), bytes(10))
@@ -1243,7 +1222,6 @@ def test_operators():
     common(Int8ub >> Int16ub >> Int32ub, b"\x01\x00\x02\x00\x00\x00\x03", [1,2,3], 7)
     common(Int8ub[2] >> Int16ub[2], b"\x01\x02\x00\x03\x00\x04", [[1,2],[3,4]], 6)
 
-    common(Sequence(Int8ub) >> Sequence(Int16ub), b"\x01\x00\x02", [1,2], 3)
     common(Struct("count"/Byte, "items"/Byte[this.count], Pass, Terminated), b"\x03\x01\x02\x03", Container(count=3, items=[1,2,3]), SizeofError)
     common("count"/Byte + "items"/Byte[this.count] + Pass + Terminated, b"\x03\x01\x02\x03", Container(count=3, items=[1,2,3]), SizeofError)
     common(Struct(a=Byte) + Struct(b=Byte), b"\x01\x02", Container(a=1, b=2), 2)
@@ -1524,13 +1502,6 @@ def test_exposing_members_attributes():
     assert isinstance(d.animal.subcon, Enum)
     assert d.animal.giraffe == "giraffe"
 
-    d = Sequence(
-        "animal" / Enum(Byte, giraffe=1),
-    )
-    assert isinstance(d.animal, Renamed)
-    assert isinstance(d.animal.subcon, Enum)
-    assert d.animal.giraffe == "giraffe"
-
     d = FocusedSeq(0,
         "animal" / Enum(Byte, giraffe=1),
     )
@@ -1552,13 +1523,6 @@ def test_exposing_members_context():
         Check(lambda this: this._subcons.count.static_sizeof() == 1),
     )
     common(d, b"\x05four", Container(count=5, data=b"four"))
-
-    d = Sequence(
-        "count" / Byte,
-        "data" / Bytes(lambda this: this.count - this._subcons.count.static_sizeof()),
-        Check(lambda this: this._subcons.count.static_sizeof() == 1),
-    )
-    common(d, b"\x05four", [5,b"four",None])
 
     d = FocusedSeq("count",
         "count" / Byte,
@@ -1588,25 +1552,6 @@ def test_isparsingbuilding():
     )
     d.build(None)
     d = Struct(
-        Check(~this._parsing & ~this._._parsing),
-        Check(~this._building & ~this._._building),
-        Check(this._sizing & this._._sizing),
-    )
-    d.static_sizeof()
-    # ---------------------------------
-    d = Sequence(
-        Check(this._parsing & this._._parsing),
-        Check(~this._building & ~this._._building),
-        Check(~this._sizing & ~this._._sizing),
-    )
-    d.parse(b'')
-    d = Sequence(
-        Check(~this._parsing & ~this._._parsing),
-        Check(this._building & this._._building),
-        Check(~this._sizing & ~this._._sizing),
-    )
-    d.build(None)
-    d = Sequence(
         Check(~this._parsing & ~this._._parsing),
         Check(~this._building & ~this._._building),
         Check(this._sizing & this._._sizing),

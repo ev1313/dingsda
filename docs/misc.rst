@@ -9,7 +9,7 @@ Special
 Renamed
 -------
 
-Adds a name string to a field (which by default is None). This class is only used internally and you should use the / and * operators instead. Naming fields is needed when working with Structs and Unions, but also sometimes with Sequences and FocusedSeq.
+Adds a name string to a field (which by default is None). This class is only used internally and you should use the / and * operators instead. Naming fields is needed when working with Structs and Unions, but also sometimes with FocusedSeq.
 
 ::
 
@@ -341,7 +341,7 @@ b'\xff\x01'
 >>> d.build(255, x=0)
 b'\xff'
 
-In particular, you can use different subcons for parsing and building. The context entries have boolean values and always exist (sizeof has both values as False). For convenience, those two entries are duplicated in Struct Sequence FocusedSeq Union nested contexts. You dont need to reach for the top-most entry. This comes handy when using hackish constructs to achieve some complex semantics that are not available in the core library.
+In particular, you can use different subcons for parsing and building. The context entries have boolean values and always exist (sizeof has both values as False). For convenience, those two entries are duplicated in Struct FocusedSeq Union nested contexts. You dont need to reach for the top-most entry. This comes handy when using hackish constructs to achieve some complex semantics that are not available in the core library.
 
 ::
 
@@ -372,12 +372,11 @@ b"\x01"
 StopIf
 ------
 
-Checks for a condition after each element, and stops a Struct Sequence GreedyRange from parsing or building following elements.
+Checks for a condition after each element, and stops a Struct GreedyRange from parsing or building following elements.
 
 ::
 
     Struct('x'/Byte, StopIf(this.x == 0), 'y'/Byte)
-    Sequence('x'/Byte, StopIf(this.x == 0), 'y'/Byte)
     GreedyRange(FocusedSeq(0, 'x'/Byte, StopIf(this.x == 0)))
 
 

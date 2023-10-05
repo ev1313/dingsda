@@ -19069,6 +19069,8 @@ FIXME: this looks different in dingsda
 
 Explanation as follows:
 
+FIXME: update this list for dingsda
+
 * `_` means up-level in the context stack, every Struct does context nesting
 * `_params` is the level on which externally provided values reside, those passed as parse() keyword arguments
 * `_root` is the outer-most Struct, this entry might not exist if you do not use Structs
@@ -19079,26 +19081,10 @@ Explanation as follows:
 * (parsed members are also added under matching names)
 
 
-Sequences
-=========
-
-Sequences are very similar to Structs, but operate with lists rather than containers. Sequences are less commonly used than Structs, but are very handy in certain situations. Since a list is returned in place of an attribute container, the names of the sub-constructs are not important. Two constructs with the same name will not override or replace each other. Names are used for the purposes of context dict.
-
->>> seq = Sequence(
-...     Int16ub,
-...     CString("utf8"),
-...     GreedyBytes,
-... )
-
-Operator `>>` can also be used to make Sequences, or to merge them (but this syntax is not recommended).
-
->>> seq = Int16ub >> CString("utf8") >> GreedyBytes
->>> seq.parse(b"\x00\x80lalalaland\x00\x00\x00\x00\x00")
-[128, 'lalalaland', b'\x00\x00\x00\x00']
-
-
 Repeaters
 ==============
+
+FIXME: in dingsda Arrays are no longer necessarlyhomogenous
 
 Repeaters, as their name suggests, repeat a given unit for a specified number of times. At this point, we'll only cover static repeaters where count is a constant integer. Meta-repeaters take values at parse/build time from the context and they will be covered in the meta-constructs tutorial. Arrays and GreedyRanges differ from Sequences in that they are homogenous, they process elements of same kind. We have three kinds of repeaters.
 

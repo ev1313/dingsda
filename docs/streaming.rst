@@ -20,9 +20,9 @@ b'\x00\x00\x00\x00\x00\x00\x00\x00Z'
 
 Peek parses a field but restores the stream position afterwards (it peeks into the stream). Building does nothing, it does NOT defer to subcon.
 
->>> d = Sequence(Peek(Int16ul), Peek(Int16ub))
+>>> d = Struct("x" / Peek(Int16ul), "y" / Peek(Int16ub))
 >>> d.parse(b"\x01\x02")
-[513, 258]
+{"x": 513, "y": 258}
 >>> d.sizeof()
 0
 
@@ -42,8 +42,8 @@ Pure side effects
 
 Seek makes a jump within the stream and leaves it there, for other constructs to follow up from that location. It does not read or write anything to the stream by itself.
 
->>> d = Sequence(Bytes(10), Seek(5), Byte)
->>> d.build([b"0123456789", None, 255])
+>>> d = Struct("x" / Bytes(10), Seek(5), "y" / Byte)
+>>> d.build({"x": b"0123456789", "y": 255})
 b'01234\xff6789'
 
 Tell checks the current stream position and returns it. The returned value gets automatically inserted into the context dictionary. It also does not read or write anything to the stream by itself.

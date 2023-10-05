@@ -3,7 +3,7 @@ The Context
 ===========
 
 
-Meta constructs are the key to the declarative power of Construct. Meta constructs are constructs which are affected by the context of the construction (during parsing and building). The context is a dictionary that is created during the parsing and building process by Structs and Sequences, and is "propagated" down and up to all constructs along the way, so that other members can access other members parsing or building results. It basically represents a mirror image of the construction tree, as it is altered by the different constructs. Nested structs create nested contexts, just as they create nested containers.
+Meta constructs are the key to the declarative power of Construct. Meta constructs are constructs which are affected by the context of the construction (during parsing and building). The context is a dictionary that is created during the parsing and building process by Structs, and is "propagated" down and up to all constructs along the way, so that other members can access other members parsing or building results. It basically represents a mirror image of the construction tree, as it is altered by the different constructs. Nested structs create nested contexts, just as they create nested containers.
 
 In order to see the context, let's try this snippet:
 
@@ -59,7 +59,7 @@ And here's how we use the special "_" name to get to the upper container in a ne
 >>> st.parse(b"12")
 Container(length1=49, inner=Container(length2=50, sum=99))
 
-Context entries can also be passed directly through `parse` and `build` methods. However, one should take into account that some classes are nesting context (like Struct Sequence Union FocusedSeq LazyStruct), so entries passed to these end up on upper level. Compare examples:
+Context entries can also be passed directly through `parse` and `build` methods. However, one should take into account that some classes are nesting context (like Struct Union FocusedSeq LazyStruct), so entries passed to these end up on upper level. Compare examples:
 
 >>> d = Bytes(this.n)
 >>> d.parse(bytes(100), n=4)
@@ -100,7 +100,7 @@ Container(count=5)(data=b'four')
 >>> d.parse(b"\x01\x02\x03\x04")
 Container(chars=[1, 2, 3, 4], data=b'\x01\x02\x03\x04')
 
-This feature is supported in same constructs as embedding: Struct Sequence FocusedSeq Union LazyStruct.
+This feature is supported in same constructs as embedding: Struct FocusedSeq Union LazyStruct.
 
 
 Using `this` expression

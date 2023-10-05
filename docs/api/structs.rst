@@ -1,8 +1,7 @@
-===============================
-Core API: Structs and Sequences
-===============================
+=================
+Core API: Structs
+=================
 
 .. autofunction:: dingsda.Struct
-.. autofunction:: dingsda.Sequence
 .. autofunction:: dingsda.AlignedStruct
 .. autofunction:: dingsda.BitStruct
