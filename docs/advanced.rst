@@ -65,7 +65,7 @@ b'12345'
 >>> Bytes(5).parse(b"12345")
 b'12345'
 
-Bytes can also be consumed until end of stream. Tunneling is discussed in a later chapter.
+Bytes can also be consumed until end of stream.
 
 >>> GreedyBytes.parse(b"39217839219...")
 b'39217839219...'

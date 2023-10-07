@@ -219,6 +219,8 @@ Data can be easily checksummed. Note that checksum field does not need to be Byt
     d.build(dict(fields=dict(value={})))
 
 
+FIXME: Compression is currently removed, will be added later with better API
+
 Data can also be easily compressed. Supported encodings include zlib/gzip/bzip2/lzma and entire codecs module. When parsing, entire stream is consumed. When building, it puts compressed bytes without marking the end. This construct should be used with :class:`~construct.core.Prefixed` or entire stream.
 
 >>> d = Prefixed(VarInt, Compressed(GreedyBytes, "zlib"))

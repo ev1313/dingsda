@@ -7,4 +7,3 @@ Core API: Abstract classes
 .. autoclass:: dingsda.Adapter
 .. autoclass:: dingsda.SymmetricAdapter
 .. autoclass:: dingsda.Validator
-.. autoclass:: dingsda.Tunnel

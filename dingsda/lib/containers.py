@@ -156,8 +156,6 @@ class Container(collections.OrderedDict):
 
     def __get_handle_special(self, name):
         if name == "_":
-            if self._parent_node is None:
-                raise KeyError(name)
             return self._parent_node
         elif name == "_root":
             if self._root_node is None:
@@ -190,6 +188,7 @@ class Container(collections.OrderedDict):
 
     def __getitem__(self, name):
         ret = self.__get_handle_special(name)
+        # FIXME: put evaluate here
         if callable(ret):
             return ret(self)
         return ret

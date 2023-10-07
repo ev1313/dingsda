@@ -345,6 +345,9 @@ class VarInt(Construct):
         stream_write(stream, bytes(B), len(B), path)
         return obj
 
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        data = self.build(obj, False)
+        return len(data)
 
 @singleton
 class ZigZag(Construct):
@@ -383,6 +386,10 @@ class ZigZag(Construct):
             x = 2*abs(obj)-1
         VarInt._build(x, stream, context, path)
         return obj
+
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        data = self.build(obj, False)
+        return len(data)
 
 
 @singleton

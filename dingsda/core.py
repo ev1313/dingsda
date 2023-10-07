@@ -13,6 +13,17 @@ from dingsda.version import version_string
 
 import xml.etree.ElementTree as ET
 
+
+def sizeof_decorator(func):
+    """ this decorator is for _sizeof functions only. It first tries to find the size using _static_sizeof and only
+    calls sizeof when that throws a SizeofError. """
+    def inner(*args, **kwargs):
+        try:
+            return args[0]._static_sizeof(args[2], args[3])
+        except SizeofError:
+            return func(*args, **kwargs)
+    return inner
+
 class Construct(object):
     r"""
     The mother of all constructs.
@@ -403,11 +414,15 @@ class Construct(object):
 
     def _is_simple_type(self) -> bool:
         """ is used by Array to determine, whether the type can be stored in a string array as XML attribute """
-        return False;
+        return False
+
+    def _is_struct(self) -> bool:
+        """ is used by Struct to determine, whether a new context while parsing is needed """
+        return False
 
     def _is_array(self) -> bool:
         """ is used by Array to detect nested arrays (is a problem with Array of Array of simple type) """
-        return False;
+        return False
 
     def __rtruediv__(self, name):
         """
@@ -495,17 +510,17 @@ class Structconstruct(Construct):
     def _is_simple_type(self) -> bool:
         return False
 
+    def _is_struct(self) -> bool:
+        return True
+
     def _static_sizeof(self, context: Container, path: str) -> int:
         try:
             return sum(sc._static_sizeof(context, path) for sc in self.subcons)
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
+    @sizeof_decorator
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        try:
-            return self._static_sizeof(context, path)
-        except SizeofError:
-            pass
         try:
             size_sum = 0
             for sc in self.subcons:
@@ -622,6 +637,7 @@ class Arrayconstruct(Subconstruct):
 
         return context
 
+    @sizeof_decorator
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         try:
             return self._static_sizeof(context, path)
@@ -664,6 +680,16 @@ class Adapter(Subconstruct):
         obj2 = self._encode(obj, context, path)
         self.subcon._build(obj2, stream, context, path)
 
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
+        obj2 = self._encode(obj, context, path)
+        obj2, meta_data = self.subcon._preprocess(obj2, context, path)
+        return self._decode(obj2, context, path), meta_data
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
+        obj2 = self._encode(obj, context, path)
+        obj2, meta_data = self.subcon._preprocess_size(obj2, context, path)
+        return self._decode(obj2, context, path), meta_data
+
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         obj2 = self._encode(obj, context, path)
         return self.subcon._sizeof(obj2, context, path)
@@ -701,40 +727,6 @@ class Validator(SymmetricAdapter):
         return obj
 
     def _validate(self, obj, context, path):
-        raise NotImplementedError
-
-
-class Tunnel(Subconstruct):
-    r"""
-    Abstract class that allows other constructs to read part of the stream as if they were reading the entire stream. See Prefixed for example.
-
-    Needs to implement `_decode()` for parsing and `_encode()` for building.
-    """
-    def _parse(self, stream, context, path):
-        data = stream_read_entire(stream, path)  # reads entire stream
-        data = self._decode(data, context, path)
-        return self.subcon.parse(data, **context)
-
-    def _build(self, obj, stream, context, path):
-        stream2 = io.BytesIO()
-        self.subcon._build(obj, stream2, context, path)
-        data = stream2.getvalue()
-        data = self._encode(data, context, path)
-        stream_write(stream, data, len(data), path)
-
-    def _static_sizeof(self, context, path):
-        raise SizeofError(path=path)
-
-    def _sizeof(self, obj, context, path):
-        raise SizeofError(path=path)
-
-    def _full_sizeof(self, obj, context, path):
-        raise SizeofError(path=path)
-
-    def _decode(self, data, context, path):
-        raise NotImplementedError
-
-    def _encode(self, data, context, path):
         raise NotImplementedError
 
 
@@ -1322,18 +1314,23 @@ class Struct(Structconstruct):
         If this is a nested Struct for example, this reference gets set as a value in the parent context afterwards.
 
         """
-        ctx = Container(parent=context)
-        ctx["_subcons"] = self._subcons
+        context["_subcons"] = self._subcons
         for sc in self.subcons:
             try:
+                # we need to determine at this point, whether we need to create a new context or not
+                # (only Structs need a new context, everything else is just added with their name to the current context)
+                if sc._is_struct():
+                    ctx = Container(parent=context)
+                else:
+                    ctx = context
                 subobj = sc._parsereport(stream, ctx, path)
                 if sc.name:
-                    ctx[sc.name] = subobj
+                    context[sc.name] = subobj
 
             except StopFieldError:
                 break
 
-        return ctx
+        return context
 
     def _preprocess(self, obj: Container, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         if obj is None:
@@ -1668,7 +1665,7 @@ class RepeatUntil(Arrayconstruct):
         for i,e in enumerate(obj):
             context._index = i
             self.subcon._build(e, stream, context, path)
-            if self.check_predicate and predicate(e, obj[:i], context):
+            if self.check_predicate and predicate(e, obj[:i+1], context):
                 break
         else:
             raise RepeatError("expected any item to match predicate, when building", path=path)
@@ -1873,6 +1870,9 @@ class Renamed(Subconstruct):
 
     def _is_simple_type(self):
         return self.subcon._is_simple_type()
+
+    def _is_struct(self):
+        return self.subcon._is_struct()
 
     def _is_array(self):
         return self.subcon._is_array()
@@ -2427,6 +2427,10 @@ class Numpy(Construct):
         import numpy
         numpy.save(stream, obj)
 
+    def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        data = self.build(obj, False)
+        return len(data)
+
 
 class NamedTuple(Adapter):
     r"""
@@ -2887,9 +2891,7 @@ class Switch(Construct):
 
     def _preprocess(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         keyfunc = evaluate(self.keyfunc, context, recurse=True)
-        sc = self.cases[keyfunc]
-
-        extra_info = {}
+        sc = self.cases.get(keyfunc, self.default)
 
         obj, _ = sc._preprocess(obj, context, path)
         assert(_ is None)
@@ -2898,7 +2900,7 @@ class Switch(Construct):
 
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         keyfunc = evaluate(self.keyfunc, context, recurse=True)
-        sc = self.cases[keyfunc]
+        sc = self.cases.get(keyfunc, self.default)
 
         meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
 
@@ -4248,263 +4250,6 @@ class Checksum(Construct):
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         return self.checksumfield._sizeof(obj, context, path)
-
-
-class Compressed(Tunnel):
-    r"""
-    Compresses and decompresses underlying stream when processing subcon. When parsing, entire stream is consumed. When building, it puts compressed bytes without marking the end. This dingsda should be used with :class:`~dingsda.core.Prefixed` .
-
-    Parsing and building transforms all bytes using a specified codec. Since data is processed until EOF, it behaves similar to `GreedyBytes`. Size is undefined.
-
-    :param subcon: Construct instance, subcon used for storing the value
-    :param encoding: string, any of module names like zlib/gzip/bzip2/lzma, otherwise any of codecs module bytes<->bytes encodings, each codec usually requires some Python version
-    :param level: optional, integer between 0..9, although lzma discards it, some encoders allow different compression levels
-
-    :raises ImportError: needed module could not be imported by ctor
-    :raises StreamError: stream failed when reading until EOF
-
-    Example::
-
-        >>> d = Prefixed(VarInt, Compressed(GreedyBytes, "zlib"))
-        >>> d.build(bytes(100))
-        b'\x0cx\x9cc`\xa0=\x00\x00\x00d\x00\x01'
-        >>> len(_)
-        13
-   """
-
-    def __init__(self, subcon, encoding, level=None):
-        super().__init__(subcon)
-        self.encoding = encoding
-        self.level = level
-        if self.encoding == "zlib":
-            import zlib
-            self.lib = zlib
-        elif self.encoding == "gzip":
-            import gzip
-            self.lib = gzip
-        elif self.encoding == "bzip2":
-            import bz2
-            self.lib = bz2
-        elif self.encoding == "lzma":
-            import lzma
-            self.lib = lzma
-        else:
-            import codecs
-            self.lib = codecs
-
-    def _decode(self, data, context, path):
-        if self.encoding in ("zlib", "gzip", "bzip2", "lzma"):
-            return self.lib.decompress(data)
-        return self.lib.decode(data, self.encoding)
-
-    def _encode(self, data, context, path):
-        if self.encoding in ("zlib", "gzip", "bzip2", "lzma"):
-            if self.level is None or self.encoding == "lzma":
-                return self.lib.compress(data)
-            else:
-                return self.lib.compress(data, self.level)
-        return self.lib.encode(data, self.encoding)
-
-
-class CompressedLZ4(Tunnel):
-    r"""
-    Compresses and decompresses underlying stream before processing subcon. When parsing, entire stream is consumed. When building, it puts compressed bytes without marking the end. This dingsda should be used with :class:`~dingsda.core.Prefixed` .
-
-    Parsing and building transforms all bytes using LZ4 library. Since data is processed until EOF, it behaves similar to `GreedyBytes`. Size is undefined.
-
-    :param subcon: Construct instance, subcon used for storing the value
-
-    :raises ImportError: needed module could not be imported by ctor
-    :raises StreamError: stream failed when reading until EOF
-
-    Can propagate lz4.frame exceptions.
-
-    Example::
-
-        >>> d = Prefixed(VarInt, CompressedLZ4(GreedyBytes))
-        >>> d.build(bytes(100))
-        b'"\x04"M\x18h@d\x00\x00\x00\x00\x00\x00\x00#\x0b\x00\x00\x00\x1f\x00\x01\x00KP\x00\x00\x00\x00\x00\x00\x00\x00\x00'
-        >>> len(_)
-        35
-   """
-
-    def __init__(self, subcon):
-        super().__init__(subcon)
-        import lz4.frame
-        self.lib = lz4.frame
-
-    def _decode(self, data, context, path):
-        return self.lib.decompress(data)
-
-    def _encode(self, data, context, path):
-        return self.lib.compress(data)
-
-
-class EncryptedSym(Tunnel):
-    r"""
-    Perform symmetrical encryption and decryption of the underlying stream before processing subcon. When parsing, entire stream is consumed. When building, it puts encrypted bytes without marking the end.
-
-    Parsing and building transforms all bytes using the selected cipher. Since data is processed until EOF, it behaves similar to `GreedyBytes`. Size is undefined.
-
-    The key for encryption and decryption should be passed via `contextkw` to `build` and `parse` methods.
-
-    This dingsda is heavily based on the `cryptography` library, which supports the following algorithms and modes. For more details please see the documentation of that library.
-    
-    Algorithms:
-    - AES
-    - Camellia
-    - ChaCha20
-    - TripleDES
-    - CAST5
-    - SEED
-    - SM4
-    - Blowfish (weak cipher)
-    - ARC4 (weak cipher)
-    - IDEA (weak cipher)
-
-    Modes:
-    - CBC
-    - CTR
-    - OFB
-    - CFB
-    - CFB8
-    - XTS
-    - ECB (insecure)
-
-    .. note:: Keep in mind that some of the algorithms require padding of the data. This can be done e.g. with :class:`~dingsda.core.Aligned`.
-    .. note:: For GCM mode use :class:`~dingsda.core.EncryptedSymAead`.
-
-    :param subcon: Construct instance, subcon used for storing the value
-    :param cipher: Cipher object or context lambda from cryptography.hazmat.primitives.ciphers
-
-    :raises ImportError: needed module could not be imported
-    :raises StreamError: stream failed when reading until EOF
-    :raises CipherError: no cipher object is provided
-    :raises CipherError: an AEAD cipher is used
-
-    Can propagate cryptography.exceptions exceptions.
-
-    Example::
-
-        >>> from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-        >>> d = Struct(
-        ...     "iv" / Default(Bytes(16), os.urandom(16)),
-        ...     "enc_data" / EncryptedSym(
-        ...         Aligned(16,
-        ...             Struct(
-        ...                 "width" / Int16ul,
-        ...                 "height" / Int16ul,
-        ...             )
-        ...         ),
-        ...         lambda ctx: Cipher(algorithms.AES(ctx._.key), modes.CBC(ctx.iv))
-        ...     )
-        ... )
-        >>> key128 = b"\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f"
-        >>> d.build({"enc_data": {"width": 5, "height": 4}}, key=key128)
-        b"o\x11i\x98~H\xc9\x1c\x17\x83\xf6|U:\x1a\x86+\x00\x89\xf7\x8e\xc3L\x04\t\xca\x8a\xc8\xc2\xfb'\xc8"
-        >>> d.parse(b"o\x11i\x98~H\xc9\x1c\x17\x83\xf6|U:\x1a\x86+\x00\x89\xf7\x8e\xc3L\x04\t\xca\x8a\xc8\xc2\xfb'\xc8", key=key128)
-        Container: 
-            iv = b'o\x11i\x98~H\xc9\x1c\x17\x83\xf6|U:\x1a\x86' (total 16)
-            enc_data = Container: 
-                width = 5
-                height = 4
-   """
-
-    def __init__(self, subcon, cipher):
-        super().__init__(subcon)
-        self.cipher = cipher
-
-    def _evaluate_cipher(self, context, path):
-        from cryptography.hazmat.primitives.ciphers import Cipher, modes
-        cipher = evaluate(self.cipher, context)
-        if not isinstance(cipher, Cipher):
-            raise CipherError(f"cipher {repr(cipher)} is not a cryptography.hazmat.primitives.ciphers.Cipher object", path=path)
-        if isinstance(cipher.mode, modes.GCM):
-            raise CipherError(f"AEAD cipher is not supported in this class, use EncryptedSymAead", path=path)
-        return cipher
-
-    def _decode(self, data, context, path):
-        cipher = self._evaluate_cipher(context, path)
-        decryptor = cipher.decryptor()
-        return decryptor.update(data) + decryptor.finalize()
-
-    def _encode(self, data, context, path):
-        cipher = self._evaluate_cipher(context, path)
-        encryptor = cipher.encryptor()
-        return encryptor.update(data) + encryptor.finalize()
-
-
-class EncryptedSymAead(Tunnel):
-    r"""
-    Perform symmetrical AEAD encryption and decryption of the underlying stream before processing subcon. When parsing, entire stream is consumed. When building, it puts encrypted bytes and tag without marking the end.
-
-    Parsing and building transforms all bytes using the selected cipher and also authenticates the `associated_data`. Since data is processed until EOF, it behaves similar to `GreedyBytes`. Size is undefined.
-
-    The key for encryption and decryption should be passed via `contextkw` to `build` and `parse` methods.
-
-    This dingsda is heavily based on the `cryptography` library, which supports the following AEAD ciphers. For more details please see the documentation of that library.
-    
-    AEAD ciphers:
-    - AESGCM
-    - AESCCM
-    - ChaCha20Poly1305
-
-    :param subcon: Construct instance, subcon used for storing the value
-    :param cipher: Cipher object or context lambda from cryptography.hazmat.primitives.ciphers
-
-    :raises ImportError: needed module could not be imported
-    :raises StreamError: stream failed when reading until EOF
-    :raises CipherError: unsupported cipher object is provided
-
-    Can propagate cryptography.exceptions exceptions.
-
-    Example::
-
-        >>> from cryptography.hazmat.primitives.ciphers import aead
-        >>> d = Struct(
-        ...     "nonce" / Default(Bytes(16), os.urandom(16)),
-        ...     "associated_data" / Bytes(21),
-        ...     "enc_data" / EncryptedSymAead(
-        ...         GreedyBytes,
-        ...         lambda ctx: aead.AESGCM(ctx._.key),
-        ...         this.nonce,
-        ...         this.associated_data
-        ...     )
-        ... )
-        >>> key128 = b"\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f"
-        >>> d.build({"associated_data": b"This is authenticated", "enc_data": b"The secret message"}, key=key128)
-        b'\xe3\xb0"\xbaQ\x18\xd3|\x14\xb0q\x11\xb5XZ\xeeThis is authenticated\x88~\xe5Vh\x00\x01m\xacn\xad k\x02\x13\xf4\xb4[\xbe\x12$\xa0\x7f\xfb\xbf\x82Ar\xb0\x97C\x0b\xe3\x85'
-        >>> d.parse(b'\xe3\xb0"\xbaQ\x18\xd3|\x14\xb0q\x11\xb5XZ\xeeThis is authenticated\x88~\xe5Vh\x00\x01m\xacn\xad k\x02\x13\xf4\xb4[\xbe\x12$\xa0\x7f\xfb\xbf\x82Ar\xb0\x97C\x0b\xe3\x85', key=key128)
-        Container: 
-            nonce = b'\xe3\xb0"\xbaQ\x18\xd3|\x14\xb0q\x11\xb5XZ\xee' (total 16)
-            associated_data = b'This is authenti'... (truncated, total 21)
-            enc_data = b'The secret messa'... (truncated, total 18)
-   """
-
-    def __init__(self, subcon, cipher, nonce, associated_data=b""):
-        super().__init__(subcon)
-        self.cipher = cipher
-        self.nonce = nonce
-        self.associated_data = associated_data
-
-    def _evaluate_cipher(self, context, path):
-        from cryptography.hazmat.primitives.ciphers.aead import AESGCM, AESCCM, ChaCha20Poly1305
-        cipher = evaluate(self.cipher, context)
-        if not isinstance(cipher, (AESGCM, AESCCM, ChaCha20Poly1305)):
-            raise CipherError(f"cipher object {repr(cipher)} is not supported", path=path)
-        return cipher
-
-    def _decode(self, data, context, path):
-        cipher = self._evaluate_cipher(context, path)
-        nonce = evaluate(self.nonce, context)
-        associated_data = evaluate(self.associated_data, context)
-        return cipher.decrypt(nonce, data, associated_data)
-
-    def _encode(self, data, context, path):
-        cipher = self._evaluate_cipher(context, path)
-        nonce = evaluate(self.nonce, context)
-        associated_data = evaluate(self.associated_data, context)
-        return cipher.encrypt(nonce, data, associated_data)
 
 
 class Rebuffered(Subconstruct):

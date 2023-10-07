@@ -55,7 +55,7 @@ def Timestamp(subcon, unit, epoch):
                 return arrow.Arrow(1980,1,1).shift(years=obj.year, months=obj.month-1, days=obj.day-1, hours=obj.hour, minutes=obj.minute, seconds=obj.second*2)
             def _encode(self, obj, context, path):
                 t = obj.timetuple()
-                return Container(year=t.tm_year-1980, month=t.tm_mon, day=t.tm_mday, hour=t.tm_hour, minute=t.tm_min, second=t.tm_sec//2)
+                return Container(year=t.tm_year-1980, month=t.tm_mon, day=t.tm_mday, hour=t.tm_hour, minute=t.tm_min, second=t.tm_sec//2, parent=context)
         macro = MsdosTimestampAdapter(st)
 
     else:
