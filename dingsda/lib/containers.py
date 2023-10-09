@@ -442,7 +442,7 @@ class ListContainer(list):
             2
             3
     """
-    meta_infos = []
+    __slots__ = ["__recursion_lock__", "_root_node", "_parent_node", "_parent_meta_info", "_meta_infos"]
 
     @recursion_lock()
     def __repr__(self):
@@ -458,10 +458,16 @@ class ListContainer(list):
             text.append(indentation.join(lines))
         return "".join(text)
 
+    def __getitem__(self, name):
+        if isinstance(name, int):
+            return super().__getitem__(name)
+        else:
+            return self._parent.__getitem__(name)
+
     def get_meta(self, idx: int) -> Optional[MetaInformation]:
         """ returns the meta information of the item, if it exists, else None. """
-        if idx < len(self.meta_infos):
-            return self.meta_infos[idx]
+        if idx < len(self._meta_infos):
+            return self._meta_infos[idx]
         else:
             return None
 
@@ -471,10 +477,10 @@ class ListContainer(list):
 
     def set_meta(self, idx: int, value: MetaInformation):
         """ sets the meta information for the item, extends meta_info list if necessary.  """
-        if len(self.meta_infos) <= idx:
+        if len(self._meta_infos) <= idx:
             assert(idx < len(self))
-            self.meta_infos.extend([None] * (1 + (idx - len(self.meta_infos))))
-        self.meta_infos[idx] = value
+            self._meta_infos.extend([None] * (1 + (idx - len(self._meta_infos))))
+        self._meta_infos[idx] = value
 
     def _search(self, compiled_pattern, search_all):
         items = []
