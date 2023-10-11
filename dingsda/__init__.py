@@ -105,7 +105,6 @@ __all__ = [
     'Mapping',
     'max_',
     'min_',
-    'NamedTuple',
     'Nibble',
     'NoneOf',
     'NullStripped',

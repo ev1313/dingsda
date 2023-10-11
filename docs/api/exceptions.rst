@@ -17,7 +17,6 @@ Core API: Exception types
 .. autofunction:: dingsda.IndexFieldError
 .. autofunction:: dingsda.CheckError
 .. autofunction:: dingsda.ExplicitError
-.. autofunction:: dingsda.NamedTupleError
 .. autofunction:: dingsda.TimestampError
 .. autofunction:: dingsda.UnionError
 .. autofunction:: dingsda.SwitchError

@@ -24,6 +24,7 @@ class ConstructMetaInformation:
     xml_parsing: bool = False
     params: dict = field(default_factory=lambda: {})
     io: Optional[Any] = field(default=None)
+    # FIXME: maybe add path and reference to current object?
 
 
 @dataclass
@@ -135,13 +136,15 @@ class Container(collections.OrderedDict):
         self._parent_node = None
         self._parent_meta_info = None
         parent = kwds.pop("parent", None)
+        parent_meta = kwds.pop("metadata", None)
         if parent is not None:
             self._parent_node = parent
             self._root_node = parent if parent._root_node is None else parent._root_node
-        parent_meta = kwds.pop("metadata", None)
         if parent_meta is not None:
             assert(self._parent_node is None)
             self._parent_meta_info = parent_meta
+        elif parent is None:
+            self._parent_meta_info = ConstructMetaInformation()
 
         self.update(other, **kwds)
 
@@ -183,7 +186,7 @@ class Container(collections.OrderedDict):
         ret = super().__getitem__(name)[0]
         if isinstance(ret, Container):
             ret._parent_node = self
-            ret._root_node = None
+            ret._root_node = self if self._root_node is None else self._root_node
         return ret
 
     def __getitem__(self, name):
@@ -425,6 +428,11 @@ class ListContainer(list):
     r"""
     Generic container like list. Provides pretty-printing. Also provides regex searching.
 
+    Supports _parent and _root like Containers.
+
+    When accessing elements with a number, it behaves like a list. When accessing with a string (also works with
+    the attribute syntax), this gets passed through to the parent node.
+
     Further stores meta information for every item in the list.
 
     Example::
@@ -442,20 +450,24 @@ class ListContainer(list):
             2
             3
     """
-    __slots__ = ["__recursion_lock__", "_root_node", "_parent_node", "_parent_meta_info", "_meta_infos"]
+    __slots__ = ["__recursion_lock__", "_root_node", "_parent_node", "_parent_meta_info", "_meta_infos", "_index"]
 
     def __init__(self, *args, **kwargs):
+        self._meta_infos = []
         self._root_node = None
         self._parent_node = None
         self._parent_meta_info = None
+        self._index = None
         parent = kwargs.pop("parent", None)
+        parent_meta = kwargs.pop("metadata", None)
         if parent is not None:
             self._parent_node = parent
             self._root_node = parent if parent._root_node is None else parent._root_node
-        parent_meta = kwargs.pop("metadata", None)
         if parent_meta is not None:
             assert(self._parent_node is None)
             self._parent_meta_info = parent_meta
+        elif parent is None:
+            self._parent_meta_info = ConstructMetaInformation()
         super().__init__(*args, **kwargs)
 
     @recursion_lock()
@@ -501,7 +513,7 @@ class ListContainer(list):
         ret = self._parent_node.__getitem__(name)
         if isinstance(ret, Container):
             ret._parent_node = self
-            ret._root_node = None
+            ret._root_node = self if self._root_node is None else self._root_node
         return ret
 
     def __getattr__(self, name):
@@ -514,10 +526,30 @@ class ListContainer(list):
             raise AttributeError(name)
 
     def __getitem__(self, name):
-        if isinstance(name, int):
+        if isinstance(name, int) or isinstance(name, slice):
             return super().__getitem__(name)
         else:
             return self.__get_handle_special(name)
+
+    def __setattr__(self, name, value):
+        try:
+            if name in self.__slots__:
+                return object.__setattr__(self, name, value)
+            else:
+                # calls __setitem__ + their checks
+                self[name] = value
+        except KeyError:
+            raise AttributeError(name)
+
+    def __setitem__(self, key, value):
+        if key in ["_", "_root", "_parsing", "_building", "_sizing", "_preprocessing",
+                   "_preprocessing_sizing", "_xml_building", "_xml_parsing", "_params",
+                   "_io",]:
+            raise AttributeError(f"{key} not allowed to be set")
+        if isinstance(key, int) or isinstance(key, slice):
+            super().__setitem__(key, value)
+        else:
+            self._parent_node.__setitem__(key, value)
 
     def get_meta(self, idx: int) -> Optional[MetaInformation]:
         """ returns the meta information of the item, if it exists, else None. """

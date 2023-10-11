@@ -192,18 +192,6 @@ Numpy arrays can be preserved and retrived along with their element type (dtype)
 b"\x93NUMPY\x01\x00F\x00{'descr': '<i8', 'fortran_order': False, 'shape': (3,), }            \n\x01\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x03\x00\x00\x00\x00\x00\x00\x00"
 
 
-NamedTuple
-----------
-
-Both arrays, structs and sequences can be mapped to a namedtuple from collections module. To create a named tuple, you need to provide a name and a sequence of fields, either a string with space-separated names or a list of strings. Just like the stadard namedtuple does.
-
->>> d = NamedTuple("coord", "x y z", Byte[3])
->>> d = NamedTuple("coord", "x y z", Byte >> Byte >> Byte)
->>> d = NamedTuple("coord", "x y z", "x"/Byte + "y"/Byte + "z"/Byte)
->>> d.parse(b"123")
-coord(x=49, y=50, z=51)
-
-
 Timestamp
 ----------
 

@@ -12,7 +12,6 @@ Core API: Miscellaneous
 .. autofunction:: dingsda.FocusedSeq
 .. autofunction:: dingsda.Pickled
 .. autofunction:: dingsda.Numpy
-.. autofunction:: dingsda.NamedTuple
 .. autofunction:: dingsda.Timestamp
 .. autofunction:: dingsda.Hex
 .. autofunction:: dingsda.HexDump

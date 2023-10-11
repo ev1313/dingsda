@@ -412,15 +412,15 @@ class Construct(object):
         """
         return []
 
-    def _is_simple_type(self) -> bool:
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
         """ is used by Array to determine, whether the type can be stored in a string array as XML attribute """
         return False
 
-    def _is_struct(self) -> bool:
+    def _is_struct(self, context: Optional[Container] = None) -> bool:
         """ is used by Struct to determine, whether a new context while parsing is needed """
         return False
 
-    def _is_array(self) -> bool:
+    def _is_array(self, context: Optional[Container] = None) -> bool:
         """ is used by Array to detect nested arrays (is a problem with Array of Array of simple type) """
         return False
 
@@ -507,10 +507,10 @@ class Subconstruct(Construct):
 
 
 class Structconstruct(Construct):
-    def _is_simple_type(self) -> bool:
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
         return False
 
-    def _is_struct(self) -> bool:
+    def _is_struct(self, context: Optional[Container] = None) -> bool:
         return True
 
     def _static_sizeof(self, context: Container, path: str) -> int:
@@ -653,10 +653,10 @@ class Arrayconstruct(Subconstruct):
             sum_size += self.subcon._sizeof(e, context, path)
         return sum_size
 
-    def _is_simple_type(self) -> bool:
-        return self.subcon._is_simple_type()
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
+        return self.subcon._is_simple_type(context=context)
 
-    def _is_array(self) -> bool:
+    def _is_array(self, context: Optional[Container] = None) -> bool:
         return True
 
     def _names(self) -> list[int]:
@@ -823,7 +823,7 @@ class Bytes(Construct):
         insert_or_append_field(context, name, elem)
         return context
 
-    def _is_simple_type(self):
+    def _is_simple_type(self, context: Optional[Container] = None):
         return True
 
 
@@ -882,7 +882,7 @@ class GreedyBytes(Construct):
         insert_or_append_field(context, name, elem)
         return context
 
-    def _is_simple_type(self):
+    def _is_simple_type(self, context: Optional[Container] = None):
         return True
 
 
@@ -1319,7 +1319,7 @@ class Struct(Structconstruct):
             try:
                 # we need to determine at this point, whether we need to create a new context or not
                 # (only Structs need a new context, everything else is just added with their name to the current context)
-                if sc._is_struct():
+                if sc._is_struct(context=context):
                     ctx = Container(parent=context)
                 else:
                     ctx = context
@@ -1551,8 +1551,8 @@ class GreedyRange(Subconstruct):
 
     def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         # predicates don't need to be checked in preprocessing
-        retlist = ListContainer()
-        for i,e in enumerate(obj):
+        retlist = ListContainer(parent=context)
+        for i, e in enumerate(obj):
             context._index = i
             obj, _ = self.subcon._preprocess(e, context, path)
             assert(_ is None)
@@ -1562,7 +1562,7 @@ class GreedyRange(Subconstruct):
 
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         # predicates don't need to be checked in preprocessing
-        retlist = ListContainer()
+        retlist = ListContainer(parent=context)
         meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
         size = 0
         for i,e in enumerate(obj):
@@ -1581,12 +1581,12 @@ class GreedyRange(Subconstruct):
 
     def _parse(self, stream, context, path):
         discard = self.discard
-        obj = ListContainer()
+        obj = ListContainer(parent=context)
         try:
             for i in itertools.count():
-                context._index = i
+                obj._index = i
                 fallback = stream_tell(stream, path)
-                e = self.subcon._parsereport(stream, context, path)
+                e = self.subcon._parsereport(stream, obj, path)
                 if not discard:
                     obj.append(e)
         except StopFieldError:
@@ -1649,14 +1649,15 @@ class RepeatUntil(Arrayconstruct):
         discard = self.discard
         if not callable(predicate):
             predicate = lambda _1,_2,_3: predicate
-        obj = ListContainer()
+        obj = ListContainer(parent=context)
         for i in itertools.count():
-            context._index = i
-            e = self.subcon._parsereport(stream, context, path)
+            obj._index = i
+            e = self.subcon._parsereport(stream, obj, path)
             if not discard:
                 obj.append(e)
             if predicate(e, obj, context):
                 return obj
+        assert(False)
 
     def _build(self, obj: Any, stream, context: Container, path: str):
         predicate = self.predicate
@@ -1868,14 +1869,14 @@ class Renamed(Subconstruct):
 
         return ctx
 
-    def _is_simple_type(self):
-        return self.subcon._is_simple_type()
+    def _is_simple_type(self, context: Optional[Container] = None):
+        return self.subcon._is_simple_type(context=context)
 
-    def _is_struct(self):
-        return self.subcon._is_struct()
+    def _is_struct(self, context: Optional[Container] = None):
+        return self.subcon._is_struct(context=context)
 
-    def _is_array(self):
-        return self.subcon._is_array()
+    def _is_array(self, context: Optional[Container] = None):
+        return self.subcon._is_array(context=context)
 
     def _names(self):
         sc_names = [self.name]
@@ -2105,11 +2106,14 @@ class Rebuild(Subconstruct):
     def _fromET(self, parent, name, context, path, is_root=False):
         return context
 
-    def _is_array(self) -> bool:
-        return self.subcon._is_array()
+    def _is_array(self, context: Optional[Container] = None) -> bool:
+        return self.subcon._is_array(context=context)
 
-    def _is_simple_type(self) -> bool:
-        return self.subcon._is_simple_type()
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
+        return self.subcon._is_simple_type(context=context)
+
+    def _is_struct(self, context: Optional[Container] = None) -> bool:
+        return self.subcon._is_struct(context=context)
 
 
 class Default(Subconstruct):
@@ -2390,11 +2394,11 @@ class FocusedSeq(Construct):
     def _names(self) -> list[str]:
         return self._get_main_sc()._names()
 
-    def _is_simple_type(self) -> bool:
-        return self._get_main_sc()._is_simple_type()
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
+        return self._get_main_sc()._is_simple_type(context=context)
 
-    def _is_array(self) -> bool:
-        return self._get_main_sc()._is_array()
+    def _is_array(self, context: Optional[Container] = None) -> bool:
+        return self._get_main_sc()._is_array(context=context)
 
 
 @singleton
@@ -2430,54 +2434,6 @@ class Numpy(Construct):
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
         data = self.build(obj, False)
         return len(data)
-
-
-class NamedTuple(Adapter):
-    r"""
-    Both arrays, structs, and sequences can be mapped to a namedtuple from `collections module <https://docs.python.org/3/library/collections.html#collections.namedtuple>`_. To create a named tuple, you need to provide a name and a sequence of fields, either a string with space-separated names or a list of string names, like the standard namedtuple.
-
-    Parses into a collections.namedtuple instance, and builds from such instance (although it also builds from lists and dicts). Size is undefined.
-
-    :param tuplename: string
-    :param tuplefields: string or list of strings
-    :param subcon: Construct instance, either Struct Array GreedyRange
-
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
-    :raises NamedTupleError: subcon is neither Struct Array GreedyRange
-
-    Can propagate collections exceptions.
-
-    Example::
-
-        >>> d = NamedTuple("coord", "x y z", Byte[3])
-        >>> d = NamedTuple("coord", "x y z", Byte >> Byte >> Byte)
-        >>> d = NamedTuple("coord", "x y z", "x"/Byte + "y"/Byte + "z"/Byte)
-        >>> d.parse(b"123")
-        coord(x=49, y=50, z=51)
-    """
-
-    def __init__(self, tuplename, tuplefields, subcon):
-        if not isinstance(subcon, (Struct,Array,GreedyRange)):
-            raise NamedTupleError("subcon is neither Struct Array GreedyRange")
-        super().__init__(subcon)
-        self.tuplename = tuplename
-        self.tuplefields = tuplefields
-        self.factory = collections.namedtuple(tuplename, tuplefields)
-
-    def _decode(self, obj, context, path):
-        if isinstance(self.subcon, Struct):
-            del obj["_io"]
-            return self.factory(**obj)
-        if isinstance(self.subcon, (Array,GreedyRange)):
-            return self.factory(*obj)
-        raise NamedTupleError("subcon is neither Struct Array GreedyRangeGreedyRange", path=path)
-
-    def _encode(self, obj, context, path):
-        if isinstance(self.subcon, Struct):
-            return Container({sc.name:getattr(obj,sc.name) for sc in self.subcon.subcons if sc.name})
-        if isinstance(self.subcon, (Array,GreedyRange)):
-            return list(obj)
-        raise NamedTupleError("subcon is neither Struct Array GreedyRange", path=path)
 
 
 class Hex(Adapter):
@@ -2963,6 +2919,24 @@ class Switch(Construct):
             assert(isinstance(case, Renamed))
         names = [case.name for case in self.cases.values()]
         return names
+
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
+        assert(context is not None)
+        keyfunc = evaluate(self.keyfunc, context, recurse=True)
+        sc = self.cases.get(keyfunc, self.default)
+        return sc._is_array(context)
+
+    def _is_array(self, context: Optional[Container] = None) -> bool:
+        assert(context is not None)
+        keyfunc = evaluate(self.keyfunc, context, recurse=True)
+        sc = self.cases.get(keyfunc, self.default)
+        return sc._is_array(context)
+
+    def _is_struct(self, context: Optional[Container] = None) -> bool:
+        assert(context is not None)
+        keyfunc = evaluate(self.keyfunc, context, recurse=True)
+        sc = self.cases.get(keyfunc, self.default)
+        return sc._is_struct(context)
 
 
 class StopIf(Construct):
@@ -3689,7 +3663,7 @@ class Prefixed(Subconstruct):
         return self.lengthfield._static_sizeof(context, path) + self.subcon._static_sizeof(context, path)
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        return self.lengthfield._sizeof(context, path) + self.subcon._sizeof(obj, context, path)
+        return self.lengthfield._sizeof(len(obj), context, path) + self.subcon._sizeof(obj, context, path)
 
     def _expected_size(self, stream, context, path):
         position1 = stream_tell(stream, path)

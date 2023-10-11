@@ -339,12 +339,32 @@ def test_container_root():
     assert(c2._parent_node is c)
     assert(c2._root_node is p)
 
-    assert(raises(lambda: p._) == AttributeError)
+    assert(p._ is None)
     assert(p._root is p)
     assert(c._ is p)
     assert(c._root is p)
     assert(c2._ is c)
     assert(c2._root is p)
+
+
+def test_container_setting():
+    p = Container({"a": 1, "b": 2})
+    c = Container({"c": 3, "d": 4}, parent=p)
+    c2 = Container({"x": 3, "y": 42}, parent=c)
+
+    p.a = 3
+    assert(p.a == 3)
+    p.b = 4
+    assert(p.b == 4)
+    c.c = 12
+    assert(c.c == 12)
+    c.d = 24
+    assert(c.d == 24)
+    c2.x = 123
+    assert(c2.x == 123)
+    c2.y = 435
+    assert(c2.y == 435)
+
 
 def test_container_attr_item_equality():
     p = Container({"a": 1, "b": 2})
@@ -357,6 +377,7 @@ def test_container_attr_item_equality():
     assert(c._root_node is c["_root_node"])
     assert(c2._parent_node is c2["_parent_node"])
     assert(c2._root_node is c2["_root_node"])
+
 
 def test_container_construct_metadata():
     metadata = ConstructMetaInformation(
@@ -393,3 +414,18 @@ def test_container_construct_metadata():
     assert(raises(lambda: p.__setattr__("_xml_parsing", False)) == AttributeError)
     assert(raises(lambda: p.__setattr__("_params", False)) == AttributeError)
     assert(raises(lambda: p.__setattr__("_io", False)) == AttributeError)
+
+
+def test_container_construct_empty_metadata():
+    p = Container({"a": 1, "b": 2})
+    c = Container({"c": 3, "d": 4}, parent=p)
+    c2 = Container({"x": 3, "y": 42}, parent=c)
+
+    assert(False == p._preprocessing == c._preprocessing == c2._preprocessing)
+    assert(False == p._preprocessing_sizing == c._preprocessing_sizing == c2._preprocessing_sizing)
+    assert(False == p._parsing == c._parsing == c2._parsing)
+    assert(False == p._building == c._building == c2._building)
+    assert(False == p._sizing == c._sizing == c2._sizing)
+    assert(False == p._xml_building == c._xml_building == c2._xml_building)
+    assert(False == p._xml_parsing == c._xml_parsing == c2._xml_parsing)
+    assert(p._io == c._io == c2._io)

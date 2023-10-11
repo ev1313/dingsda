@@ -367,7 +367,7 @@ def test_rebuild_issue_664():
         # IfThenElse
     )
     obj = Container(
-        bytes = 0,
+        bytes = b"\x00",
         bytesinteger = 255,
         pascalstring = u"text",
         enum = "label",
@@ -423,16 +423,6 @@ def test_numpy_error():
     import numpy, io
     numpy.load(io.BytesIO(b""))
 
-def test_namedtuple():
-    coord = collections.namedtuple("coord", "x y z")
-    d = NamedTuple("coord", "x y z", Array(3, Byte))
-    common(d, b"123", coord(49,50,51), 3)
-    d = NamedTuple("coord", "x y z", GreedyRange(Byte))
-    common(d, b"123", coord(49,50,51), SizeofError)
-    d = NamedTuple("coord", "x y z", Struct("x"/Byte, "y"/Byte, "z"/Byte))
-    common(d, b"123", coord(49,50,51), 3)
-
-    assert raises(lambda: NamedTuple("coord", "x y z", BitStruct("x"/Byte, "y"/Byte, "z"/Byte))) == NamedTupleError
 
 def test_timestamp():
     import arrow
@@ -623,9 +613,11 @@ def test_aligned():
     size_test(Struct("a"/Aligned(4, Byte), "b"/Byte), {}, 5)
     size_test(Aligned(this.m, Byte), {"m": 2}, None, 2, None)
 
+
 def test_alignedstruct():
     d = AlignedStruct(4, "a"/Int8ub, "b"/Int16ub)
     common(d, b"\x01\x00\x00\x00\x00\x05\x00\x00", Container(a=1, b=5), 8)
+
 
 def test_bitstruct():
     d = BitStruct("a"/BitsInteger(3), "b"/Flag, Padding(3), "c"/Nibble, "d"/BitsInteger(5))
@@ -634,6 +626,7 @@ def test_bitstruct():
     d = BitStruct("a"/BitsInteger(3), "b"/Flag, Padding(3), "c"/Nibble, "sub"/Struct("d"/Nibble, "e"/Bit))
     common(d, b"\xe1\x1f", Container(a=7, b=False, c=8, sub=Container(d=15, e=1)))
     size_test(d, {}, 2, 2)
+
 
 def test_pointer():
     common(Pointer(2,             Byte), b"\x00\x00\x07", 7, 0)
@@ -644,6 +637,7 @@ def test_pointer():
         'x' / Pointer(0, Byte, stream=this.inner._io),
     )
     d.parse(bytes(20)) == 0
+
 
 def test_peek():
     d = Peek(Int8ub)

@@ -85,20 +85,42 @@ def test_listcontainer_construct_metadata():
     assert({"param1": 1, "param2": 2} == p._params == c._params == c2._params)
     assert(p._io == c._io == c2._io)
 
+    p = ListContainer([1, 2, 3], metadata=metadata)
+    c = ListContainer([4, 5, 6], parent=p)
+    p.append(c)
+    c2 = Container({"x": 3, "y": 42}, parent=c)
+    c.append(c2)
+
+    assert(True == p._preprocessing == c._preprocessing == c2._preprocessing)
+    assert(True == p._preprocessing_sizing == c._preprocessing_sizing == c2._preprocessing_sizing)
+    assert(True == p._parsing == c._parsing == c2._parsing)
+    assert(True == p._building == c._building == c2._building)
+    assert(True == p._sizing == c._sizing == c2._sizing)
+    assert(True == p._xml_building == c._xml_building == c2._xml_building)
+    assert(True == p._xml_parsing == c._xml_parsing == c2._xml_parsing)
+    assert({"param1": 1, "param2": 2} == p._params == c._params == c2._params)
+    assert(p._io == c._io == c2._io)
+
+
+def test_listcontainer_construct_empty_metadata():
+    p = ListContainer([1, 2, 3])
+    c = ListContainer([4, 5, 6], parent=p)
+    p.append(c)
+    c2 = Container({"x": 3, "y": 42}, parent=c)
+    c.append(c2)
+
+    assert(False == p._preprocessing == c._preprocessing == c2._preprocessing)
+    assert(False == p._preprocessing_sizing == c._preprocessing_sizing == c2._preprocessing_sizing)
+    assert(False == p._parsing == c._parsing == c2._parsing)
+    assert(False == p._building == c._building == c2._building)
+    assert(False == p._sizing == c._sizing == c2._sizing)
+    assert(False == p._xml_building == c._xml_building == c2._xml_building)
+    assert(False == p._xml_parsing == c._xml_parsing == c2._xml_parsing)
+    assert(p._io == c._io == c2._io)
+
 
 def test_listcontainer_access_items():
-    metadata = ConstructMetaInformation(
-        preprocessing = True,
-        preprocessing_sizing = True,
-        parsing = True,
-        building = True,
-        sizing = True,
-        xml_building = True,
-        xml_parsing = True,
-        params = {"param1": 1, "param2": 2},
-        io=BytesIO(),
-    )
-    p = Container({"a": 1, "b": 2}, metadata=metadata)
+    p = Container({"a": 1, "b": 2})
     c = ListContainer([1, 2, 3], parent=p)
     p["c"] = c
     c2 = Container({"x": 3, "y": 42}, parent=c)
@@ -114,3 +136,17 @@ def test_listcontainer_access_items():
     assert(c.a == 1)
     assert(c.b == 2)
 
+
+def test_container_setting():
+    p = Container({"a": 1, "b": 2})
+    c = ListContainer([1, 2, 3], parent=p)
+    p["c"] = c
+    c2 = Container({"x": 3, "y": 42}, parent=c)
+    c.append(c2)
+
+    p.a = 3
+    assert(p.a == 3)
+    assert(c.a == 3)
+    c.a = 123
+    assert(c.a == 123)
+    assert(p.a == 123)

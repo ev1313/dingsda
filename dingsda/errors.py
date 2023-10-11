@@ -99,13 +99,6 @@ class ExplicitError(ConstructError):
     pass
 
 
-class NamedTupleError(ConstructError):
-    """
-    Only one parsing class can raise this exception: NamedTuple. It can mean the subcon is not of a valid type.
-    """
-    pass
-
-
 class TimestampError(ConstructError):
     """
     Only one parsing class can raise this exception: Timestamp. It can mean the subcon unit or epoch are invalid.
