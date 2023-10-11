@@ -316,6 +316,17 @@ def test_meta_info_merge():
     assert(c.get_meta("a").ptr_size == 0)
     assert(c.get_meta("b") is None)
 
+
+def test_meta_info_merge():
+    x = Container({"a": 1, "b": 2})
+    x.set_meta("a", MetaInformation(offset=0, size=1, end_offset=1))
+
+    c = Container(x)
+
+    assert(c.get_meta("a") == c.meta("a"))
+    assert(c.get_meta("b") == c.meta("b"))
+
+
 def test_container_root():
     p = Container({"a": 1, "b": 2})
     c = Container({"c": 3, "d": 4}, parent=p)
@@ -334,6 +345,18 @@ def test_container_root():
     assert(c._root is p)
     assert(c2._ is c)
     assert(c2._root is p)
+
+def test_container_attr_item_equality():
+    p = Container({"a": 1, "b": 2})
+    c = Container({"c": 3, "d": 4}, parent=p)
+    c2 = Container({"x": 3, "y": 42}, parent=c)
+
+    assert(p._parent_node is p["_parent_node"])
+    assert(p._root_node is p["_root_node"])
+    assert(c._parent_node is c["_parent_node"])
+    assert(c._root_node is c["_root_node"])
+    assert(c2._parent_node is c2["_parent_node"])
+    assert(c2._root_node is c2["_root_node"])
 
 def test_container_construct_metadata():
     metadata = ConstructMetaInformation(

@@ -444,6 +444,20 @@ class ListContainer(list):
     """
     __slots__ = ["__recursion_lock__", "_root_node", "_parent_node", "_parent_meta_info", "_meta_infos"]
 
+    def __init__(self, *args, **kwargs):
+        self._root_node = None
+        self._parent_node = None
+        self._parent_meta_info = None
+        parent = kwargs.pop("parent", None)
+        if parent is not None:
+            self._parent_node = parent
+            self._root_node = parent if parent._root_node is None else parent._root_node
+        parent_meta = kwargs.pop("metadata", None)
+        if parent_meta is not None:
+            assert(self._parent_node is None)
+            self._parent_meta_info = parent_meta
+        super().__init__(*args, **kwargs)
+
     @recursion_lock()
     def __repr__(self):
         return "ListContainer(%s)" % (list.__repr__(self), )
@@ -458,11 +472,52 @@ class ListContainer(list):
             text.append(indentation.join(lines))
         return "".join(text)
 
+    def __get_handle_special(self, name):
+        if name == "_":
+            return self._parent_node
+        elif name == "_root":
+            if self._root_node is None:
+                return self
+            else:
+                return self._root_node
+        elif name == "_parsing":
+            return self._root._parent_meta_info.parsing
+        elif name == "_building":
+            return self._root._parent_meta_info.building
+        elif name == "_sizing":
+            return self._root._parent_meta_info.sizing
+        elif name == "_preprocessing":
+            return self._root._parent_meta_info.preprocessing
+        elif name == "_preprocessing_sizing":
+            return self._root._parent_meta_info.preprocessing_sizing
+        elif name == "_xml_building":
+            return self._root._parent_meta_info.xml_building
+        elif name == "_xml_parsing":
+            return self._root._parent_meta_info.xml_parsing
+        elif name == "_params":
+            return self._root._parent_meta_info.params
+        elif name == "_io":
+            return self._root._parent_meta_info.io
+        ret = self._parent_node.__getitem__(name)
+        if isinstance(ret, Container):
+            ret._parent_node = self
+            ret._root_node = None
+        return ret
+
+    def __getattr__(self, name):
+        try:
+            if name in self.__slots__:
+                return object.__getattribute__(self, name)
+            else:
+                return self.__getitem__(name)
+        except KeyError:
+            raise AttributeError(name)
+
     def __getitem__(self, name):
         if isinstance(name, int):
             return super().__getitem__(name)
         else:
-            return self._parent.__getitem__(name)
+            return self.__get_handle_special(name)
 
     def get_meta(self, idx: int) -> Optional[MetaInformation]:
         """ returns the meta information of the item, if it exists, else None. """
