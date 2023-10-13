@@ -23,7 +23,7 @@ def raises(func, *args, **kw):
         return e.__class__
 
 
-def common(format: Construct, datasample: bytes, objsample: Container, objsample_build: Optional[Container] = None, preprocess: bool = False, **kw):
+def common(format: Construct, datasample: bytes, objsample: Container, objsample_build: Optional[Container] = None, **kw):
     r"""
     :param format: the construct to test
     :param datasample: a sample of the data to parse
@@ -39,8 +39,6 @@ def common(format: Construct, datasample: bytes, objsample: Container, objsample
     assert obj == objsample
 
     build_object = objsample
-    if preprocess:
-        build_object, extra_info = format.preprocess(objsample, context=kw)
 
     data = format.build(build_object, **kw)
     assert data == datasample

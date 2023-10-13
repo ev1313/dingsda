@@ -49,12 +49,12 @@ def test_listcontainer_attr_item_equality():
     c2 = ListContainer([7, 8, 9], parent=c)
     c.append(c2)
 
-    assert(p._parent_node is p["_parent_node"])
-    assert(p._root_node is p["_root_node"])
-    assert(c._parent_node is c["_parent_node"])
-    assert(c._root_node is c["_root_node"])
-    assert(c2._parent_node is c2["_parent_node"])
-    assert(c2._root_node is c2["_root_node"])
+    assert(p._parent_node is None)
+    assert(p._root_node is None)
+    assert(c._parent_node is c["_"])
+    assert(c._root_node is c["_root"])
+    assert(c2._parent_node is c2["_"])
+    assert(c2._root_node is c2["_root"])
 
 
 def test_listcontainer_construct_metadata():
@@ -150,3 +150,16 @@ def test_container_setting():
     c.a = 123
     assert(c.a == 123)
     assert(p.a == 123)
+
+def test_listcontainer_constructor_from_dicts():
+    d = [{"a": 1, "b": 2, "c": {"x": 3, "y": 42}}, {"a": 1, "b": 2, "c": {"x": 3, "y": 42}}]
+
+    c = ListContainer(d)
+
+    assert(isinstance(c, ListContainer))
+    assert(isinstance(c[0], Container))
+    assert(c[0]._ is c)
+    assert(c[0]._root is c)
+    assert(isinstance(c[1], Container))
+    assert(c[1]._ is c)
+    assert(c[1]._root is c)

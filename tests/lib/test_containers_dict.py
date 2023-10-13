@@ -371,12 +371,12 @@ def test_container_attr_item_equality():
     c = Container({"c": 3, "d": 4}, parent=p)
     c2 = Container({"x": 3, "y": 42}, parent=c)
 
-    assert(p._parent_node is p["_parent_node"])
-    assert(p._root_node is p["_root_node"])
-    assert(c._parent_node is c["_parent_node"])
-    assert(c._root_node is c["_root_node"])
-    assert(c2._parent_node is c2["_parent_node"])
-    assert(c2._root_node is c2["_root_node"])
+    assert(p._parent_node is None)
+    assert(p._root_node is None)
+    assert(c._parent_node is c["_"])
+    assert(c._root_node is c["_root"])
+    assert(c2._parent_node is c2["_"])
+    assert(c2._root_node is c2["_root"])
 
 
 def test_container_construct_metadata():
@@ -429,3 +429,14 @@ def test_container_construct_empty_metadata():
     assert(False == p._xml_building == c._xml_building == c2._xml_building)
     assert(False == p._xml_parsing == c._xml_parsing == c2._xml_parsing)
     assert(p._io == c._io == c2._io)
+
+
+def test_container_constructor_from_dict():
+    d = {"a": 1, "b": 2, "c": {"x": 3, "y": 42}}
+
+    c = Container(d)
+
+    assert(isinstance(c, Container))
+    assert(isinstance(c.c, Container))
+    assert(c.c._ is c)
+    assert(c.c._root is c)

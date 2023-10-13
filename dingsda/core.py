@@ -505,6 +505,15 @@ class Subconstruct(Construct):
     def _full_sizeof(self, obj: Any, context: Container, path: str) -> int:
         return self.subcon._full_sizeof(obj, context, path)
 
+    def _is_array(self, context: Optional[Container] = None) -> bool:
+        return self.subcon._is_array(context=context)
+
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
+        return self.subcon._is_simple_type(context=context)
+
+    def _is_struct(self, context: Optional[Container] = None) -> bool:
+        return self.subcon._is_struct(context=context)
+
 
 class Structconstruct(Construct):
     def _is_simple_type(self, context: Optional[Container] = None) -> bool:
@@ -527,7 +536,7 @@ class Structconstruct(Construct):
                 try:
                     size_sum += sc._static_sizeof(context, path)
                 except SizeofError:
-                    if not sc._is_array():
+                    if not sc._is_array(context):
                         ctx = Container(parent=context)
                     else:
                         ctx = Container(parent=context)
@@ -548,10 +557,10 @@ class Structconstruct(Construct):
 class Arrayconstruct(Subconstruct):
     def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         # predicates don't need to be checked in preprocessing
-        retlist = ListContainer()
+        retlist = ListContainer(parent=context)
         for i, e in enumerate(obj):
             context._index = i
-            child_obj, _ = self.subcon._preprocess(e, context, path)
+            child_obj, _ = self.subcon._preprocess(e, retlist, path)
             retlist.append(child_obj)
             assert(_ is None)
 
@@ -559,12 +568,12 @@ class Arrayconstruct(Subconstruct):
 
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         # predicates don't need to be checked in preprocessing
-        retlist = ListContainer()
+        retlist = ListContainer(parent=context)
         meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
         size = 0
         for i, e in enumerate(obj):
             context._index = i
-            child_obj, child_meta_info = self.subcon._preprocess_size(e, context, path, offset)
+            child_obj, child_meta_info = self.subcon._preprocess_size(e, retlist, path, offset)
             retlist.append(child_obj)
 
             offset += child_meta_info.size
@@ -1329,7 +1338,7 @@ class Struct(Structconstruct):
 
             except StopFieldError:
                 break
-
+        context.pop("_subcons")
         return context
 
     def _preprocess(self, obj: Container, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
@@ -1494,10 +1503,15 @@ class Array(Arrayconstruct):
         if not 0 <= count:
             raise RangeError("invalid count %s" % (count,), path=path)
         discard = self.discard
-        obj = ListContainer()
+        obj = ListContainer(parent=context)
         for i in range(count):
-            context._index = i
-            e = self.subcon._parsereport(stream, context, path)
+            if self.subcon._is_struct(context=obj):
+                ctx = Container(parent=obj)
+            else:
+                ctx = obj
+            ctx._index = i
+            obj._index = i
+            e = self.subcon._parsereport(stream, ctx, path)
             if not discard:
                 obj.append(e)
         return obj
@@ -1584,9 +1598,14 @@ class GreedyRange(Subconstruct):
         obj = ListContainer(parent=context)
         try:
             for i in itertools.count():
-                obj._index = i
                 fallback = stream_tell(stream, path)
-                e = self.subcon._parsereport(stream, obj, path)
+                if self.subcon._is_struct(context=obj):
+                    ctx = Container(parent=obj)
+                else:
+                    ctx = obj
+                ctx._index = i
+                obj._index = i
+                e = self.subcon._parsereport(stream, ctx, path)
                 if not discard:
                     obj.append(e)
         except StopFieldError:
@@ -2105,15 +2124,6 @@ class Rebuild(Subconstruct):
 
     def _fromET(self, parent, name, context, path, is_root=False):
         return context
-
-    def _is_array(self, context: Optional[Container] = None) -> bool:
-        return self.subcon._is_array(context=context)
-
-    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
-        return self.subcon._is_simple_type(context=context)
-
-    def _is_struct(self, context: Optional[Container] = None) -> bool:
-        return self.subcon._is_struct(context=context)
 
 
 class Default(Subconstruct):
@@ -2838,7 +2848,12 @@ class Switch(Construct):
     def _parse(self, stream, context: Container, path: str) -> Any:
         keyfunc = evaluate(self.keyfunc, context)
         sc = self.cases.get(keyfunc, self.default)
-        return sc._parsereport(stream, context, path)
+
+        if sc._is_struct(context):
+            ctx = Container(parent=context)
+        else:
+            ctx = context
+        return sc._parsereport(stream, ctx, path)
 
     def _build(self, obj: Any, stream, context: Container, path: str):
         keyfunc = evaluate(self.keyfunc, context)
@@ -2933,6 +2948,7 @@ class Switch(Construct):
         return sc._is_array(context)
 
     def _is_struct(self, context: Optional[Container] = None) -> bool:
+        return False
         assert(context is not None)
         keyfunc = evaluate(self.keyfunc, context, recurse=True)
         sc = self.cases.get(keyfunc, self.default)
@@ -3851,7 +3867,7 @@ class NullTerminated(Subconstruct):
         raise SizeofError(path=path)
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        raise SizeofError(path=path)
+        return self.subcon._sizeof(obj, context, path) + len(self.term)
 
 
 class NullStripped(Subconstruct):
@@ -3905,7 +3921,7 @@ class NullStripped(Subconstruct):
         raise SizeofError(path=path)
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
-        raise SizeofError(path=path)
+        return self.subcon._sizeof(obj, context, path)
 
 
 class RestreamData(Subconstruct):

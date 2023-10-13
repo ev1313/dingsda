@@ -263,7 +263,25 @@ class Container(collections.OrderedDict):
         chained = list(chain(items, kwds.items()))
         if len(chained) > 0:
             for k, v in chained:
+                if isinstance(v, dict):
+                    # we need to create a Container + create parent
+                    if isinstance(v, Container):
+                        # FIXME: refactor this in some kind of update parent function
+                        v._parent_node = self
+                        v._root_node = self if self._root_node is None else self._root_node
+                    else:
+                        v = Container(v, parent=self)
+                elif isinstance(v, list):
+                    # we need to create a ListContainer + create parent
+                    if isinstance(v, ListContainer):
+                        v._parent_node = self
+                        v._root_node = self if self._root_node is None else self._root_node
+                    else:
+                        v = ListContainer(v, parent=self)
+
                 self[k] = v
+
+                # if Container this is created from has meta information, copy it
                 if isinstance(seqordict, Container):
                     self.set_meta(k, seqordict.get_meta(k))
 
@@ -389,6 +407,11 @@ class Container(collections.OrderedDict):
     def _search(self, compiled_pattern, search_all):
         items = []
         for key in self.keys():
+            if key in self.__slots__:
+                continue
+            if key in ["_", "_root", "_parsing", "_building", "_sizing", "_preprocessing",
+                        "_xml_building", "_xml_parsing", "_params", "_io", "_subcons"]:
+                continue
             try:
                 if isinstance(self[key], (Container,ListContainer)):
                     ret = self[key]._search(compiled_pattern, search_all)
@@ -453,7 +476,10 @@ class ListContainer(list):
     __slots__ = ["__recursion_lock__", "_root_node", "_parent_node", "_parent_meta_info", "_meta_infos", "_index"]
 
     def __init__(self, *args, **kwargs):
+        # in lists the meta infos are just another list, so no tuple complexity like in Containers is necessary
         self._meta_infos = []
+
+        # parent / root handling like in Containers
         self._root_node = None
         self._parent_node = None
         self._parent_meta_info = None
@@ -468,7 +494,26 @@ class ListContainer(list):
             self._parent_meta_info = parent_meta
         elif parent is None:
             self._parent_meta_info = ConstructMetaInformation()
+
+        # initialize the list
         super().__init__(*args, **kwargs)
+        # now update all dicts / lists to Containers / ListContainers
+
+        for idx, item in enumerate(self):
+            # FIXME: refactor all these parent/root functions to a base class for Container and ListContainer? or at least some functions
+            if isinstance(item, dict):
+                # we need to create a Container + create parent
+                if isinstance(item, Container):
+                    assert(item._ is self)
+                else:
+                    item = Container(item, parent=self)
+            elif isinstance(item, list):
+                # we need to create a ListContainer + create parent
+                if isinstance(item, ListContainer):
+                    assert(item._ is self)
+                else:
+                    item = ListContainer(item, parent=self)
+            self[idx] = item
 
     @recursion_lock()
     def __repr__(self):
@@ -510,10 +555,14 @@ class ListContainer(list):
             return self._root._parent_meta_info.params
         elif name == "_io":
             return self._root._parent_meta_info.io
+        if self._parent_node is None:
+            raise KeyError(name)
         ret = self._parent_node.__getitem__(name)
         if isinstance(ret, Container):
-            ret._parent_node = self
-            ret._root_node = self if self._root_node is None else self._root_node
+            assert(ret._parent_node is self)
+            assert(ret._root_node is self if self._root_node is None else self._root_node)
+            #ret._parent_node = self
+            #ret._root_node = self if self._root_node is None else self._root_node
         return ret
 
     def __getattr__(self, name):

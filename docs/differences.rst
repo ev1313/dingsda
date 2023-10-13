@@ -180,3 +180,13 @@ speed, but rather ease of describing the formats.
 Rather than generating parsers in Python or kaitai structs, a
 C++ implementation or parser generator of this would be preferred.
 But this is not planned currently.
+
+Furthermore the following features were removed:
+
+ - Sequence:
+    - These were just Structs but with unnamed fields.
+    - This creates problems with the new Container / ListContainer design and is technically not needed.
+    - also deletes the legacy >> operator API for creating sequences
+    - just create / use Structs now, and name elements you need
+ - Select, TryParse: I regard these as bad design and they can't determine their size
+ - NamedTuple: I don't see the use of this, and the API seemed bad

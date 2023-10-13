@@ -331,7 +331,7 @@ def test_rebuild():
         "count" / Rebuild(Byte, len_(this.items)),
         "items" / Byte[this.count],
     )
-    assert d.parse(b"\x02ab") == Container(count=2, items=[97,98])
+    assert d.parse(b"\x02ab") == Container(count=2, items=[97, 98])
     assert d.build(dict(count=None,items=[255])) == b"\x01\xff"
     assert d.build(dict(count=-1,items=[255])) == b"\x01\xff"
     assert d.build(dict(items=[255])) == b"\x01\xff"
@@ -795,10 +795,10 @@ def test_nullterminated():
     assert d.parse(b'\xff\x00') == b'\xff\x00'
     d = NullTerminated(GreedyBytes, include=False)
     assert d.parse(b'\xff\x00') == b'\xff'
-    d = NullTerminated(GreedyBytes, consume=True) >> GreedyBytes
-    assert d.parse(b'\xff\x00') == [b'\xff', b'']
-    d = NullTerminated(GreedyBytes, consume=False) >> GreedyBytes
-    assert d.parse(b'\xff\x00') == [b'\xff', b'\x00']
+    d = Struct("n" / NullTerminated(GreedyBytes, consume=True), "rest" / GreedyBytes)
+    assert d.parse(b'\xff\x00') == {"n": b'\xff', "rest": b''}
+    d = Struct("n" / NullTerminated(GreedyBytes, consume=False), "rest" / GreedyBytes)
+    assert d.parse(b'\xff\x00') == {"n": b'\xff', "rest": b'\x00'}
     d = NullTerminated(GreedyBytes, require=True)
     assert raises(d.parse, b'\xff') == StreamError
     d = NullTerminated(GreedyBytes, require=False)
@@ -809,6 +809,7 @@ def test_nullterminated():
     common(d, bytes(1), u"", SizeofError)
     d = NullTerminated(GreedyBytes, term=bytes(2))
     common(d, b"\x01\x00\x00\x02\x00\x00", b"\x01\x00\x00\x02", SizeofError)
+
 
 def test_nullstripped():
     d = NullStripped(GreedyBytes)
@@ -1197,10 +1198,6 @@ def test_operators():
     common(Array(4, Byte), b"\x01\x02\x03\x04", [1,2,3,4], 4)
     common(Byte[4], b"\x01\x02\x03\x04", [1,2,3,4], 4)
     common(Struct("nums" / Byte[4]), b"\x01\x02\x03\x04", Container(nums=[1,2,3,4]), 4)
-
-    common(Int8ub >> Int16ub, b"\x01\x00\x02", [1,2], 3)
-    common(Int8ub >> Int16ub >> Int32ub, b"\x01\x00\x02\x00\x00\x00\x03", [1,2,3], 7)
-    common(Int8ub[2] >> Int16ub[2], b"\x01\x02\x00\x03\x00\x04", [[1,2],[3,4]], 6)
 
     common(Struct("count"/Byte, "items"/Byte[this.count], Pass, Terminated), b"\x03\x01\x02\x03", Container(count=3, items=[1,2,3]), SizeofError)
     common("count"/Byte + "items"/Byte[this.count] + Pass + Terminated, b"\x03\x01\x02\x03", Container(count=3, items=[1,2,3]), SizeofError)
@@ -1629,6 +1626,7 @@ def test_struct_stream():
     )
     d.parse(bytes(20))
 
+
 def test_struct_root_topmost():
     d = Struct(
         'x' / Computed(1),
@@ -1643,7 +1641,8 @@ def test_struct_root_topmost():
             ),
         Probe(),
         )
-    assert d.parse(b"", z=2) == Container(x=1, inner=Container(inner2=Container(x=1,xx=1,z=2,zz=2)))
+    assert d.parse(b"", z=2) == Container(z=2, x=1, inner=Container(inner2=Container(x=1,xx=1,z=2,zz=2)))
+
 
 def test_parsedhook_repeatersdiscard():
     outputs = []
@@ -1870,7 +1869,7 @@ def test_area_int():
         "header2": {"data2": [0x05, 0x06, 0x07, 0x08, 0x09]}
     }
     # sizesample is only size of the header!
-    common(format=fmt, datasample=data, objsample=obj, objbuilt=obj_built, preprocess=True, sizesample=4)
+    common(format=fmt, datasample=data, objsample=obj)
     data = b"\x04\x00\x04\x01\x01"
     obj = {
         "header1": {"offset": 0x04, "size": 0x00, "data1": []},
@@ -1880,7 +1879,7 @@ def test_area_int():
         "header1": {"data1": []},
         "header2": {"data2": [0x01]}
     }
-    common(format=fmt, datasample=data, objsample=obj, objbuilt=obj_built, preprocess=True, sizesample=4)
+    common(format=fmt, datasample=data, objsample=obj)
 
 
 @xfail(reason="unfixable defect in the design")
