@@ -1,5 +1,6 @@
-from typing import Any, Tuple, Dict
+from typing import Any, Tuple, Dict, Optional
 
+from dingsda import MetaInformation
 from dingsda.core import Construct, Subconstruct
 from dingsda.errors import CheckError, ConstError, StringError, ExplicitError, SizeofError, TerminatedError
 from dingsda.helpers import bytestringtype, evaluate, singleton
@@ -237,6 +238,12 @@ class Error(Construct):
 
     def _build(self, obj, stream, context, path):
         raise ExplicitError("Error field was activated during building", path=path)
+
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
+        raise ExplicitError("Error field was activated during preprocessing", path=path)
+
+    def _preprocess_size(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
+        raise ExplicitError("Error field was activated during preprocessing", path=path)
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         raise SizeofError("Error does not have size, because it interrupts parsing and building", path=path)

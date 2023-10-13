@@ -423,8 +423,8 @@ def test_check():
 def test_error():
     assert raises(Error.parse, b"") == ExplicitError
     assert raises(Error.build, None) == ExplicitError
-    assert ("x"/Int8sb >> IfThenElse(this.x > 0, Int8sb, Error)).parse(b"\x01\x05") == [1,5]
-    assert raises(("x"/Int8sb >> IfThenElse(this.x > 0, Int8sb, Error)).parse, b"\xff\x05") == ExplicitError
+    assert Struct("x"/Int8sb, "if" / IfThenElse(this.x > 0, Int8sb, Error)).parse(b"\x01\x05") == {"x": 1, "if": 5}
+    assert raises(Struct("x"/Int8sb, "if" / IfThenElse(this.x > 0, Int8sb, Error)).parse, b"\xff\x05") == ExplicitError
 
 def test_focusedseq():
     common(FocusedSeq("num", Const(b"MZ"), "num"/Byte, Terminated), b"MZ\xff", 255)
@@ -506,6 +506,7 @@ def test_hexdump():
     assert str(obj) == repr
     assert str(obj) == repr
 
+
 def test_hexdump_regression_issue_188():
     # Hex HexDump were not inheriting subcon flags
     d = Struct(Hex(Const(b"MZ")))
@@ -514,6 +515,7 @@ def test_hexdump_regression_issue_188():
     d = Struct(HexDump(Const(b"MZ")))
     assert d.parse(b"MZ") == Container()
     assert d.build(dict()) == b"MZ"
+
 
 def test_union():
     d = Union(None, "a"/Bytes(2), "b"/Int16ub)
@@ -542,10 +544,12 @@ def test_union():
     # regression check, so first subcon is not parsefrom by accident
     assert raises(Union, Byte, VarInt) == UnionError
 
+
 def test_union_kwctor():
     d = Union(None, a=Int8ub, b=Int16ub, c=Int32ub)
     assert d.parse(b"\x01\x02\x03\x04") == Container(a=0x01,b=0x0102,c=0x01020304)
     assert d.build(Container(c=0x01020304)) == b"\x01\x02\x03\x04"
+
 
 def test_union_issue_348():
     d = Union(None,
@@ -557,6 +561,7 @@ def test_union_issue_348():
     assert d.build(dict(Int16=[4386, 13124])) == b'\x00\x04\x11\x22\x33\x44'
     assert d.build(dict(Int32=[287454020])) == b'\x00\x04\x11\x22\x33\x44'
 
+
 def test_if():
     common(If(True,  Byte), b"\x01", 1)
     common(If(False, Byte), b"", None)
@@ -564,9 +569,11 @@ def test_if():
     size_test(If(True, Byte), {}, 1, 1)
     size_test(If(False, Byte), {}, 0, 0)
 
+
 def test_ifthenelse():
     common(IfThenElse(True,  Int8ub, Int16ub), b"\x01", 1, 1)
     common(IfThenElse(False, Int8ub, Int16ub), b"\x00\x01", 1, 2)
+
 
 def test_switch():
     d = Switch(this.x, {1:Int8ub, 2:Int16ub, 4:Int32ub})
@@ -603,6 +610,7 @@ def test_switch_issue_357():
     )
     assert st1.parse(b"") == st2.parse(b"")
 
+
 def test_stopif():
     d = Struct("x"/Byte, StopIf(this.x == 0), "y"/Byte)
     common(d, b"\x00", Container(x=0))
@@ -615,10 +623,12 @@ def test_stopif():
     assert d.build([1]) == b"\x01"
     assert d.build([1,0,2]) == b"\x01\x00"
 
+
 def test_padding():
     common(Padding(4), b"\x00\x00\x00\x00", None, 4)
     assert raises(Padding, 4, pattern=b"?????") == PaddingError
     assert raises(Padding, 4, pattern=u"?") == PaddingError
+
 
 def test_padded():
     common(Padded(4, Byte), b"\x01\x00\x00\x00", 1)
@@ -626,6 +636,7 @@ def test_padded():
     assert raises(Padded, 4, Byte, pattern=u"?") == PaddingError
     assert Padded(4, VarInt).static_sizeof() == 4
     assert Padded(4, Byte[this.missing]).static_sizeof() == 4
+
 
 def test_aligned():
     common(Aligned(4, Byte), b"\x01\x00\x00\x00", 1)
