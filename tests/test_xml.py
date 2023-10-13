@@ -4,7 +4,7 @@ from dingsda.lazy import Lazy, LazyBound
 from dingsda.string import PascalString, CString
 from tests.declarativeunittest import *
 from dingsda import *
-from dingsda.core import list_to_string, string_to_list
+from dingsda.helpers import list_to_string, string_to_list
 
 import xml.etree.ElementTree as ET
 

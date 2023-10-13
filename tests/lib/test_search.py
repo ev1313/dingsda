@@ -1,5 +1,8 @@
-from dingsda.core import *
-from dingsda.numbers import *
+from dingsda import this
+from dingsda.struct import Struct
+from dingsda.numbers import Int8ub
+from dingsda.arrays import GreedyRange
+from dingsda.switch import Switch
 
 d = Struct(
     "aa" / Int8ub,

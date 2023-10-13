@@ -1,11 +1,13 @@
 import sys
 
 from dingsda.helpers import stream_seek, stream_tell, evaluate, create_child_context
-from dingsda.core import Construct, Subconstruct, Structconstruct
+from dingsda.core import Construct, Subconstruct
+from dingsda.struct import Structconstruct
 from dingsda.errors import *
 from dingsda.lib import stringtypes, Container, ListContainer
 
 from typing import Any, Tuple, Dict
+
 
 class Lazy(Subconstruct):
     r"""

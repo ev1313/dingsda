@@ -2,8 +2,8 @@ r"""
 DingsDa -- Parsing Made Fun
 
 Homepage:
-	https://github.com/construct/construct
-    http://construct.readthedocs.org
+	https://github.com/ev1313/dingsda
+    http://dingsda.readthedocs.org
 
 Hands-on example:
     >>> from dingsda import *
@@ -20,14 +20,29 @@ Hands-on example:
 """
 
 from dingsda.core import *
+from dingsda.adapters import *
+from dingsda.arrays import *
+from dingsda.conditional import *
 from dingsda.debug import *
 from dingsda.errors import *
 from dingsda.expr import *
 from dingsda.helpers import *
 from dingsda.lazy import *
 from dingsda.numbers import *
+from dingsda.prefixed import *
 from dingsda.string import *
+from dingsda.stream import *
+from dingsda.struct import *
+from dingsda.switch import *
+from dingsda.union import *
 from dingsda.version import *
+from dingsda.validators import *
+from dingsda.alignment import *
+from dingsda.bytes import *
+from dingsda.misc import *
+from dingsda.enum import *
+from dingsda.pointer import *
+from dingsda.extra import *
 from dingsda import lib
 
 
@@ -125,7 +140,6 @@ __all__ = [
     'Prefixed',
     'PrefixedArray',
     'Probe',
-    'ProcessXor',
     'RawCopy',
     'Rebuffered',
     'RebufferedBytesIO',

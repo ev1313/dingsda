@@ -13,8 +13,6 @@ Core API: Tunneling
 .. autofunction:: dingsda.RestreamData
 .. autofunction:: dingsda.Transformed
 .. autofunction:: dingsda.Restreamed
-.. autofunction:: dingsda.ProcessXor
-.. autofunction:: dingsda.ProcessRotateLeft
 .. autofunction:: dingsda.Checksum
 .. autofunction:: dingsda.Compressed
 .. autofunction:: dingsda.CompressedLZ4

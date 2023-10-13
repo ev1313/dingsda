@@ -25,6 +25,8 @@ setup(
     install_requires = [],
     extras_require = {
         "extras": [
+            "pytest",
+            "pytest-benchmark",
             "enum34",
             "numpy",
             "arrow",

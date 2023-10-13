@@ -7,9 +7,10 @@ xfail = pytest.mark.xfail
 skip = pytest.mark.skip
 skipif = pytest.mark.skipif
 
-from dingsda import *
-from dingsda.errors import *
-from dingsda.lib import *
+from dingsda.core import Construct
+from dingsda.lib import Container, ONWINDOWS
+
+import binascii
 
 if not ONWINDOWS:
     devzero = open("/dev/zero", "rb")

@@ -1,6 +1,9 @@
-from dingsda.core import Adapter, Prefixed, GreedyBytes, FixedSized, NullStripped, NullTerminated
+from dingsda.adapters import Adapter
+from dingsda.bytes import GreedyBytes
+from dingsda.prefixed import Prefixed
 from dingsda.helpers import *
 from dingsda.errors import *
+from dingsda.stream import NullStripped, NullTerminated, FixedSized
 from dingsda.lib import unicodestringtype
 
 #: Explicitly supported encodings (by PaddedString and CString classes).

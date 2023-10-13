@@ -939,24 +939,6 @@ def test_restreamed_partial_read():
     d = Restreamed(Bytes(255), ident, 1, ident, 1, ident)
     assert raises(d.parse, b"") == StreamError
 
-def test_processxor():
-    d = ProcessXor(0, Int16ub)
-    common(d, b"\xf0\x0f", 0xf00f, 2)
-    d = ProcessXor(0xf0, Int16ub)
-    common(d, b"\x00\xff", 0xf00f, 2)
-    d = ProcessXor(bytes(10), Int16ub)
-    common(d, b"\xf0\x0f", 0xf00f, 2)
-    d = ProcessXor(b"\xf0\xf0\xf0\xf0\xf0", Int16ub)
-    common(d, b"\x00\xff", 0xf00f, 2)
-
-    d = ProcessXor(0xf0, GreedyBytes)
-    common(d, b"\x00\xff", b"\xf0\x0f", SizeofError)
-    d = ProcessXor(b"\xf0\xf0\xf0\xf0\xf0", GreedyBytes)
-    common(d, b"\x00\xff", b"\xf0\x0f", SizeofError)
-    d = ProcessXor(b"X", GreedyString("utf-8"))
-    common(d, b"\x00", u"X", SizeofError)
-    d = ProcessXor(b"XXXXX", GreedyString("utf-8"))
-    common(d, b"\x00", u"X", SizeofError)
 
 def test_checksum():
     d = Struct(
