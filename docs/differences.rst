@@ -9,8 +9,11 @@ in reverse engineering of file formats. Many features aim directly
 for simple describing of whole file formats written in and for
 other languages, especially in terms of offset/size handling (see Area).
 
+New Features
+==========
+
 Preprocessing
-===========
+---------
 
 Previously when using Rebuilds it was not possible to nest them like this:
 
@@ -59,43 +62,6 @@ This information is added in the Containers for every element in dataclasses
 (so it is not that RAM intensive like in dictionaries).
 
 After preprocessing Rebuilds also can access these meta attributes.
-
-SizeOf
-======
-
-Construct provided two different sizeof methods, _sizeof and _actualsize.
-
-_sizeof was essentially just a static size implementation - it did return SizeOf errors
-for all the types with unknown lengths.
-
-_actualsize was a helper function used only by LazyArray and LazyStruct for
-determining whether the struct can be omitted parsing or not.
-
-In DingsDa there are multiple different types of sizeof:
-
- - static_sizeof
- - sizeof
- - full_sizeof
- - _expected_sizeof
-
-Static sizeof resembles the classic sizeof of Construct the most. It
-returns only for types like FormatField, where the size of the construct
-is known before parsing.
-
-Sizeof takes now an extra argument, obj, which is the previously
-parsed construct. With the information from the parser object it
-can determine for any Construct the actual size. It will fallback to static sizeof,
-if not implemented in a Construct.
-
-Full sizeof determines the full size of the Struct, also measuring the sizes of
-the Pointers as well by adding _ptrsize up. This is not intended or working as
-a "how large will the file be?", but rather as a public method for Pointer types
-to get the size of the pointer contents. It will fallback to normal sizeof.
-
-_expected_size is a internal used sizeof replacing _actualsize. It determines
-for some special types with prefixed lengths by using the current parsing stream
-the expected size of the Construct and moves the stream along by this size.
-The fallback of this function is static_sizeof.
 
 Area
 ====
@@ -156,6 +122,105 @@ This can be used when Rebuilding the object for determining a type id.
  - IfThenElse as an option called "rebuild_hack" which falls back on fromET to determining the
 case not by evaluating, but by the name of the XML Tag. This is necessary in some cases, because the
 data determining the branch will be rebuild later from the data itself.
+
+Changed Features
+===============
+
+SizeOf
+------
+
+Construct provided two different sizeof methods, _sizeof and _actualsize.
+
+_sizeof was essentially just a static size implementation - it did return SizeOf errors
+for all the types with unknown lengths.
+
+_actualsize was a helper function used only by LazyArray and LazyStruct for
+determining whether the struct can be omitted parsing or not.
+
+In DingsDa there are multiple different types of sizeof:
+
+ - static_sizeof
+ - sizeof
+ - full_sizeof
+ - _expected_sizeof
+
+Static sizeof resembles the classic sizeof of Construct the most. It
+returns only for types like FormatField, where the size of the construct
+is known before parsing.
+
+Sizeof takes now an extra argument, obj, which is the previously
+parsed construct. With the information from the parser object it
+can determine for any Construct the actual size. It will fallback to static sizeof,
+if not implemented in a Construct.
+
+Full sizeof determines the full size of the Struct, also measuring the sizes of
+the Pointers as well by adding _ptrsize up. This is not intended or working as
+a "how large will the file be?", but rather as a public method for Pointer types
+to get the size of the pointer contents. It will fallback to normal sizeof.
+
+_expected_size is a internal used sizeof replacing _actualsize. It determines
+for some special types with prefixed lengths by using the current parsing stream
+the expected size of the Construct and moves the stream along by this size.
+The fallback of this function is static_sizeof.
+
+Furthermore all Constructs in DingsDa support sizing, if the parsed Container
+is provided.
+
+Containers
+---------
+
+Construct used a wild mix of dictionaries and Containers for storing the parsed
+information. Major speedbumps were the copying of the dictionaries and the nested
+copies of the dictionaries (which led to a quite big RAM usage for big, nested datastructures).
+
+DingsDa uses a custom Container and ListContainer datatype, which supports
+parenting and stores meta information in dedicated dataclasses. This leads to
+a much smaller RAM usage.
+
+Furthermore all the _parse functions will create now a new Container and append this to
+the parent Container. Everywhere are only used references instead of deep copying.
+The _ and _root attributes are now references, that are handled by the Container/ListContainer:
+
+```
+    p = ListContainer([1,2,3])
+    c = ListContainer([4,5,6], parent=p)
+    p.append(c)
+    c2 = ListContainer([7,8,9], parent=c)
+    c.append(c2)
+
+    assert(p._ == None)
+    assert(p._root is p)
+    assert(c._ is p)
+    assert(c._root is p)
+    assert(c2._ is c)
+    assert(c2._root is p)
+```
+
+The building step now doesn't modify the Containers / ListContainers at all.
+
+Only the preprocessing step will still modify the Containers / ListContainers for
+obvious reasons, however it does also not copy any Containers / ListContainers.
+
+FIXME: add documentation about static / non-static metainformation
+
+FlagsEnum
+--------
+
+Previously the following was possible:
+
+```
+    d = FlagsEnum(Byte, one=1, two=2, four=4, eight=8)
+    assert d.build(255) == b"\xff"
+```
+
+However this breaks in dingsda, because of the preprocessing step.
+Now it returns:
+
+```
+    assert d.build(255) == b"\x0f"
+```
+
+As I do not know a clean way to fix this yet, it is documented here.
 
 Removed features
 ================
