@@ -1674,7 +1674,7 @@ class RepeatUntil(Arrayconstruct):
             e = self.subcon._parsereport(stream, obj, path)
             if not discard:
                 obj.append(e)
-            if predicate(e, obj, context):
+            if predicate(e, obj, obj):
                 return obj
         assert(False)
 

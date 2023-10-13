@@ -151,6 +151,7 @@ def test_container_setting():
     assert(c.a == 123)
     assert(p.a == 123)
 
+
 def test_listcontainer_constructor_from_dicts():
     d = [{"a": 1, "b": 2, "c": {"x": 3, "y": 42}}, {"a": 1, "b": 2, "c": {"x": 3, "y": 42}}]
 

@@ -15,23 +15,50 @@ Preprocessing
 Previously when using Rebuilds it was not possible to nest them like this:
 
 ```
-f = "F" / Struct(
-        "a" / Rebuild(Int32ul, this.b),
-        "b" / Rebuild(Int32ul, this.c),
-        "c" / Int32ul,
-    )
-```
+    f = "F" / Struct(
+            "a" / Rebuild(Int32ul, this.b),
+            "b" / Rebuild(Int32ul, this.c),
+            "c" / Int32ul,
+        )
 
-Now before building it is possible to call the preprocess function:
-
-```
     obj = f.parse(data)
-    preprocessed_obj = f.preprocess(obj)
     data = f.build(preprocessed_obj)
 ```
 
 This works, because preprocess adds for a and b lambdas, which get
 resolved after the preprocessing, which adds all of them.
+
+Now before building DingsDa internally calls the preprocess and preprocess_size functions.
+
+The new preprocessing step calls _preprocess and _preprocess_size functions by
+default when building. Every construct is now able to determine its size and
+this size gets appended in the meta information:
+
+```
+    assert(obj.meta("a")._offset == 0)
+    assert(obj.meta("a")._size == 12)
+    assert(obj.meta("a")._endoffset == 12)
+```
+
+Furthermore even pointers get their size determined and appended:
+
+```
+    f = "F" / Struct(
+            "a" / Pointer(4, Int32ul),
+            "b" / Int32ul,
+            "c" / Int32ul,
+        )
+
+    obj = f.parse(data)
+    data = f.build(preprocessed_obj)
+    assert(obj.meta("a")._size == 4)
+    assert(obj.meta("a")._ptrsize == 4)
+```
+
+This information is added in the Containers for every element in dataclasses
+(so it is not that RAM intensive like in dictionaries).
+
+After preprocessing Rebuilds also can access these meta attributes.
 
 SizeOf
 ======
@@ -69,47 +96,6 @@ _expected_size is a internal used sizeof replacing _actualsize. It determines
 for some special types with prefixed lengths by using the current parsing stream
 the expected size of the Construct and moves the stream along by this size.
 The fallback of this function is static_sizeof.
-
-Sizing
-======
-
-After the first part of preprocessing, the optional sizing step adds the following attributes to every
-parsed item:
-
- - _offset
- - _size
- - _endoffset
-
-Furthermore Pointers set the size of their contents when sizing to:
- - _ptrsize
-
-All these items exist in the object dictionary itself and Struct
-adds another layer in the object dictionary of the Struct.
-The Struct names all child objects like this:
-
- - _{childname}_offset
- - _{childname}_size
- - _{childname}_endoffset
- - _{childname}_ptrsize
-
-All of these can be used in Rebuilds in the build step later. As
-the sizing step is done after the preprocessing step, it can also
-utilize the Rebuilds, for example when calculating the size of a Switch
-like this:
-
-```
-    s = "test" / Struct(
-        "type" / Rebuild(Int8ul, lambda ctx: ctx._switch_id_data),
-        "data" / Switch(this.type, {
-            1: "b32bit" / Struct("value" / Int32ul),
-            2: "b16bit" / Struct("value" / Int16ul),
-            3: "test" / Struct("a" / Int32ul, "b" / Int32ul),
-        }),
-        )
-```
-
-Here when sizing, the Rebuild of type will be called, which will get the
-switch id from the _switch_id_data attribute, previously added in an fromET step.
 
 Area
 ====

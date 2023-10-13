@@ -8,6 +8,7 @@ from dingsda.lazy import *
 from dingsda.lib import *
 from dingsda.date import Timestamp
 
+
 def test_size_array_different():
     # test elements with differing sizes like Switch
     d = Array(3, Struct("test" / Byte, "x" / Switch(this.test, {1: "a" / Byte, 2: "b" / Int16ub, 3: "c" / Int32ub})))
@@ -15,14 +16,17 @@ def test_size_array_different():
     size_test(d, [{"test": 1, "x": 1},{"test": 2, "x": 2},{"test": 1, "x": 3}], size=7)
     size_test(d, [{"test": 1, "x": 1},{"test": 2, "x": 2},{"test": 3, "x": 3}], size=10)
 
+
 def test_size_pascalstring():
     # PascalString is a macro using GreedyBytes
     d = PascalString(Byte, "utf8")
     size_test(d, "test", size=5)
 
+
 def test_size_prefixedarray():
     d = PrefixedArray(Byte, Byte)
     size_test(d, [1,2,3], size=4)
+
 
 def test_size_rebuild_array():
     d = Rebuild(Array(3, Byte), lambda x: [1,2,3])
@@ -46,11 +50,13 @@ def test_size_rebuild_array():
 
     size_test(d, obj, size=12)
 
+
 def test_size_utf16_string():
     d = PascalString(Int32ul, "utf-8")
     size_test(d, "test", size=8)
     d = PascalString(Int32ul, "utf-16-le")
     size_test(d, "test", size=12)
+
 
 def test_size_impr():
     IMPR = Struct(

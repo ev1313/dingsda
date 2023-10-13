@@ -8,6 +8,7 @@ from dingsda.lazy import *
 from dingsda.lib import *
 from dingsda.date import Timestamp
 
+
 def test_bytes():
     d = Bytes(4)
     common(format=d, datasample=b"1234", objsample=b"1234")
@@ -31,11 +32,13 @@ def test_bytes():
 def test_greedybytes():
     common(format=GreedyBytes, datasample=b"1234", objsample=b"1234")
 
+
 def test_bytes_issue_827():
     d = Bytes(3)
     assert d.build(bytearray(b'\x01\x02\x03')) == b'\x01\x02\x03'
     d = GreedyBytes
     assert d.build(bytearray(b'\x01\x02\x03')) == b'\x01\x02\x03'
+
 
 def test_bitwise():
     common(format=Bitwise(Bytes(8)), datasample=b"\xff", objsample=b"\x01\x01\x01\x01\x01\x01\x01\x01")
@@ -50,6 +53,7 @@ def test_bitwise():
     size_test(Bitwise(Array(2, Nibble)), {}, 1, 1, None)
     size_test(Bitwise(Array(1, Octet)), {}, 1, 1, None)
 
+
 def test_bytewise():
     common(format=Bitwise(Bytewise(Bytes(1))), datasample=b"\xff", objsample=b"\xff", sizesample=1)
     common(format=BitStruct("p1"/Nibble, "num"/Bytewise(Int24ub), "p2"/Nibble), datasample=b"\xf0\x10\x20\x3f", objsample=Container(sizesample=4, p1=15, num=0x010203, p2=15), sizesample=4)
@@ -61,6 +65,7 @@ def test_flag():
     common(d, b"\x00", False, 1)
     common(d, b"\x01", True, 1)
     d.parse(b"\xff") == True
+
 
 def test_enum():
     d = Enum(Byte, one=1, two=2, four=4, eight=8)
@@ -79,6 +84,7 @@ def test_enum():
     assert raises(d.build, "unknown") == MappingError
     assert raises(lambda: d.missing) == AttributeError
 
+
 def test_enum_enum34():
     import enum
     class E(enum.IntEnum):
@@ -89,6 +95,7 @@ def test_enum_enum34():
     common(d, b"\x01", "a", 1)
     common(d, b"\x02", "b", 1)
 
+
 def test_enum_enum36():
     import enum
     class E(enum.IntEnum):
@@ -98,6 +105,7 @@ def test_enum_enum36():
     d = Enum(Byte, E, F)
     common(d, b"\x01", "a", 1)
     common(d, b"\x02", "b", 1)
+
 
 def test_enum_issue_298():
     d = Struct(
@@ -125,6 +133,7 @@ def test_enum_issue_298():
     )
     common(d, b"\x01", dict(flag=True), 1)
 
+
 @xfail(reason="Cannot implement this in EnumIntegerString.")
 def test_enum_issue_992():
     import enum
@@ -138,6 +147,7 @@ def test_enum_issue_992():
     x = d.parse(b"\x02")
     assert x == F.b
 
+
 def test_flagsenum():
     d = FlagsEnum(Byte, one=1, two=2, four=4, eight=8)
     common(d, b"\x03", Container(_flagsenum=True, one=True, two=True, four=False, eight=False), 1)
@@ -145,7 +155,9 @@ def test_flagsenum():
     assert d.build(dict(one=True,two=True)) == b'\x03'
     assert d.build(8) == b'\x08'
     assert d.build(1|2) == b'\x03'
-    assert d.build(255) == b"\xff"
+    # previously this was possible, however due to the extra preprocessing step it isn't anymore:
+    #assert d.build(255) == b"\xff"
+    assert d.build(255) == b"\x0f"
     assert d.build(d.eight) == b'\x08'
     assert d.build(d.one|d.two) == b'\x03'
     assert raises(d.build, dict(unknown=True)) == MappingError
@@ -153,6 +165,7 @@ def test_flagsenum():
     assert d.one == "one"
     assert d.one|d.two == "one|two"
     assert raises(lambda: d.missing) == AttributeError
+
 
 def test_flagsenum_enum34():
     import enum
@@ -165,6 +178,7 @@ def test_flagsenum_enum34():
     common(d, b"\x02", Container(_flagsenum=True, a=False,b=True), 1)
     common(d, b"\x03", Container(_flagsenum=True, a=True,b=True), 1)
 
+
 def test_flagsenum_enum36():
     import enum
     class E(enum.IntEnum):
@@ -176,10 +190,12 @@ def test_flagsenum_enum36():
     common(d, b"\x02", Container(_flagsenum=True, a=False,b=True), 1)
     common(d, b"\x03", Container(_flagsenum=True, a=True,b=True), 1)
 
+
 def test_mapping():
     x = object
     d = Mapping(Byte, {x:0})
     common(d, b"\x00", x, 1)
+
 
 def test_struct():
     common(Struct(), b"", Container(), 0)
@@ -193,13 +209,16 @@ def test_struct():
     size_test(Struct("a"/Int16ub, "b"/Int8ub), {}, 3, 3, None)
     size_test(Struct("a"/Int16ub), {}, 2, 2, None)
 
+
 def test_struct_nested():
     d = Struct("a"/Byte, "b"/Int16ub, "inner"/Struct("c"/Byte, "d"/Byte))
     common(d, b"\x01\x00\x02\x03\x04", Container(a=1,b=2,inner=Container(c=3,d=4)), 5)
 
+
 def test_struct_kwctor():
     d = Struct(a=Byte, b=Byte, c=Byte, d=Byte)
     common(d, b"\x01\x02\x03\x04", Container(a=1,b=2,c=3,d=4), 4)
+
 
 def test_struct_proper_context():
     # adjusted to support new embedding semantics
@@ -215,6 +234,7 @@ def test_struct_proper_context():
     )
     assert d.parse(b"\x01\x0f") == Container(x=1, inner=Container(y=15, a=2, b=17), c=4, d=19)
 
+
 def test_struct_sizeof_context_nesting():
     d = Struct(
         "a" / Computed(1),
@@ -227,6 +247,7 @@ def test_struct_sizeof_context_nesting():
         Check(this.inner.b == 2),
     )
     size_test(d, {}, 0, 0, None)
+
 
 def test_array():
     common(Byte[0], b"", [], 0)
@@ -253,9 +274,11 @@ def test_array():
     assert d.build([1,2,3]) == b"\x01\x02\x03"
     assert d.static_sizeof() == 3
 
+
 @xfail(ONWINDOWS, reason="/dev/zero not available on Windows")
 def test_array_nontellable():
     assert Array(5, Byte).parse_stream(devzero) == [0,0,0,0,0]
+
 
 def test_greedyrange():
     d = GreedyRange(Byte)
@@ -269,6 +292,7 @@ def test_greedyrange():
     d = GreedyRange(Byte, discard=True)
     assert d.parse(b"\x01\x02") == []
     assert d.build([1,2]) == b"\x01\x02"
+
 
 def test_repeatuntil():
     d = RepeatUntil(obj_ == 9, Byte)
@@ -291,6 +315,7 @@ def test_repeatuntil():
     assert d.build([2,3,8,9]) == b"\x02\x03\x08\x09"
     assert raises(d.build, [2,3,8]) == RepeatError
 
+
 def test_const():
     common(Const(b"MZ"), b"MZ", b"MZ", 2)
     common(Const(b"MZ", Bytes(2)), b"MZ", b"MZ", 2)
@@ -301,6 +326,7 @@ def test_const():
     assert Struct(Const(b"MZ")).build({}) == b"MZ"
     # non-prefixed string literals are unicode on Python 3
     assert raises(lambda: Const("no prefix string")) == StringError
+
 
 def test_computed():
     common(Computed(255), b"", 255, 0)
@@ -699,6 +725,7 @@ def test_rawcopy():
     d = RawCopy(Padding(1))
     assert d.build(None) == b'\x00'
 
+
 def test_rawcopy_issue_289():
     # When you build from a full dict that has all the keys, the if data kicks in, and replaces the context entry with a subset of a dict it had to begin with.
     d = Struct(
@@ -711,10 +738,12 @@ def test_rawcopy_issue_289():
     # this is not buildable, array is not passed and cannot be deduced from raw data
     # print(d.build(dict(raw=dict(data=b"\x01\x02\xff\x00"))))
 
+
 def test_rawcopy_issue_358():
     # RawCopy overwritten context value with subcon return obj regardless of None
     d = Struct("a"/RawCopy(Byte), "check"/Check(this.a.value == 255))
     assert d.build(dict(a=dict(value=255))) == b"\xff"
+
 
 def test_rawcopy_issue_888():
     # If you use build_file() on a RawCopy that has only a value defined, then
@@ -722,6 +751,7 @@ def test_rawcopy_issue_888():
     # if build_file opened the file for writing only.
     d = RawCopy(Byte)
     d.build_file(dict(value=0), filename="example_888")
+
 
 def test_byteswapped():
     d = ByteSwapped(Bytes(5))
@@ -731,11 +761,13 @@ def test_byteswapped():
     common(d, b"\x01\x02", Container(a=2, b=1),)
     size_test(d, {}, 2, 2)
 
+
 def test_byteswapped_from_issue_70():
     d = ByteSwapped(BitStruct("flag1"/Bit, "flag2"/Bit, Padding(2), "number"/BitsInteger(16), Padding(4)))
     assert d.parse(b'\xd0\xbc\xfa') == Container(flag1=1, flag2=1, number=0xabcd)
     d = BitStruct("flag1"/Bit, "flag2"/Bit, Padding(2), "number"/BitsInteger(16), Padding(4))
     assert d.parse(b'\xfa\xbc\xd1') == Container(flag1=1, flag2=1, number=0xabcd)
+
 
 def test_bitsswapped():
     d = BitsSwapped(Bytes(2))
@@ -748,6 +780,7 @@ def test_bitsswapped():
     common(d, b"\xf1", Container(a=15, b=1), 1)
     d = BitsSwapped(BitStruct("a"/Nibble, "b"/Nibble))
     common(d, b"\xf1", Container(a=8, b=15), 1)
+
 
 def test_prefixed():
     d = Prefixed(Byte, Int16ul)
@@ -764,6 +797,7 @@ def test_prefixed():
     d = Prefixed(Byte, GreedyString("utf-8"))
     common(d, b"\x0a"+bytes(10), u"\x00"*10)
 
+
 def test_prefixedarray():
     common(PrefixedArray(Byte,Byte), b"\x02\x0a\x0b", [10,11])
     assert PrefixedArray(Byte, Byte).parse(b"\x03\x01\x02\x03") == [1,2,3]
@@ -772,6 +806,7 @@ def test_prefixedarray():
     assert raises(PrefixedArray(Byte, Byte).parse, b"") == StreamError
     assert raises(PrefixedArray(Byte, Byte).parse, b"\x03\x01") == StreamError
     assert raises(PrefixedArray(Byte, Byte).static_sizeof) == SizeofError
+
 
 def test_fixedsized():
     d = FixedSized(10, Byte)
@@ -1343,6 +1378,7 @@ def test_from_issue_244():
     d = AddIndexes(Struct("num"/Byte)[4])
     assert d.parse(b"abcd") == [Container(num=97, index=0),Container(num=98, index=1),Container(num=99, index=2),Container(num=100, index=3),]
 
+
 def test_from_issue_269():
     d = Struct("enabled" / Byte, If(this.enabled, Padding(2)))
     assert d.build(dict(enabled=1)) == b"\x01\x00\x00"
@@ -1351,9 +1387,11 @@ def test_from_issue_269():
     assert d.build(dict(enabled=1)) == b"\x01\x00\x00"
     assert d.build(dict(enabled=0)) == b"\x00"
 
+
 def test_hanging_issue_280():
     d = BitStruct('a'/BitsInteger(20), 'b'/BitsInteger(12))
     assert raises(d.parse, b'\x00') == StreamError
+
 
 def test_from_issue_324():
     d = Struct(
@@ -1368,6 +1406,7 @@ def test_from_issue_324():
     )
     assert d.build(dict(vals=dict(value=dict(a=[0,1])))) == b"\x02\x00\x01\x01"
     assert d.build(dict(vals=dict(data=b"\x00\x01"))) == b"\x02\x00\x01\x01"
+
 
 def test_from_issue_357():
     inner = Struct(
@@ -1517,87 +1556,88 @@ def test_exposing_members_context():
 
 def test_isparsingbuilding():
     d = Struct(
-        Check(this._parsing & this._._parsing),
-        Check(~this._building & ~this._._building),
-        Check(~this._sizing & ~this._._sizing),
+        Check(this._parsing),
+        Check(~this._building),
+        Check(~this._sizing),
     )
     d.parse(b'')
     d = Struct(
-        Check(~this._parsing & ~this._._parsing),
-        Check(this._building & this._._building),
-        Check(~this._sizing & ~this._._sizing),
+        Check(~this._parsing),
+        Check(this._building),
+        Check(~this._sizing),
     )
     d.build(None)
     d = Struct(
-        Check(~this._parsing & ~this._._parsing),
-        Check(~this._building & ~this._._building),
-        Check(this._sizing & this._._sizing),
+        Check(~this._parsing),
+        Check(~this._building),
+        Check(this._sizing),
     )
     d.static_sizeof()
     # ---------------------------------
     d = FocusedSeq("none",
         "none" / Pass,
-        Check(this._parsing & this._._parsing),
-        Check(~this._building & ~this._._building),
-        Check(~this._sizing & ~this._._sizing),
+        Check(this._parsing),
+        Check(~this._building),
+        Check(~this._sizing),
     )
     d.parse(b'')
     d = FocusedSeq("none",
         "none" / Pass,
-        Check(~this._parsing & ~this._._parsing),
-        Check(this._building & this._._building),
-        Check(~this._sizing & ~this._._sizing),
+        Check(~this._parsing),
+        Check(this._building),
+        Check(~this._sizing),
     )
     d.build(None)
     d = FocusedSeq("none",
         "none" / Pass,
-        Check(~this._parsing & ~this._._parsing),
-        Check(~this._building & ~this._._building),
-        Check(this._sizing & this._._sizing),
+        Check(~this._parsing),
+        Check(~this._building),
+        Check(this._sizing),
     )
     d.static_sizeof()
     # ---------------------------------
     d = Union(None,
         "none" / Pass,
-        Check(this._parsing & this._._parsing),
-        Check(~this._building & ~this._._building),
-        Check(~this._sizing & ~this._._sizing),
+        Check(this._parsing),
+        Check(~this._building),
+        Check(~this._sizing),
     )
     d.parse(b'')
     d = Union(None,
         "none" / Pass,
-        Check(~this._parsing & ~this._._parsing),
-        Check(this._building & this._._building),
-        Check(~this._sizing & ~this._._sizing),
+        Check(~this._parsing),
+        Check(this._building),
+        Check(~this._sizing),
     )
     d.build(dict(none=None))
     d = Union(None,
         "none" / Pass,
-        Check(~this._parsing & ~this._._parsing),
-        Check(~this._building & ~this._._building),
-        Check(this._sizing & this._._sizing),
+        Check(~this._parsing),
+        Check(~this._building),
+        Check(this._sizing),
     )
     # doesnt check context because _sizeof just raises the error
     assert raises(d.static_sizeof) == SizeofError
     # ---------------------------------
     d = LazyStruct(
-        Check(this._parsing & this._._parsing),
-        Check(~this._building & ~this._._building),
-        Check(~this._sizing & ~this._._sizing),
+        Check(this._parsing),
+        Check(~this._building),
+        Check(~this._sizing),
     )
     d.parse(b'')
     d = LazyStruct(
-        Check(~this._parsing & ~this._._parsing),
-        Check(this._building & this._._building),
-        Check(~this._sizing & ~this._._sizing),
+        Check(~this._parsing),
+        Check(this._building),
+        Check(~this._sizing),
     )
     d.build({})
     d = LazyStruct(
-        Check(~this._parsing & ~this._._parsing),
-        Check(~this._building & ~this._._building),
-        Check(this._sizing & this._._sizing),
+        Check(~this._parsing),
+        Check(~this._building),
+        Check(this._sizing),
     )
     d.static_sizeof()
+
 
 def test_struct_stream():
     d = Struct(
