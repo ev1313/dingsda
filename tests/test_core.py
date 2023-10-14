@@ -924,6 +924,7 @@ def test_transformed():
     d = Transformed(GreedyString("utf-8"), bytes2bits, None, bits2bytes, None)
     common(d, bytes(2), u"\x00"*16, SizeofError)
 
+
 def test_transformed_issue_676():
     d = Struct(
          'inner1' / BitStruct(
@@ -938,6 +939,7 @@ def test_transformed_issue_676():
     )
     d.build({})
 
+
 def test_restreamed():
     d = Restreamed(Int16ub, ident, 1, ident, 1, ident)
     common(d, b"\x00\x01", 1, 2)
@@ -945,6 +947,7 @@ def test_restreamed():
     assert raises(d.static_sizeof) == SizeofError
     d = Restreamed(Bytes(2), lambda b: b*2, 1, lambda b: b[0:1], 1, lambda n: n*2)
     common(d, b"aa", b"aa", 4)
+
 
 def test_restreamed_partial_read():
     d = Restreamed(Bytes(255), ident, 1, ident, 1, ident)
@@ -1144,8 +1147,10 @@ def test_expradapter():
     assert Ident.build(1) == b"\x02"
     assert Ident.static_sizeof() == 1
 
+
 def test_exprsymmetricadapter():
     pass
+
 
 def test_exprvalidator():
     One = ExprValidator(Byte, lambda obj,ctx: obj in [1,3,5])
@@ -1154,6 +1159,7 @@ def test_exprvalidator():
     assert One.build(5) == b"\x05"
     assert raises(One.build, 255) == ValidationError
     assert One.static_sizeof() == 1
+
 
 def test_ipaddress_adapter_issue_95():
     class IpAddressAdapter(Adapter):
@@ -1175,20 +1181,24 @@ def test_ipaddress_adapter_issue_95():
     assert IpAddress.build("127.1.2.3") == b"\x7f\x01\x02\x03"
     assert IpAddress.static_sizeof() == 4
 
+
 def test_oneof():
     assert OneOf(Byte,[4,5,6,7]).parse(b"\x05") == 5
     assert OneOf(Byte,[4,5,6,7]).build(5) == b"\x05"
     assert raises(OneOf(Byte,[4,5,6,7]).parse, b"\x08") == ValidationError
     assert raises(OneOf(Byte,[4,5,6,7]).build, 8) == ValidationError
 
+
 def test_noneof():
     assert NoneOf(Byte,[4,5,6,7]).parse(b"\x08") == 8
     assert raises(NoneOf(Byte,[4,5,6,7]).parse, b"\x06") == ValidationError
+
 
 def test_filter():
     d = Filter(obj_ != 0, GreedyRange(Byte))
     assert d.parse(b"\x00\x02\x00") == [2]
     assert d.build([0,1,0,2,0]) == b"\x01\x02"
+
 
 def test_slicing():
     d = Slicing(Array(4,Byte), 4, 1, 3, empty=0)
@@ -1196,11 +1206,13 @@ def test_slicing():
     assert d.build([2,3]) == b"\x00\x02\x03\x00"
     assert d.static_sizeof() == 4
 
+
 def test_indexing():
     d = Indexing(Array(4,Byte), 4, 2, empty=0)
     assert d.parse(b"\x01\x02\x03\x04") == 3
     assert d.build(3) == b"\x00\x00\x03\x00"
     assert d.static_sizeof() == 4
+
 
 def test_probe():
     common(Probe(), b"", None, 0)
@@ -1210,14 +1222,17 @@ def test_probe():
     common(Struct(Probe(lookahead=32)), b"", {}, 0)
     common(Struct("value"/Computed(7), Probe(this.value)), b"", dict(value=7), 0)
 
+
 def test_debugger():
     common(Debugger(Byte), b"\xff", 255, 1)
+
 
 def test_repr():
     assert repr(Byte) == '<FormatField>'
     assert repr("num"/Byte) == '<Renamed num <FormatField>>'
     assert repr(Default(Byte, 0)) == '<Default +nonbuild <FormatField>>'
     assert repr(Struct()) == '<Struct +nonbuild>'
+
 
 def test_operators():
     common(Struct("new" / ("old" / Byte)), b"\x01", Container(new=1), 1)
@@ -1243,15 +1258,18 @@ def test_operators():
     d = Renamed(Renamed(Byte, newdocs="old"), newdocs="new")
     assert d.docs == "new"
 
+
 def test_operators_issue_87():
     assert ("string_name" / Byte).parse(b"\x01") == 1
     assert (u"unicode_name" / Byte).parse(b"\x01") == 1
     assert (b"bytes_name" / Byte).parse(b"\x01") == 1
     assert (None / Byte).parse(b"\x01") == 1
 
+
 def test_from_issue_76():
     d = Aligned(4, Struct("a"/Byte, "f"/Bytes(lambda ctx: ctx.a)))
     common(d, b"\x02\xab\xcd\x00", Container(a=2, f=b"\xab\xcd"))
+
 
 def test_from_issue_60():
     Header = Struct(
@@ -1271,6 +1289,7 @@ def test_from_issue_60():
     assert Header.build(dict(type=1, size=5)) == b"\x01\x00\x05"
     assert Header.build(dict(type=2, size=5)) == b"\x02\x00\x00\x00\x05"
 
+
 def test_from_issue_171():
     attributes = BitStruct(
         "attr" / Aligned(8, Array(3, Struct(
@@ -1288,6 +1307,7 @@ def test_from_issue_171():
         Container(attrCode=205, attrValue=2),
         Container(attrCode=512, attrValue=1), ])
 
+
 def test_from_issue_175():
     @FuncPath
     def comp_(num_array):
@@ -1298,6 +1318,7 @@ def test_from_issue_175():
         "value" / Computed(comp_(this.numArray))
     )
     assert test.parse(b'\x87\x0f').value == 34575
+
 
 def test_from_issue_71():
     Inner = Struct(
@@ -1525,6 +1546,7 @@ def test_exposing_members_attributes():
     assert isinstance(d.animal.subcon, Enum)
     assert d.animal.giraffe == "giraffe"
 
+
 def test_exposing_members_context():
     d = Struct(
         "count" / Byte,
@@ -1546,6 +1568,7 @@ def test_exposing_members_context():
         Check(lambda this: this._subcons.chars.static_sizeof() == 4),
     )
     assert d.parse(b"\x01\x02\x03\x04") == dict(chars=[1,2,3,4],data=b"\x01\x02\x03\x04")
+
 
 def test_isparsingbuilding():
     d = Struct(
@@ -1765,11 +1788,13 @@ def test_hex_issue_709():
     obj = d.parse(b"\xff")
     assert "y = unhexlify('ff')" in str(obj)
 
+
 @xfail(reason="Enable to see path information in stream operations")
 def test_showpath():
     # trips stream_read
     d = Struct("inner"/Struct("x"/Byte))
     d.parse(b"")
+
 
 @xfail(reason="Enable to see path information in stream operations")
 def test_showpath2():
@@ -1791,9 +1816,11 @@ def test_showpath2():
     # StreamError: Error in path (parsing) -> a -> b -> c -> foo
     # stream read less than specified amount, expected 1, found 0
 
+
 def test_buildfile_issue_737():
     Byte.build_file(Byte.parse(b'\xff'), 'example_737')
     assert Byte.parse_file('example_737') == 255
+
 
 @xfail(reason="Context is not properly processed, see #771 and PR #784")
 def test_struct_issue_771():
@@ -1810,6 +1837,7 @@ def test_struct_issue_771():
     assert spec.build(info) == data
     assert spec.sizeof(**info) == 10
 
+
 def test_struct_copy():
     import copy
     d = Struct(
@@ -1820,6 +1848,7 @@ def test_struct_copy():
     
     common(d, b"\x00\x01\x02", Container(a=1,b=2), 3)
     common(d_copy, b"\x00\x01\x02", Container(a=1,b=2), 3)
+
 
 def test_switch_issue_913_using_enum():
     enum = Enum(Byte, Zero=0, One=1, Two=2)
@@ -1837,6 +1866,7 @@ def test_switch_issue_913_using_enum():
     size_test(d, {"x": "One"}, size=1)
     size_test(d, {"x": "Two"}, size=2)
 
+
 def test_switch_issue_913_using_strings():
     mapping = {
         "Zero": Pass,
@@ -1851,6 +1881,7 @@ def test_switch_issue_913_using_strings():
     size_test(d, {"x": "Zero"}, size=0)
     size_test(d, {"x": "One"}, size=1)
     size_test(d, {"x": "Two"}, size=2)
+
 
 def test_switch_issue_913_using_integers():
     mapping = {
@@ -1878,6 +1909,7 @@ def test_lazy_rebuild():
     obj = {"foo": 4, "bar": lambda ctx: ctx.baz, "baz": lambda ctx: ctx.foo}
     res = d.build(obj)
     assert(res == b'\x04\x00\x00\x00\x04\x00\x00\x00\x04\x00\x00\x00')
+
 
 def test_area_int():
     fmt = Struct(
