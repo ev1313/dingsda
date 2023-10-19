@@ -13,20 +13,24 @@ def test_list_to_string():
     str = list_to_string(lst)
     assert(str == 'foo,bar,baz')
 
+
 def test_list_to_string_spaces():
     lst = [" foo","bar "," baz "]
     str = list_to_string(lst)
     assert(str == ' foo,bar , baz ')
+
 
 def test_string_to_list():
     str = 'foo,bar,baz'
     lst = string_to_list(str)
     assert(lst == ["foo","bar","baz"])
 
+
 def test_quoted_string_to_list():
     str = '"foo","bar","baz"'
     lst = string_to_list(str)
     assert(lst == ["foo","bar","baz"])
+
 
 def test_xml_struct():
     s = Struct(
@@ -50,6 +54,7 @@ def test_xml_struct_2():
     xml = b'<test a="1" b="2"><s c="3" d="4" /></test>'
     common_xml_test(s, xml, data)
     common_endtoend_xml_test(s, b'\x01\x00\x00\x00\x02\x00\x00\x00\x03\x00\x00\x00\x04\x00\x00\x00', data, xml)
+
 
 def test_xml_struct_3():
     s = "test" / Struct(

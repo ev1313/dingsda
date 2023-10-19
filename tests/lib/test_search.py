@@ -26,6 +26,8 @@ d = Struct(
 def test_search_sanity():
     obj1 = d.parse(b"\x11\x21\x22\x02\x02\x13\x51\x52")
 
+    x = obj1["ad"]
+
     assert obj1.search("bb") == None
     assert obj1.search("abcb") != None
     assert obj1.search("ad") != None

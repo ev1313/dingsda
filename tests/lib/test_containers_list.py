@@ -164,3 +164,27 @@ def test_listcontainer_constructor_from_dicts():
     assert(isinstance(c[1], Container))
     assert(c[1]._ is c)
     assert(c[1]._root is c)
+
+
+def test_listcontainer_update_parent():
+    # note the update_parent function does not remove the child from the parent
+    p = ListContainer([1, 2, 3])
+    c = ListContainer([4, 5, 6], parent=p)
+    p.append(c)
+    c2 = Container({"x": 3, "y": 42}, parent=c)
+    c.append(c2)
+
+    p2 = Container({"foo": 1, "bar": 2})
+    p2["c"] = c
+    c.update_parent(p2)
+
+    assert(c._ is p2)
+    assert(c._root is p2)
+    assert(c2._ is c)
+    assert(c2._root is p2)
+
+
+def test_listcontainer_index():
+    p = ListContainer([1,2,3])
+    p._index = 2
+    assert(p._index == 2)

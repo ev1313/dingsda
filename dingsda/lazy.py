@@ -6,7 +6,7 @@ from dingsda.struct import Structconstruct
 from dingsda.errors import *
 from dingsda.lib import stringtypes, Container, ListContainer
 
-from typing import Any, Tuple, Dict
+from typing import Any, Tuple, Dict, Optional
 
 
 class Lazy(Subconstruct):
@@ -378,7 +378,6 @@ class LazyBound(Construct):
         sc = self.subconfunc()
         return sc._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
 
-
     def _fromET(self, parent, name, context, path, is_root=False):
         sc = self.subconfunc()
         return sc._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
@@ -406,3 +405,16 @@ class LazyBound(Construct):
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
         sc = self.subconfunc()
         return sc._preprocess_size(obj, context, path, offset)
+
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
+        sc = self.subconfunc()
+        return sc._is_simple_type(context)
+
+    def _is_array(self, context: Optional[Container] = None) -> bool:
+        sc = self.subconfunc()
+        return sc._is_array(context)
+
+    def _is_struct(self, context: Optional[Container] = None) -> bool:
+        sc = self.subconfunc()
+        return sc._is_struct(context)
+

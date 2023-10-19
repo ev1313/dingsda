@@ -137,9 +137,7 @@ class Container(collections.OrderedDict):
         self._parent_meta_info = None
         parent = kwds.pop("parent", None)
         parent_meta = kwds.pop("metadata", None)
-        if parent is not None:
-            self._parent_node = parent
-            self._root_node = parent if parent._root_node is None else parent._root_node
+        self.update_parent(parent)
         if parent_meta is not None:
             assert(self._parent_node is None)
             self._parent_meta_info = parent_meta
@@ -184,9 +182,9 @@ class Container(collections.OrderedDict):
         elif name == "_io":
             return self._root._parent_meta_info.io
         ret = super().__getitem__(name)[0]
-        if isinstance(ret, Container):
-            ret._parent_node = self
-            ret._root_node = self if self._root_node is None else self._root_node
+        if isinstance(ret, Container) or isinstance(ret, ListContainer):
+            #assert(ret._parent_node is self)
+            ret.update_parent(self)
         return ret
 
     def __getitem__(self, name):
@@ -210,6 +208,19 @@ class Container(collections.OrderedDict):
         if key in ["_", "_root", "_parsing", "_building", "_sizing", "_preprocessing",
                    "_preprocessing_sizing", "_xml_building", "_xml_parsing", "_params", "_io"]:
             raise AttributeError(f"{key} not allowed to be set")
+        if isinstance(value, dict):
+            # we need to create a Container + create parent
+            if isinstance(value, Container):
+                value.update_parent(self)
+            else:
+                value = Container(value, parent=self)
+        elif isinstance(value, list):
+            # we need to create a ListContainer + create parent
+            if isinstance(value, ListContainer):
+                value.update_parent(self)
+            else:
+                value = ListContainer(value, parent=self)
+
         super().__setitem__(key, (value, self.get_meta(key)))
 
     def __delattr__(self, name):
@@ -263,22 +274,6 @@ class Container(collections.OrderedDict):
         chained = list(chain(items, kwds.items()))
         if len(chained) > 0:
             for k, v in chained:
-                if isinstance(v, dict):
-                    # we need to create a Container + create parent
-                    if isinstance(v, Container):
-                        # FIXME: refactor this in some kind of update parent function
-                        v._parent_node = self
-                        v._root_node = self if self._root_node is None else self._root_node
-                    else:
-                        v = Container(v, parent=self)
-                elif isinstance(v, list):
-                    # we need to create a ListContainer + create parent
-                    if isinstance(v, ListContainer):
-                        v._parent_node = self
-                        v._root_node = self if self._root_node is None else self._root_node
-                    else:
-                        v = ListContainer(v, parent=self)
-
                 self[k] = v
 
                 # if Container this is created from has meta information, copy it
@@ -321,6 +316,18 @@ class Container(collections.OrderedDict):
 
     def copy(self):
         return Container(self)
+
+    def update_parent(self, parent):
+        if parent is not None:
+            self._parent_node = parent
+            self._root_node = parent if parent._root_node is None else parent._root_node
+        else:
+            self._parent_node = None
+            self._root_node = None
+        # we now have to update the _root_node references in all the children
+        for k, v in self.items():
+            if isinstance(v, Container) or isinstance(v, ListContainer):
+                v.update_parent(self)
 
     __update__ = update
 
@@ -486,9 +493,7 @@ class ListContainer(list):
         self._index = None
         parent = kwargs.pop("parent", None)
         parent_meta = kwargs.pop("metadata", None)
-        if parent is not None:
-            self._parent_node = parent
-            self._root_node = parent if parent._root_node is None else parent._root_node
+        self.update_parent(parent)
         if parent_meta is not None:
             assert(self._parent_node is None)
             self._parent_meta_info = parent_meta
@@ -558,11 +563,10 @@ class ListContainer(list):
         if self._parent_node is None:
             raise KeyError(name)
         ret = self._parent_node.__getitem__(name)
-        if isinstance(ret, Container):
+        if isinstance(ret, Container) or isinstance(ret, ListContainer):
             assert(ret._parent_node is self)
             assert(ret._root_node is self if self._root_node is None else self._root_node)
-            #ret._parent_node = self
-            #ret._root_node = self if self._root_node is None else self._root_node
+            #ret.update_parent(self)
         return ret
 
     def __getattr__(self, name):
@@ -591,13 +595,16 @@ class ListContainer(list):
             raise AttributeError(name)
 
     def __setitem__(self, key, value):
+        # FIXME: there has to be a better way for getting all the non accessible attributes
         if key in ["_", "_root", "_parsing", "_building", "_sizing", "_preprocessing",
                    "_preprocessing_sizing", "_xml_building", "_xml_parsing", "_params",
                    "_io",]:
             raise AttributeError(f"{key} not allowed to be set")
+        # special handling for list
         if isinstance(key, int) or isinstance(key, slice):
             super().__setitem__(key, value)
         else:
+            # probably accessing the parent
             self._parent_node.__setitem__(key, value)
 
     def get_meta(self, idx: int) -> Optional[MetaInformation]:
@@ -617,6 +624,19 @@ class ListContainer(list):
             assert(idx < len(self))
             self._meta_infos.extend([None] * (1 + (idx - len(self._meta_infos))))
         self._meta_infos[idx] = value
+
+    # FIXME: partially duplicated code from Container
+    def update_parent(self, parent):
+        if parent is not None:
+            self._parent_node = parent
+            self._root_node = parent if parent._root_node is None else parent._root_node
+        else:
+            self._parent_node = None
+            self._root_node = None
+        # we now have to update the _root_node references in all the children
+        for v in self:
+            if isinstance(v, Container) or isinstance(v, ListContainer):
+                v.update_parent(self)
 
     def _search(self, compiled_pattern, search_all):
         items = []

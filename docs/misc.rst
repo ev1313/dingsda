@@ -169,18 +169,6 @@ When a sequence has some fields that could be ommited like Const Padding Termina
 b'MZ\xff'
 
 
-Pickled
-----------
-
-For convenience, arbitrary Python objects can be preserved using the famous pickle protocol. Almost any type can be pickled, but you have to understand that pickle uses its own (homebrew) protocol that is not a standard outside Python. Therefore, you can forget about parsing the binary blobs using other languages. There are also some minor considerations, like pickle protocol requiring Python 3.0 version or so. Its useful, but it automates things beyond your understanding.
-
->>> obj = [1, 2.3, {}]
->>> Pickled.build(objobj)
-b'\x80\x03]q\x00(K\x01G@\x02ffffff}q\x01e.'
->>> Pickled.parse(_)
-[1, 2.3, {}]
-
-
 Numpy
 ----------
 
@@ -283,10 +271,6 @@ Container(raw=b'12345678', ints=[825373492, 892745528], shorts=[12594, 13108, 13
 >>> d.build(dict(chars=range(8)))
 b'\x00\x01\x02\x03\x04\x05\x06\x07'
 
-::
-
-    Note that this syntax works ONLY on CPython 3.6 (and PyPy any version) due to ordered keyword arguments. There is similar syntax for many other constructs.
-    >>> Union(0, raw=Bytes(8), ints=Int32ub[2], shorts=Int16ub[4], chars=Byte[8])
 
 
 Optional

@@ -4,7 +4,7 @@ import io
 from typing import Tuple, Dict, Any, Optional
 
 from dingsda.errors import *
-from dingsda.lib.containers import Container, MetaInformation, ConstructMetaInformation
+from dingsda.lib.containers import Container, MetaInformation, ConstructMetaInformation, ListContainer
 from dingsda.lib import stringtypes
 from dingsda.helpers import singleton, evaluate, stream_tell, stream_write, stream_read, stream_seek
 from dingsda.version import version_string
@@ -290,6 +290,11 @@ class Construct(object):
         if isinstance(obj, dict):
             context = Container(obj, metadata=metadata, **contextkw)
             obj, meta_info = self._preprocess(obj=context, context=context, path="(preprocess)")
+        elif isinstance(obj, list):
+            parent = Container(metadata=metadata, **contextkw)
+            context = ListContainer(parent=parent)
+            context += obj
+            obj, meta_info = self._preprocess(obj=context, context=context, path="(preprocess)")
         else:
             context = Container(metadata=metadata, **contextkw)
             obj, meta_info = self._preprocess(obj=obj, context=context, path="(preprocess)")
@@ -336,9 +341,12 @@ class Construct(object):
         :raises SizeofError: size could not be determined in current context, or is impossible to be determined
         """
         metadata = ConstructMetaInformation(sizing=True, params=contextkw)
-        context = Container(metadata=metadata, **contextkw)
-        if isinstance(obj, dict) or isinstance(obj, Container):
-            context.update(obj)
+        if isinstance(obj, dict):
+            context = Container(obj, metadata=metadata, **contextkw)
+        elif isinstance(obj, list):
+            context = ListContainer(obj, metadata=metadata, **contextkw)
+        else:
+            context = Container(metadata=metadata, **contextkw)
 
         return self._sizeof(obj, context, "(sizeof)")
 

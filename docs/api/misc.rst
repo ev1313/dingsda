@@ -10,7 +10,6 @@ Core API: Miscellaneous
 .. autofunction:: dingsda.Check
 .. autofunction:: dingsda.Error
 .. autofunction:: dingsda.FocusedSeq
-.. autofunction:: dingsda.Pickled
 .. autofunction:: dingsda.Numpy
 .. autofunction:: dingsda.Timestamp
 .. autofunction:: dingsda.Hex

@@ -440,3 +440,23 @@ def test_container_constructor_from_dict():
     assert(isinstance(c.c, Container))
     assert(c.c._ is c)
     assert(c.c._root is c)
+
+
+def test_container_update_parent():
+    # note the update_parent function does not remove the child from the parent
+    p = Container({"a": 1, "b": 2})
+    c = Container({"c": 3, "d": 4}, parent=p)
+    p["c"] = c
+    c2 = Container({"x": 3, "y": 42}, parent=c)
+    c["c2"] = c2
+    c3 = Container({"z": 32, "zz": 2}, parent=c2)
+    c2["c3"] = c3
+    p2 = Container({"foo": 1, "bar": 2})
+    p2["c2"] = c2
+    c2.update_parent(p2)
+
+    assert(c2._ is p2)
+    assert(c2._root is p2)
+    assert(c3._ is c2)
+    assert(c3._root is p2)
+

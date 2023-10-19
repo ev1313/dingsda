@@ -10,33 +10,31 @@ from typing import Any, Dict, Optional, Tuple
 class Arrayconstruct(Subconstruct):
     def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         # predicates don't need to be checked in preprocessing
-        retlist = ListContainer(parent=context)
         for i, e in enumerate(obj):
-            context._index = i
-            child_obj, _ = self.subcon._preprocess(e, retlist, path)
-            retlist.append(child_obj)
+            obj._index = i
+            child_obj, _ = self.subcon._preprocess(e, obj, path)
+            obj[i] = child_obj
             assert(_ is None)
 
-        return retlist, None
+        return obj, None
 
     def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         # predicates don't need to be checked in preprocessing
-        retlist = ListContainer(parent=context)
         meta_info = MetaInformation(offset=offset, size=0, end_offset=0)
         size = 0
         for i, e in enumerate(obj):
             context._index = i
-            child_obj, child_meta_info = self.subcon._preprocess_size(e, retlist, path, offset)
-            retlist.append(child_obj)
+            child_obj, child_meta_info = self.subcon._preprocess_size(e, obj, path, offset)
+            obj[i] = child_obj
 
             offset += child_meta_info.size
             size += child_meta_info.size
-            retlist.set_meta(i, child_meta_info)
+            obj.set_meta(i, child_meta_info)
 
         meta_info.size = size
         meta_info.end_offset = offset
 
-        return retlist, meta_info
+        return obj, meta_info
 
     def _toET(self, parent, name, context, path):
         data = get_current_field(context, name)
@@ -112,7 +110,7 @@ class Arrayconstruct(Subconstruct):
         sum_size = 0
         for i, e in enumerate(obj):
             context._index = i
-            sum_size += self.subcon._sizeof(e, context, path)
+            sum_size += self.subcon._sizeof(e, context[i], path)
         return sum_size
 
     def _is_simple_type(self, context: Optional[Container] = None) -> bool:
@@ -120,6 +118,9 @@ class Arrayconstruct(Subconstruct):
 
     def _is_array(self, context: Optional[Container] = None) -> bool:
         return True
+
+    def _is_struct(self, context: Optional[Container] = None) -> bool:
+        return False
 
     def _names(self) -> list[int]:
         return self.subcon._names()

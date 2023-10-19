@@ -73,7 +73,7 @@ def test_size_impr():
     d = IMPR.parse(data)
     obj, meta_info = IMPR.preprocess(d)
     assert(meta_info.size == len(data))
-    built_data = IMPR.build(obj)
+    built_data = IMPR.build(obj, preprocess_before=False)
 
     assert(built_data == data)
 

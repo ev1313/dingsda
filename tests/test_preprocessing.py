@@ -1,6 +1,14 @@
-from dingsda import Struct, Switch, Rebuild, Array, RepeatUntil, GreedyRange, Pointer
+from dingsda.lib.containers import ListContainer
+from dingsda.expr import this
+from dingsda.core import Rebuild
+from dingsda.conditional import If, IfThenElse
+from dingsda.arrays import Array, RepeatUntil, GreedyRange
+from dingsda.pointer import Pointer
+from dingsda.switch import Switch
+from dingsda.struct import Struct
 from dingsda.numbers import Int8ul, Int16ul, Int32ul
 from tests.declarativeunittest import *
+
 
 def test_preprocess_rebuild_chained():
     d = Struct(
@@ -55,7 +63,7 @@ def test_preprocess_struct():
 
 def test_preprocess_array():
     d = Array(3, Int32ul)
-    obj = [4,4,4]
+    obj = ListContainer([4,4,4])
     preprocessed_ctx, meta_info = d.preprocess(obj=obj)
     assert(meta_info.offset == 0)
     assert(preprocessed_ctx.get_meta(0).offset == 0)

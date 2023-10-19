@@ -6,7 +6,7 @@ from typing import Optional, Any, Tuple
 from dingsda.core import Construct, Container, sizeof_decorator
 from dingsda.errors import SizeofError, StopFieldError
 from dingsda.helpers import evaluate
-from dingsda.lib.containers import MetaInformation
+from dingsda.lib.containers import MetaInformation, ListContainer
 from dingsda.alignment import Aligned
 
 
@@ -31,10 +31,10 @@ class Structconstruct(Construct):
                 try:
                     size_sum += sc._static_sizeof(context, path)
                 except SizeofError:
-                    if not sc._is_array(context):
+                    if sc._is_array(context):
                         ctx = Container(parent=context)
                     else:
-                        ctx = Container(parent=context)
+                        ctx = context
 
                     for name in sc._names():
                         child_obj = context.get(name, None)
@@ -133,7 +133,7 @@ class Struct(Structconstruct):
         for sc in self.subcons:
             try:
                 # we need to determine at this point, whether we need to create a new context or not
-                # (only Structs need a new context, everything else is just added with their name to the current context)
+                # (only Arrays / Structs need a new context, everything else is just added with their name to the current context)
                 if sc._is_struct(context=context):
                     ctx = Container(parent=context)
                 else:
@@ -232,20 +232,20 @@ class Struct(Structconstruct):
         assert(parent is not None)
 
         # FIXME: replace this with create_child_context if possible
-        ctx = create_child_context_2(context, name)
+        ctx = Container(parent=context)
 
         elem = ET.Element(name)
         for sc in self.subcons:
             if sc.name is None or sc.name.startswith("_"):
                 continue
 
-            child = sc._toET(context=ctx, name=sc.name, parent=elem, path=f"{path} -> {name}")
+            child = sc._toET(parent=elem, name=sc.name, context=ctx, path=f"{path} -> {name}")
             if child is not None:
                 elem.append(child)
 
         return elem
 
-    def _fromET(self, parent, name, context, path, is_root=False):
+    def _fromET(self, parent: ET.Element, name: str, context: Container, path: str, is_root: bool=False) -> Container:
         # we go down one layer
         ctx = Container(parent=context)
 
@@ -262,11 +262,9 @@ class Struct(Structconstruct):
         for sc in self.subcons:
             ctx = sc._fromET(context=ctx, parent=elem, name=sc.name, path=f"{path} -> {name}")
 
-        # now we have to go back up
-        ret_ctx = context
-        insert_or_append_field(ret_ctx, name, ctx)
+        context[name] = ctx
 
-        return ret_ctx
+        return context
 
 
 def AlignedStruct(modulus, *subcons, **subconskw):
@@ -289,17 +287,27 @@ def AlignedStruct(modulus, *subcons, **subconskw):
     return Struct(*[sc.name / Aligned(modulus, sc) for sc in subcons])
 
 
-class FocusedSeq(Construct):
+class FocusedStruct(Construct):
     r"""
     Allows constructing more elaborate "adapters" than Adapter class.
 
-    Parse does parse all subcons in sequence, but returns only the element that was selected (discards other values). Build does build all subcons in sequence, where each gets build from nothing (except the selected subcon which is given the object). Size is the sum of all subcon sizes, unless any subcon raises SizeofError.
+    Parse does parse all subcons in Struct, but returns only the element that was selected (discards other values).
+    Build does build all subcons in sequence, where each gets build from nothing
+    (except the selected subcon which is given the object). Size is the sum of all subcon sizes,
+    unless any subcon raises SizeofError.
 
-    This class does context nesting, meaning its members are given access to a new dictionary where the "_" entry points to the outer context. When parsing, each member gets parsed and subcon parse return value is inserted into context under matching key only if the member was named. When building, the matching entry gets inserted into context before subcon gets build, and if subcon build returns a new value (not None) that gets replaced in the context.
+    This class does context nesting, meaning its members are given access to a new dictionary where the "_" entry points
+    to the outer context. When parsing, each member gets parsed and subcon parse return value is inserted into context
+    under matching key only if the member was named. When building, the matching entry gets inserted into context before
+    subcon gets build, and if subcon build returns a new value (not None) that gets replaced in the context.
 
-    This class exposes subcons as attributes. You can refer to subcons that were inlined (and therefore do not exist as variable in the namespace) by accessing the struct attributes, under same name. Also note that compiler does not support this feature. See examples.
+    This class exposes subcons as attributes. You can refer to subcons that were inlined (and therefore do not exist as
+    variable in the namespace) by accessing the struct attributes, under same name. Also note that compiler does not
+    support this feature. See examples.
 
-    This class exposes subcons in the context. You can refer to subcons that were inlined (and therefore do not exist as variable in the namespace) within other inlined fields using the context. Note that you need to use a lambda (`this` expression is not supported). Also note that compiler does not support this feature. See examples.
+    This class exposes subcons in the context. You can refer to subcons that were inlined (and therefore do not exist as
+    variable in the namespace) within other inlined fields using the context. Note that you need to use a lambda (`this`
+    expression is not supported). Also note that compiler does not support this feature. See examples.
 
     This class is used internally to implement :class:`~dingsda.core.PrefixedArray`.
 
@@ -307,7 +315,8 @@ class FocusedSeq(Construct):
     :param \*subcons: Construct instances, list of members, some can be named
     :param \*\*subconskw: Construct instances, list of members (requires Python 3.6)
 
-    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different amount than actual data, or could not write all bytes
+    :raises StreamError: requested reading negative amount, could not read enough bytes, requested writing different
+    amount than actual data, or could not write all bytes
     :raises UnboundLocalError: selector does not match any subcon
 
     Can propagate any exception from the lambda, possibly non-ConstructError.
@@ -452,3 +461,4 @@ class FocusedSeq(Construct):
         return self._get_main_sc()._is_array(context=context)
 
 
+FocusedSeq = FocusedStruct

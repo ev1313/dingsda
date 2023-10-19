@@ -106,6 +106,13 @@ class Union(Construct):
         raise SizeofError("Union builds depending on actual object dict, size is unknown", path=path)
 
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
+        """
+        The sizeof function of a Union returns the biggest size of the subcons. (Works like C unions.)
+
+        Be aware that this may lead to bad results, when your data contains arrays with length fields like these:
+
+        FIXME: add example
+        """
         raise SizeofError(path=path)
 
 
