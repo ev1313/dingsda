@@ -139,10 +139,10 @@ class Construct(object):
         """Override in your subclass."""
         raise NotImplementedError
 
-    def _toET(self, parent, name, context, path):
+    def _toET(self, parent: ET.Element, context: Container, path: str) -> ET.Element:
         raise NotImplementedError
 
-    def _fromET(self, parent, name, context, path, is_root=False):
+    def _fromET(self, parent: ET.Element, context: Container, path: str) -> Container:
         raise NotImplementedError
 
     def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
@@ -233,7 +233,7 @@ class Construct(object):
         """Override in your subclass. Shall not return anything."""
         raise NotImplementedError
 
-    def toET(self, obj, name="Root", **contextkw):
+    def toET(self, obj: Any, name="Root", **contextkw) -> ET.Element:
         r"""
             Convert a parsed construct to a XML ElementTree.
 
@@ -245,14 +245,19 @@ class Construct(object):
         :returns: an ElementTree
         """
         metadata = ConstructMetaInformation(xml_building=True, params=contextkw)
-        context = Container(metadata=metadata, **contextkw)
-        context[name] = obj
+        if isinstance(obj, dict):
+            context = Container(obj, metadata=metadata, **contextkw)
+        elif isinstance(obj, list):
+            context = ListContainer(obj, metadata=metadata, **contextkw)
+        else:
+            context = Container(metadata=metadata, **contextkw)
+
         # create root node
         xml = ET.Element(name)
         xml.attrib["_dingsda_version"] = version_string
-        return self._toET(parent=xml, context=context, name=name, path="(toET)")
+        return self._toET(parent=xml, obj=context, path="(toET)")
 
-    def fromET(self, xml, **contextkw):
+    def fromET(self, xml, **contextkw) -> Container:
         r"""
             Convert an XML ElementTree to a construct.
 
@@ -266,7 +271,7 @@ class Construct(object):
         # create root node
         parent = ET.Element("Root")
         parent.append(xml)
-        result = self._fromET(parent=parent, name=xml.tag, context=context, path="(fromET)")
+        result = self._fromET(parent=parent, obj=context, path="(fromET)")
 
         return result.get(xml.tag)
 
@@ -555,46 +560,25 @@ class Renamed(Subconstruct):
         path += " -> %s" % (self.name,)
         return self.subcon._parsereport(stream, context, path)
 
-    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
         path += " -> %s" % (self.name,)
         return self.subcon._preprocess(obj, context, path)
 
-    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Dict[str, Any]]:
+    def _preprocess_size(self, obj: Any, context: Container, path: str, offset: int = 0) -> Tuple[Any, Optional[MetaInformation]]:
         path += " -> %s" % (self.name,)
         return self.subcon._preprocess_size(obj=obj, context=context, path=path, offset=offset)
 
-    def _build(self, obj, stream, context, path):
+    def _build(self, obj: Any, stream: io.IOBase, context: Container, path: str):
         path += " -> %s" % (self.name,)
         self.subcon._build(obj, stream, context, path)
 
-    def _toET(self, parent, name, context, path):
-        ctx = context
+    def _toET(self, parent: ET.Element, obj: Any, path: str) -> ET.Element:
+        path += " -> %s" % (self.name,)
+        return self.subcon._toET(parent=parent, obj=obj, path=path)
 
-        # corner case with Switch e.g.
-        if name != self.name:
-            ctx = rename_in_context(context=context, name=name, new_name=self.name)
-
-        return self.subcon._toET(context=ctx, name=self.name, parent=parent, path=f"{path} -> {name}")
-
-    def _fromET(self, parent, name, context, path, is_root=False):
-        ctx = context
-
-        # this renaming is necessary e.g. for GenericList,
-        # because it creates a list which needs to be renamed accordingly, so the following objects
-        # can append themselves to the list
-        if name != self.name and name in ctx.keys():
-            ctx = rename_in_context(context=context, name=name, new_name=self.name)
-
-        ctx = self.subcon._fromET(context=ctx, parent=parent, name=self.name, path=f"{path} -> {name}", is_root=is_root)
-
-        if name != self.name:
-            ctx = rename_in_context(context=ctx, name=self.name, new_name=name)
-
-        #  requires when rebuilding, else key error is raised
-        if not self.name in ctx.keys():
-            ctx.pop(self.name, None)
-
-        return ctx
+    def _fromET(self, parent: ET.Element, obj: Container, path: str) -> Container:
+        path += " -> %s" % (self.name,)
+        return self.subcon._fromET(parent=parent, obj=obj, path=path)
 
     def _is_simple_type(self, context: Optional[Container] = None):
         return self.subcon._is_simple_type(context=context)

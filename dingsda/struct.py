@@ -227,11 +227,9 @@ class Struct(Structconstruct):
             except StopFieldError:
                 break
 
-    def _toET(self, parent: ET.Element, name: str, context: Container, path: str) -> ET.Element:
-        assert(name is not None)
+    def _toET(self, parent: ET.Element, obj: Container, path: str) -> ET.Element:
         assert(parent is not None)
 
-        # FIXME: replace this with create_child_context if possible
         ctx = Container(parent=context)
 
         elem = ET.Element(name)
@@ -245,7 +243,7 @@ class Struct(Structconstruct):
 
         return elem
 
-    def _fromET(self, parent: ET.Element, name: str, context: Container, path: str, is_root: bool=False) -> Container:
+    def _fromET(self, parent: ET.Element, obj: Container, path: str) -> Container:
         # we go down one layer
         ctx = Container(parent=context)
 
