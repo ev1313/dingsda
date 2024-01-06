@@ -439,10 +439,12 @@ def test_focusedseq():
     assert raises(d.build, {}) == KeyError
     assert raises(d.static_sizeof) == 0
 
+
 def test_numpy():
     import numpy
     obj = numpy.array([1,2,3], dtype=numpy.int64)
     assert numpy.array_equal(Numpy.parse(Numpy.build(obj)), obj)
+
 
 @xfail(reason="docs stated that it throws StreamError, not true at all")
 def test_numpy_error():
@@ -619,9 +621,9 @@ def test_stopif():
     d = GreedyRange(FocusedSeq("x", "x"/Byte, StopIf(this.x == 0)))
     assert d.parse(b"\x01\x00?????") == [1]
     assert d.build([]) == b""
-    assert d.build([0]) == b"\x00"
-    assert d.build([1]) == b"\x01"
-    assert d.build([1,0,2]) == b"\x01\x00"
+    assert d.build([0], preprocess_before=False) == b"\x00"
+    assert d.build([1], preprocess_before=False) == b"\x01"
+    assert d.build([1,0,2], preprocess_before=False) == b"\x01\x00"
 
 
 def test_padding():

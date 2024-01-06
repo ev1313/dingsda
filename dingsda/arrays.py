@@ -6,6 +6,8 @@ from dingsda.lib.containers import Container, ListContainer, MetaInformation
 from dingsda.helpers import evaluate, stream_seek, stream_tell
 from typing import Any, Dict, Optional, Tuple
 
+import xml.etree.ElementTree as ET
+
 
 class Arrayconstruct(Subconstruct):
     def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
@@ -36,66 +38,33 @@ class Arrayconstruct(Subconstruct):
 
         return obj, meta_info
 
-    def _toET(self, parent, name, context, path):
-        data = get_current_field(context, name)
+    def _toET(self, parent: ET.Element, obj: Any, ctx: Container, path: str):
+        items = ListContainer(parent=obj)
+        for data in obj:
+            # nested arrays may not be stored in the csv format
+            if not self.subcon._maybe_array() and self.subcon._is_simple_type(context=ctx):
+                items.append(self.subcon._toET(None, data, items, path))
+            else:
+                sub_et = ET.Element(self.subcon.name)
+                items.append(self.subcon._toET(sub_et, data, items, path))
+        return items
 
+    def _fromET(self, elems: ET.Element, obj: Any, ctx: Container, path: str):
+        items = ListContainer(parent=ctx)
+        items._index = 0
         # Simple fields -> FormatFields and Strings
         if self.subcon._is_simple_type() and not self.subcon._is_array():
-            arr = []
-            for idx, item in enumerate(data):
-                # create new context including the index
-                ctx = create_parent_context(context)
-                ctx._index = idx
-                ctx[f"{name}_{idx}"] = data[idx]
-
-                obj = self.subcon._toET(None, name, ctx, path)
-                arr += [obj]
-            parent.attrib[name] = "[" + list_to_string(arr) + "]"
+            assert(len(elems) == 1)
+            for x in obj:
+                item = self.subcon._fromET(elems[0], obj=x, ctx=items, path=path)
+                items._index += 1
+                items.append(item)
         else:
-            sc_names = self.subcon._names()
-            if len(sc_names) == 0:
-                sc_names = [self.subcon.__class__.__name__]
-            for idx, item in enumerate(data):
-                # create new context including the index
-                ctx = create_parent_context(context)
-                ctx._index = idx
-                ctx[f"{sc_names[0]}_{idx}"] = data[idx]
-
-                elem = self.subcon._toET(parent, sc_names[0], ctx, path)
-                if elem is not None:
-                    parent.append(elem)
-
-        return None
-
-    def _fromET(self, parent, name, context, path, is_root=False):
-        context[name] = []
-
-        # Simple fields -> FormatFields and Strings
-        if self.subcon._is_simple_type() and not self.subcon._is_array():
-            data = parent.attrib[name]
-            assert(data[0] == "[")
-            assert(data[-1] == "]")
-            arr = string_to_list(data[1:-1])
-
-            for x in arr:
-                self.subcon._fromET(x, name, context, path, is_root=True)
-        else:
-            items = []
-            sc_names = self.subcon._names()
-            if len(sc_names) == 0:
-                sc_names = [self.subcon.__class__.__name__]
-
-            for n in sc_names:
-                items += parent.findall(n)
-
-            for item in items:
-                self.subcon._fromET(item, name, context, path, is_root=True)
-
-            for n in sc_names:
-                if context.get(n, 1) == None:
-                    context.pop(n)
-
-        return context
+            for elem in elems:
+                item = self.subcon._fromET(parent=elem, obj=None, ctx=items, path=path)
+                items._index += 1
+                items.append(item)
+        return items
 
     @sizeof_decorator
     def _sizeof(self, obj: Any, context: Container, path: str) -> int:
@@ -117,6 +86,9 @@ class Arrayconstruct(Subconstruct):
         return self.subcon._is_simple_type(context=context)
 
     def _is_array(self, context: Optional[Container] = None) -> bool:
+        return True
+
+    def _maybe_array(self) -> bool:
         return True
 
     def _is_struct(self, context: Optional[Container] = None) -> bool:

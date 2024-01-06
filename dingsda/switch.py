@@ -1,7 +1,8 @@
-from typing import Any, Tuple, Optional
+from typing import Any, Tuple, Optional, List
 
 from dingsda import Construct, Pass, Container, evaluate, MetaInformation, SizeofError, Renamed
 
+import xml.etree.ElementTree as ET
 
 class Switch(Construct):
     r"""
@@ -94,40 +95,26 @@ class Switch(Construct):
         except (KeyError, AttributeError):
             raise SizeofError("cannot calculate size, key not found in context", path=path)
 
-    def _toET(self, parent, name, context, path):
-        ctx = context
-        keyfunc = None
-        idx = context.get("_index", None)
-        if idx is not None:
-            ctx = context[f"{name}_{idx}"]
-
+    def _toET(self, parent: ET.Element, obj: Container, path: str, ctx: Container):
         keyfunc = evaluate(self.keyfunc, ctx)
         sc = self.cases.get(keyfunc, self.default)
 
         assert(isinstance(sc, Renamed))
+        parent.tag = sc.name
 
-        return sc._toET(parent, name, ctx, path)
+        return sc._toET(parent=parent, obj=obj, path=path, ctx=ctx)
 
-    def _fromET(self, parent, name, context, path, is_root=False):
+    def _fromET(self, elems: List[ET.Element], obj: Container, path: str):
         for i, case in self.cases.items():
             assert(isinstance(case, Renamed))
-            if not is_root:
-                elems = parent.findall(case.name)
+
+            obj[f"_switch_id_{self.name}"] = i
+            obj[f"_switch_name_{self.name}"] = case.name
+
+            if case._maybe_array():
+                return case._fromET(elems=elems, obj=obj, path=path)
             else:
-                elems = [parent]
-
-            if len(elems) == 0:
-                continue
-
-            if not case._is_array():
-                assert(len(elems) == 1)
-            else:
-                elems = [parent]
-            elem = elems[0]
-            context[f"_switch_id_{name}"] = i
-            context[f"_switch_name_{name}"] = case.name
-
-            return case._fromET(elem, name, context, path, is_root=True)
+                return case._fromET(parent=elems[0], obj=obj, path=path)
 
     def _names(self):
         for case in self.cases.values():
@@ -153,5 +140,8 @@ class Switch(Construct):
         keyfunc = evaluate(self.keyfunc, context, recurse=True)
         sc = self.cases.get(keyfunc, self.default)
         return sc._is_struct(context)
+
+    def _maybe_array(self) -> bool:
+        return True
 
 

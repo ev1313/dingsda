@@ -9,6 +9,7 @@ from dingsda.helpers import evaluate
 from dingsda.lib.containers import MetaInformation, ListContainer
 from dingsda.alignment import Aligned
 
+from dingsda.helpers import string_to_list, list_to_string
 
 class Structconstruct(Construct):
     def _is_simple_type(self, context: Optional[Container] = None) -> bool:
@@ -227,42 +228,76 @@ class Struct(Structconstruct):
             except StopFieldError:
                 break
 
-    def _toET(self, parent: ET.Element, obj: Container, path: str) -> ET.Element:
+    def _toET(self, parent: ET.Element, obj: Any, ctx: Container, path: str) -> ET.Element:
+        if obj is None:
+            obj = ctx
         assert(parent is not None)
 
-        ctx = Container(parent=context)
-
-        elem = ET.Element(name)
         for sc in self.subcons:
-            if sc.name is None or sc.name.startswith("_"):
+            name = sc._names()[0]
+            if name is None or name.startswith("_"):
                 continue
 
-            child = sc._toET(parent=elem, name=sc.name, context=ctx, path=f"{path} -> {name}")
-            if child is not None:
-                elem.append(child)
+            sc_obj = obj.get(name, obj.get(sc.name, None))
 
-        return elem
+            # arrays of simple types get put into attributes with CSV
+            if sc._maybe_array() and sc._is_simple_type(context=ctx):
+                data = sc._toET(parent=None, obj=sc_obj, path=f"{path} -> {name}", ctx=ctx)
+                if data is not None:
+                    parent.attrib[name] = "[" + list_to_string(data) + "]"
+            # simple types get put into attributes
+            elif sc._is_simple_type(context=ctx):
+                data = sc._toET(parent=None, obj=sc_obj, path=f"{path} -> {name}", ctx=ctx)
+                if data is not None:
+                    parent.attrib[name] = data
+            else:
+                # else create a new XML element and put it all in there
+                sub_et = ET.Element(name)
+                child = sc._toET(parent=sub_et, obj=sc_obj, path=f"{path} -> {name}", ctx=ctx)
+                if child is not None:
+                    parent.append(child)
 
-    def _fromET(self, parent: ET.Element, obj: Container, path: str) -> Container:
+        return parent
+
+    def _fromET(self, parent: ET.Element, obj: Any, ctx: Container, path: str) -> Container:
         # we go down one layer
-        ctx = Container(parent=context)
+        ctx = Container(parent=obj)
 
-        # get the xml element
-        if not is_root:
-            elem = parent.findall(name)
-            if len(elem) == 1:
-                elem = elem[0]
-        else:
-            elem = parent
-
-        assert(elem is not None)
+        assert(parent is not None)
 
         for sc in self.subcons:
-            ctx = sc._fromET(context=ctx, parent=elem, name=sc.name, path=f"{path} -> {name}")
+            sub_xml = []
+            if sc._maybe_array() and sc._is_simple_type(context=ctx):
+                sub_xml = [parent]
+                for name in sc._names():
+                    data = parent.attrib.get(name, None)
+                    if data is not None:
+                        break
+                if data is None:
+                    data = "[]"
+                assert(data[0] == "[")
+                assert(data[-1] == "]")
+                sub_obj = string_to_list(data[1:-1])
+            elif sc._is_simple_type(context=ctx):
+                sub_xml = [parent]
+                for name in sc._names():
+                    sub_obj = parent.attrib.get(name, None)
+                    if sub_obj is not None:
+                        break
+            else:
+                for name in sc._names():
+                    sub_xml = parent.findall(name)
+                    if len(sub_xml) > 0:
+                        break
+                sub_obj = ctx
+            assert(len(sub_xml) > 0)
+            if not sc._maybe_array():
+                ctx[sc.name] = sc._fromET(parent=sub_xml[0], obj=sub_obj, ctx=ctx, path=f"{path} -> {sc.name}")
+            else:
+                ctx[sc.name] = sc._fromET(elems=sub_xml, obj=sub_obj, ctx=ctx, path=f"{path} -> {sc.name}")
 
-        context[name] = ctx
 
-        return context
+        return ctx
 
 
 def AlignedStruct(modulus, *subcons, **subconskw):
@@ -356,24 +391,65 @@ class FocusedStruct(Construct):
             return self._subcons[name]
         raise AttributeError
 
-    def _parse(self, stream, context, path):
-        context = Container(_ = context, _params = context._params, _root = None, _parsing = context._parsing, _building = context._building, _sizing = context._sizing, _subcons = self._subcons, _io = stream, _index = context.get("_index", None))
-        context._root = context._.get("_root", context)
-        parsebuildfrom = evaluate(self.parsebuildfrom, context)
-        for i,sc in enumerate(self.subcons):
-            parseret = sc._parsereport(stream, context, path)
-            if sc.name:
-                context[sc.name] = parseret
-            if sc.name == parsebuildfrom:
-                finalret = parseret
+    def _parse(self, stream, context: Container, path: str):
+        """
+        FocusedStruct is a bit special, because it needs to only write the output from the selected subcon to the
+        context. However the other subcons may need to read / write from the context other values in the Struct,
+        for example for rebuilding.
+
+        This is could be solved by just removing all other values,
+        however FocusedStruct is returning _is_struct = parsebuildfrom._is_struct, because it maybe an
+        integer or some other basic value.
+
+        This means it is necessary to create a new context, which gets abandoned afterwards. This context will be
+        added to the parent context, but explicitly deleted after.
+
+        StopFields work also with FocusedStruct, however they will fail, if the parse field is not set yet.
+        """
+        finalret = None
+        # the context is either a new one or not, depending on whether the selected subcon is a struct or not
+        # however as we are technically a struct within that context (for the time of parsing, in case someone tries to
+        # read some pointer or sth.) we need to create a new context anyway
+        temp_ctx = Container(parent=context)
+        temp_ctx["_subcons"] = self._subcons
+        parsebuildfrom = evaluate(self.parsebuildfrom, temp_ctx)
+        finalret_is_set = False
+        for i, sc in enumerate(self.subcons):
+            try:
+                # we need to determine at this point, whether we need to create a new context or not
+                # (only Arrays / Structs need a new context, everything else is just added with their name to the current context)
+                if sc._is_struct(context=temp_ctx):
+                    ctx = Container(parent=temp_ctx)
+                else:
+                    ctx = temp_ctx
+                parseret = sc._parsereport(stream, ctx, path)
+                if sc.name:
+                    temp_ctx[sc.name] = parseret
+                if sc.name == parsebuildfrom:
+                    if self._is_struct(temp_ctx):
+                        context.update(parseret)
+                    finalret = parseret
+                    finalret_is_set = True
+            except StopFieldError as ex:
+                assert(finalret_is_set)
+                raise ex
+
+        if not finalret_is_set:
+            raise UnboundLocalError("parsebuildfrom did not match any subcon")
         return finalret
 
     def _build(self, obj: Any, stream, context: Container, path: str):
         ctx = Container(parent=context)
         parsebuildfrom = evaluate(self.parsebuildfrom, ctx)
         ctx[parsebuildfrom] = obj
+        parsebuildfrom_used = False
         for i,sc in enumerate(self.subcons):
             sc._build(obj if sc.name == parsebuildfrom else None, stream, ctx, path)
+            if sc.name == parsebuildfrom:
+                parsebuildfrom_used = True
+
+        if not parsebuildfrom_used:
+            raise UnboundLocalError("parsebuildfrom did not match any subcon")
 
     def _toET(self, parent, name, context, path):
         assert (isinstance(self.parsebuildfrom, str))
@@ -457,6 +533,13 @@ class FocusedStruct(Construct):
 
     def _is_array(self, context: Optional[Container] = None) -> bool:
         return self._get_main_sc()._is_array(context=context)
+
+    def _is_struct(self, context: Optional[Container] = None) -> bool:
+        """
+        FocusedStruct is a bit special, it is not a struct if it returns a simple type or sth.
+        like that.
+        """
+        return self._get_main_sc()._is_struct(context=context)
 
 
 FocusedSeq = FocusedStruct

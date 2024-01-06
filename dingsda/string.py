@@ -6,6 +6,8 @@ from dingsda.errors import *
 from dingsda.stream import NullStripped, NullTerminated, FixedSized
 from dingsda.lib import unicodestringtype
 
+import xml.etree.ElementTree as ET
+
 #: Explicitly supported encodings (by PaddedString and CString classes).
 #:
 possiblestringencodings = dict(
@@ -137,27 +139,11 @@ class StringEncoded(Adapter):
             return b""
         return obj.encode(self.encoding)
 
-    def _toET(self, parent, name, context, path):
-        assert (name is not None)
+    def _toET(self, parent: ET.Element, obj: Any, ctx: Container, path: str):
+        return obj
 
-        data = str(get_current_field(context, name))
-        if parent is None:
-            return data
-        else:
-            parent.attrib[name] = data
-        return None
+    def _fromET(self, parent: ET.Element, obj: Any, ctx: Container, path):
+        return obj
 
-    def _fromET(self, parent, name, context, path, is_root=False):
-        assert(parent is not None)
-        assert(name is not None)
-
-        if isinstance(parent, str):
-            elem = parent
-        else:
-            elem = parent.attrib[name]
-
-        insert_or_append_field(context, name, elem)
-        return context
-
-    def _is_simple_type(self):
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
         return True

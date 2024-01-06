@@ -1,9 +1,10 @@
 import itertools
-from typing import Tuple, Any, Dict
+from typing import Tuple, Any, Dict, Optional
 
 from dingsda import Subconstruct, MetaInformation, evaluate, stream_tell, stream_seek, Container, ListContainer
 from dingsda.arrays import Arrayconstruct
 
+import xml.etree.ElementTree as ET
 
 class Pointer(Subconstruct):
     r"""
@@ -64,16 +65,29 @@ class Pointer(Subconstruct):
         stream_seek(stream, fallback, 0, path)
         return buildret
 
+    def _toET(self, parent: ET.Element, obj: Any, ctx: Container, path: str):
+        return self.subcon._toET(parent=parent, obj=obj, ctx=ctx, path=path)
 
-    def _toET(self, parent, name, context, path):
-        return self.subcon._toET(context=context, name=name, parent=parent, path=f"{path} -> {name}")
-
-
-    def _fromET(self, parent, name, context, path, is_root=False):
-        return self.subcon._fromET(context=context, parent=parent, name=name, path=f"{path} -> {name}", is_root=is_root)
+    def _fromET(self, parent: ET.Element, obj: Any, ctx: Container, path: str):
+        return self.subcon._fromET(parent=parent, obj=obj, ctx=ctx, path=path)
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
+
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
+        return self.subcon._is_simple_type(context=context)
+
+    def _is_array(self, context: Optional[Container] = None) -> bool:
+        return self.subcon._is_array(context=context)
+
+    def _is_struct(self, context: Optional[Container] = None) -> bool:
+        return self.subcon._is_struct(context=context)
+
+    def _maybe_array(self) -> bool:
+        return self.subcon._maybe_array()
+
+    def _names(self) -> list:
+        return self.subcon._names()
 
 
 class Area(Arrayconstruct):

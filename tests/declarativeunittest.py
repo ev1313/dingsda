@@ -79,6 +79,7 @@ def common_xml_test(s, xml, obj, obj_from = None):
     test_obj = s.fromET(xml=test_et)
     assert(obj_from == test_obj)
     test_xml = s.toET(obj=obj, name="test")
+    test_xml.attrib.pop("_dingsda_version")
     test_xml_str = ET.tostring(test_xml)
     assert(test_xml_str == xml)
 
@@ -89,6 +90,7 @@ def common_endtoend_xml_test(s, byte_data, obj=None, xml=None):
         assert(data == obj)
     test_xml = s.toET(obj=data, name="test")
     if xml is not None:
+        test_xml.attrib.pop("_dingsda_version")
         assert(ET.tostring(test_xml) == xml)
     xml_data = s.fromET(xml=test_xml)
     assert(byte_data == s.build(xml_data))

@@ -188,3 +188,19 @@ def test_listcontainer_index():
     p = ListContainer([1,2,3])
     p._index = 2
     assert(p._index == 2)
+
+
+def test_listcontainer_equality():
+    p = ListContainer([1,2,3])
+    p2 = ListContainer([1,2,3])
+    assert(p == p2)
+    assert(p == [1,2,3])
+
+    p = ListContainer([1,2,3])
+    p2 = ListContainer(parent=p)
+    p2.append(1)
+    p2.append(2)
+    p2.append(3)
+    assert(p == p2)
+    assert(p == [1,2,3])
+    assert(p2 == [1,2,3])

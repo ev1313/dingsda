@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import io
 
-from typing import Tuple, Dict, Any, Optional
+from typing import Tuple, Dict, Any, Optional, List
 
 from dingsda.errors import *
 from dingsda.lib.containers import Container, MetaInformation, ConstructMetaInformation, ListContainer
@@ -139,10 +139,10 @@ class Construct(object):
         """Override in your subclass."""
         raise NotImplementedError
 
-    def _toET(self, parent: ET.Element, context: Container, path: str) -> ET.Element:
+    def _toET(self, elems: ET.Element, obj: Any, ctx: Container, path: str) -> ET.Element:
         raise NotImplementedError
 
-    def _fromET(self, parent: ET.Element, context: Container, path: str) -> Container:
+    def _fromET(self, elems: ET.Element, obj: Any, ctx: Container, path: str) -> Container:
         raise NotImplementedError
 
     def _preprocess(self, obj: Any, context: Container, path: str) -> Tuple[Any, Optional[MetaInformation]]:
@@ -255,7 +255,7 @@ class Construct(object):
         # create root node
         xml = ET.Element(name)
         xml.attrib["_dingsda_version"] = version_string
-        return self._toET(parent=xml, obj=context, path="(toET)")
+        return self._toET(parent=xml, obj=None, path="(toET)", ctx=context)
 
     def fromET(self, xml, **contextkw) -> Container:
         r"""
@@ -268,12 +268,7 @@ class Construct(object):
         metadata = ConstructMetaInformation(xml_parsing=True, params=contextkw)
         context = Container(metadata=metadata, **contextkw)
 
-        # create root node
-        parent = ET.Element("Root")
-        parent.append(xml)
-        result = self._fromET(parent=parent, obj=context, path="(fromET)")
-
-        return result.get(xml.tag)
+        return self._fromET(parent=xml, obj=None, ctx=context, path="(fromET)")
 
     def preprocess(self, obj: Any, sizing: bool = True, **contextkw) -> Tuple[Any, Optional[MetaInformation]]:
         r"""
@@ -424,7 +419,9 @@ class Construct(object):
         return []
 
     def _is_simple_type(self, context: Optional[Container] = None) -> bool:
-        """ is used by Array to determine, whether the type can be stored in a string array as XML attribute """
+        """ is used by Array to determine, whether the type can be stored in a string array as XML attribute.
+        If a type is simple, Struct will also handle it differently and store it in a XML attribute.
+        """
         return False
 
     def _is_struct(self, context: Optional[Container] = None) -> bool:
@@ -433,6 +430,9 @@ class Construct(object):
 
     def _is_array(self, context: Optional[Container] = None) -> bool:
         """ is used by Array to detect nested arrays (is a problem with Array of Array of simple type) """
+        return False
+
+    def _maybe_array(self) -> bool:
         return False
 
     def __rtruediv__(self, name):
@@ -572,13 +572,13 @@ class Renamed(Subconstruct):
         path += " -> %s" % (self.name,)
         self.subcon._build(obj, stream, context, path)
 
-    def _toET(self, parent: ET.Element, obj: Any, path: str) -> ET.Element:
-        path += " -> %s" % (self.name,)
-        return self.subcon._toET(parent=parent, obj=obj, path=path)
+    def _toET(self, **kwargs) -> ET.Element:
+        kwargs["path"] += " -> %s" % (self.name,)
+        return self.subcon._toET(**kwargs)
 
-    def _fromET(self, parent: ET.Element, obj: Container, path: str) -> Container:
-        path += " -> %s" % (self.name,)
-        return self.subcon._fromET(parent=parent, obj=obj, path=path)
+    def _fromET(self, **kwargs) -> Container:
+        kwargs["path"] += " -> %s" % (self.name,)
+        return self.subcon._fromET(**kwargs)
 
     def _is_simple_type(self, context: Optional[Container] = None):
         return self.subcon._is_simple_type(context=context)
@@ -589,9 +589,13 @@ class Renamed(Subconstruct):
     def _is_array(self, context: Optional[Container] = None):
         return self.subcon._is_array(context=context)
 
+    def _maybe_array(self) -> bool:
+        return self.subcon._maybe_array()
+
     def _names(self):
-        sc_names = [self.name]
+        sc_names = []
         sc_names += self.subcon._names()
+        sc_names += [self.name]
         return sc_names
 
 
@@ -639,11 +643,11 @@ class Index(Construct):
     def _static_sizeof(self, context: Container, path: str) -> int:
         return 0
 
-    def _toET(self, parent, name, context, path):
+    def _toET(self, parent: ET.Element, obj: Any, ctx: Container, path: str):
         return None
 
-    def _fromET(self, parent, name, context, path, is_root=False):
-        return context
+    def _fromET(self, parent: ET.Element, obj: Any, ctx: Container, path: str):
+        return obj
 
 
 class Rebuild(Subconstruct):
@@ -695,11 +699,11 @@ class Rebuild(Subconstruct):
         meta_info = MetaInformation(offset=offset, size=size, end_offset=offset + size)
         return self.func, meta_info
 
-    def _toET(self, parent, name, context, path):
+    def _toET(self, parent: ET.Element, obj: Any, ctx: Container, path: str):
         return None
 
-    def _fromET(self, parent, name, context, path, is_root=False):
-        return context
+    def _fromET(self, parent: ET.Element, obj: Any, ctx: Container, path: str):
+        return obj
 
 
 #===============================================================================
@@ -832,8 +836,8 @@ class Pass(Construct):
     def _static_sizeof(self, context, path):
         return 0
 
-    def _toET(self, parent, name, context, path):
+    def _toET(self, parent: ET.Element, obj: Any, ctx: Container, path: str):
         return None
 
-    def _fromET(self, parent, name, context, path, is_root=False):
-        return context
+    def _fromET(self, parent: ET.Element, obj: Any, ctx: Container, path: str):
+        return ctx

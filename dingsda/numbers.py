@@ -7,6 +7,8 @@ from dingsda.helpers import *
 from dingsda.errors import *
 from dingsda.lib import *
 
+import xml.etree.ElementTree as ET
+
 native = (sys.byteorder == "little")
 
 
@@ -59,40 +61,23 @@ class FormatField(Construct):
             raise FormatFieldError("struct %r error during building, given value %r" % (self.fmtstr, obj), path=path)
         stream_write(stream, data, self.length, path)
 
-    def _toET(self, parent, name, context, path):
-        assert (name is not None)
+    def _toET(self, parent: ET.Element, obj: Any, ctx: Container, path: str) -> str:
+        return str(obj)
 
-        data = str(get_current_field(context, name))
-        if parent is None:
-            return data
-        else:
-            parent.attrib[name] = data
-        return None
-
-    def _fromET(self, parent, name, context, path, is_root=False):
-        assert(parent is not None)
-        assert(name is not None)
-
-        if isinstance(parent, str):
-            elem = parent
-        else:
-            elem = parent.attrib[name]
-
+    def _fromET(self, parent: ET.Element, obj: Any, ctx: Container, path: str) -> str:
         assert (len(self.fmtstr) == 2)
         if self.fmtstr[1] in ["B", "H", "L", "Q", "b", "h", "l", "q"]:
-            insert_or_append_field(context, name, int(elem))
-            return context
+            return int(obj)
         elif self.fmtstr[1] in ["e", "f", "d"]:
-            insert_or_append_field(context, name, float(elem))
-            return context
-
-        assert (0)
+            return float(obj)
+        assert False
 
     def _static_sizeof(self, context: Container, path: str) -> int:
         return self.length
 
-    def _is_simple_type(self) -> bool:
+    def _is_simple_type(self, context: Optional[Container] = None) -> bool:
         return True
+
 
 class BytesInteger(Construct):
     r"""

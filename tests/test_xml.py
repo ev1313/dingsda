@@ -148,7 +148,7 @@ def test_xml_rebuild():
         "b" / Rebuild(Int32ul, lambda ctx: ctx.a + 1),
         )
 
-    data = {"a": 1}
+    data = {"a": 1, "b": None}
     xml = b'<test a="1" />'
     common_xml_test(s, xml, data)
 
@@ -162,7 +162,7 @@ def test_xml_switch():
         }),
         )
     data = {"type": 1, "data": {"value": 32}}
-    data_from = {"data": {"value": 32}}
+    data_from = {"type": None, "data": {"value": 32}}
     xml = b'<test><b32bit value="32" /></test>'
     common_xml_test(s, xml, data, data_from)
 
@@ -182,7 +182,7 @@ def test_xml_switch_2():
         }),
         )
     data = {"type": 1, "data": {"value": 32}, "second": {"value": 32}}
-    data_from = {"data": {"value": 32}, "second": {"value": 32}}
+    data_from = {"type": None, "data": {"value": 32}, "second": {"value": 32}}
     xml = b'<test><b32bit value="32" /><foo value="32" /></test>'
     common_xml_test(s, xml, data, data_from)
 
